@@ -1,0 +1,86 @@
+ body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+pre,
+code,
+kbd,
+samp {
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+}
+
+pre[class*="language-"] {
+	margin: 0;
+}
+
+:focus {
+	outline:0 !important;
+	box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f8f9fa !important;
+}
+
+code[class*="language-"],
+code[class*="language-"] *,
+pre[class*="language-"],
+pre[class*="language-"] * {
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+}
+
+html, body {
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+}
+
+.text-twitter {
+	color: #4da0eb;
+}
+
+.bg-mamppro {
+	background-color:#00729a;
+}
+
+.bg-mamp {
+	background-color:#8a8b8b;
+}
+
+.hm {
+	-webkit-hyphens: manual;
+	-moz-hyphens: manual;
+	-ms-hyphens: manual;
+	hyphens: manual;
+}
+
+.btn-twitter {
+	color: #fff;
+	background-color: #4794da;
+	border-color: #4794da;
+}
+
+.btn-twitter:hover {
+	color: #fff;
+	background-color: #3779ba;
+	border-color: #3779ba;
+}
+
+.accordion-button:not(.collapsed) {
+	color: #212529 !important;
+	background-color: #e9ecef !important;
+}
+
+.accordion-button:not(.collapsed)::after{
+	background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+	color: #212529;
+	background-color: #e9ecef !important;
+}

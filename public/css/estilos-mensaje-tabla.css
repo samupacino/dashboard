@@ -1,0 +1,73 @@
+#mensajeTabla {
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeTabla.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeTabla.error {
+  background: #dc3545;
+  color: white;
+}
+
+
+
+#mensajeTablaMessage {
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeTablaMessage.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeTablaMessage.error {
+  background: #dc3545;
+  color: white;
+}
+
+
+
+
+#mensajeTablaT155 {
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeTablaT155.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeTablaT155.error {
+  background: #dc3545;
+  color: white;
+}
+
+
+#mensajeModalT155 {
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeModalT155.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeModalT155.error {
+  background: #dc3545;
+  color: white;
+}

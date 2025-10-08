@@ -1,0 +1,122 @@
+<?php
+
+
+use PDO;
+
+class DataTableT155
+{
+    private PDO $pdo;
+    private string $tabla;
+    private array $columnas;
+
+    public function __construct(){
+
+    }
+    /*
+    public function __construct(PDO $pdo, string $tabla, array $columnas)
+    {
+        $this->pdo = $pdo;
+        $this->tabla = $tabla;
+        $this->columnas = $columnas;
+    }*/
+  
+
+    /**
+     * Método principal para procesar la petición y devolver JSON para DataTables
+     */
+    public function procesar(): array
+    {
+        
+        // Extraer parámetros enviados por DataTables (GET o POST)
+        $draw = $_GET['draw'] ?? 1;
+        $start = $_GET['start'] ?? 0;
+        $length = $_GET['length'] ?? 10;
+        $search = $_GET['search']['value'] ?? '';
+        $orderColumnIndex = $_GET['order'][0]['column'] ?? 0;
+        $orderDir = $_GET['order'][0]['dir'] ?? 'asc';
+
+        // 🔧 MODIFICADO: Extraer alias limpio para el ordenamiento
+        // Si tienes columnas tipo "p.nombre AS plataforma", se extrae el alias "plataforma"
+        $orderColumnRaw = $this->columnas[$orderColumnIndex] ?? $this->columnas[0];
+        if (stripos($orderColumnRaw, ' AS ') !== false) {
+            // Convertir "p.nombre AS plataforma" → "plataforma"
+            $orderColumn = trim(preg_replace('/.*\s+AS\s+/i', '', $orderColumnRaw));
+        } else {
+            // Convertir "p.nombre" → "p.nombre"
+            $orderColumn = $orderColumnRaw;
+        }
+       
+       
+        // 🔧 MODIFICADO: Usar subconsulta para contar correctamente con JOINs
+        $stmtTotal = $this->pdo->query("SELECT COUNT(*) AS total FROM ({$this->buildSelectQuery()}) AS subconsulta_total");
+        $recordsTotal = (int)$stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
+
+        // Preparar cláusula WHERE si hay búsqueda
+        $where = '';
+        $params = [];
+
+        if (!empty($search)) {
+            $conditions = [];
+
+            foreach ($this->columnas as $col) {
+                // 🔧 MODIFICADO: aplicar alias si existe
+                if (stripos($col, ' AS ') !== false) {
+                    preg_match('/AS\s+(\w+)/i', $col, $matches);
+                    $alias = $matches[1] ?? '';
+                    if ($alias !== '') {
+                        $conditions[] = "$alias LIKE :search";
+                    }
+                } else {
+                    $conditions[] = "$col LIKE :search";
+                }
+            }
+
+         
+            $where = "WHERE " . implode(' OR ', $conditions);
+            $params[':search'] = "%$search%";
+        }
+
+        // 🔧 MODIFICADO: Contar con filtro aplicado también usando subconsulta
+        if ($where) {
+            $stmtFiltered = $this->pdo->prepare("SELECT COUNT(*) AS total FROM ({$this->buildSelectQuery()} $where) AS subconsulta_filtrada");
+            $stmtFiltered->execute($params);
+            $recordsFiltered = (int)$stmtFiltered->fetch(PDO::FETCH_ASSOC)['total'];
+        } else {
+            $recordsFiltered = $recordsTotal;
+        }
+
+        // 🔧 MODIFICADO: Usar lista de columnas explícita
+        $selectColumns = implode(', ', $this->columnas);
+
+        // 🔧 MODIFICADO: Usar consulta base con búsqueda, orden y paginación
+        $sql = "SELECT $selectColumns FROM {$this->tabla} $where ORDER BY $orderColumn $orderDir LIMIT :start, :length";
+        $stmt = $this->pdo->prepare($sql);
+
+        // Vincular parámetros
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val, PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':start', (int)$start, PDO::PARAM_INT);
+        $stmt->bindValue(':length', (int)$length, PDO::PARAM_INT);
+
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Formato que espera DataTables
+        return [
+            'draw' => (int)$draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+    }
+
+    /**
+     * 🔧 AGREGADO: Función auxiliar para construir SELECT base sin LIMIT/ORDER
+     */
+    private function buildSelectQuery(): string
+    {
+        $selectColumns = implode(', ', $this->columnas);
+        return "SELECT $selectColumns FROM {$this->tabla}";
+    }
+}

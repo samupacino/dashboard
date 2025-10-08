@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+
+    Options -MultiViews
+    RewriteEngine On
+
+    # Permitir acceso directo a archivos o directorios existentes
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Reescribir todas las demás solicitudes a index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

@@ -1,0 +1,93 @@
+
+ 
+ /* Modal principal de registro */
+    .modal-registro-usuario {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-contenido-registro {
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width:500px;
+      border-radius: 10px;
+      position: relative;
+    }
+    .cerrar-modal-registro {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .modal-contenido-registro h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+    .form-registro-usuario {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .form-registro-usuario input, 
+    .form-registro-usuario select {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .form-registro-usuario button {
+      padding: 10px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .form-registro-usuario button:hover {
+      background: #0056b3;
+    }
+    .mensaje-error-registro {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    /* Modal de confirmación */
+    .modal-confirmar-registro {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-contenido-confirmar {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+    .modal-contenido-confirmar button {
+      margin: 5px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-si-registro {
+      background: #28a745;
+      color: white;
+    }
+    .btn-no-registro {
+      background: #dc3545;
+      color: white;
+    }

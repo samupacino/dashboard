@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Esta linea es para instalar bootstrap -->
+  <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+  <!-- Estas dos lineas es para usar datatable-->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />
+  <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script> 
+
+ <!-- DataTables CSS AGREUE ESTO ULTIMO ACUERDATE CTM-->
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.7/css/responsive.dataTables.min.css">
+  <script src="https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.min.js"></script> 
+
+  
+  <!-- ------------------------------------------------------------------------- -->
+  <!-- Estas lineas son para uso exclusivo para barra menu-->
+   
+  <link rel="stylesheet" href="barra-menu/estilos/fonts.css?t=<?php echo mt_rand(); ?>">
+	<link rel="stylesheet" href="barra-menu/estilos/prism.css?t=<?php echo mt_rand(); ?>">
+	<link rel="stylesheet" href="barra-menu/estilos/custom.css?t=<?php echo mt_rand(); ?>">
+	<link rel="stylesheet" href="barra-menu/estilos/extra.css?t=<?php echo mt_rand(); ?>">
+
+  <!-- ------------------------------------------------------------------------- -->
+   
+  <link rel="stylesheet" href="css/estilos-login-modal.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-registro-modal.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-editar-modal.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-mensaje-tabla.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-datatable.css?v=<?php echo time();?>">
+
+  <title>Dashboard</title>
+ 
+</head>
+<body>
+
+  <?php
+    include_once'barra-menu.php';
+  ?>
+  
+  <?php
+    //include_once'modal-requerido-login.php';
+  ?>
+
+  <?php
+    include_once'modal-registro.php';
+    
+  ?>
+
+  
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>DataTable Responsive Demo</title>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.min.css">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
+</head>
+<body>

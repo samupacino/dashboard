@@ -1,0 +1,5 @@
+ table.dataTable th,
+  table.dataTable td {
+   
+    vertical-align: middle;
+  }

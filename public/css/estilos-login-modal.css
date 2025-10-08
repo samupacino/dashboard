@@ -1,0 +1,68 @@
+
+
+#loginModal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.96);
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+#loginModal .modal-content {
+  border: 2px solid #006400;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  background-color: #f0f0f0;
+  color: #003300;
+  box-shadow: 0 0 10px #006400;
+}
+
+#loginModal h2 {
+  font-weight: bold;
+  text-align: center;
+  color: #004400;
+  margin-bottom: 20px;
+}
+
+#loginModal form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#loginModal label {
+  font-weight: bold;
+  color: #004400;
+}
+
+#loginModal input[type="text"],
+#loginModal input[type="password"] {
+  padding: 10px;
+  border: 1px solid #004400;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: #003300;
+}
+
+#loginModal input[type="submit"] {
+  padding: 10px;
+  border: 2px solid #004400;
+  background-color: #e0ffe0;
+  color: #004400;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#loginModal #mensajeModal {
+  font-weight: bold;
+  margin-top: 12px;
+  color: #004400;
+}

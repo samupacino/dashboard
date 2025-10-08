@@ -1,0 +1,91 @@
+/* Modal principal de edición */
+.modal-editar-usuario {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+.modal-contenido-editar {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  position: relative;
+}
+.cerrar-modal-editar {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+.modal-contenido-editar h2 {
+  margin-top: 0;
+  text-align: center;
+}
+.form-editar-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.form-editar-usuario input, 
+.form-editar-usuario select {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.form-editar-usuario button {
+  padding: 10px;
+  border: none;
+  background: #17a2b8;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.form-editar-usuario button:hover {
+  background: #117a8b;
+}
+.mensaje-error-editar {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Modal de confirmación de edición */
+.modal-confirmar-editar {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+.modal-confirmar-editar .modal-contenido-confirmar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+.modal-confirmar-editar button {
+  margin: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-si-editar {
+  background: #28a745;
+  color: white;
+}
+.btn-no-editar {
+  background: #dc3545;
+  color: white;
+}
