@@ -120,7 +120,6 @@ function cargarVistaModulo(nombreModulo) {
       // Paso 10: Si hubo algún error, lo mostramos dentro del contenedor principal
       contenedor.innerHTML = `
         <div class="vista-error" style="color: red; text-align: center; padding: 2rem;">
-          <h1>PTM</h1>
           <strong>Error:</strong> ${error.message}
         </div>
       `;

@@ -28,12 +28,7 @@ function load_t155(){
 	// Crear nueva instancia y guardarla globalmente
    
 	let datatable_t155 = new DataTable(tabla,{
-		 responsive: {
-				details: {
-				type: 'inline',   // muestra debajo de la fila
-				target: 'tr'      // al hacer clic en toda la fila
-				}
-  		},
+		 responsive:true,
  		//responsive: true,
 		destroy:true ,
 		processing:true, /*
@@ -95,6 +90,7 @@ function load_t155(){
 
 		},
         columns:[
+
 					{
 						data:'id',
 						visible: false
@@ -109,6 +105,7 @@ function load_t155(){
 					{                                                          
 						data: null,                                              // [DT] No usa un campo → fabricamos contenido
 						orderable: false,                                        // [DT] No ordenable
+						
 						searchable: false,                                       // [DT] No filtrable
 						/*
 						🟡 ¿class="dt-center" es de Bootstrap?
@@ -149,11 +146,7 @@ function load_t155(){
 				],
 
 				  // 🔹 Aquí sí van los priorities
-		columnDefs: [
-			{ responsivePriority: 1, targets: 1 }, // Tag nunca se oculta
-			{ responsivePriority: 2, targets: 2 }, // Ubicación casi nunca
-			{ responsivePriority: 3, targets: -1 } // Botón eliminar se oculta primero
-		],
+		
 			
      		
 		createdRow: function (row, data, dataIndex) {                // [DT] Callback al crear cada fila
@@ -170,7 +163,8 @@ function load_t155(){
 		const boton = e.target.closest('button');                    // [DOM] Detectamos si clic fue en botón
 		if (!boton) return;                                          // [DOM] Si no es botón → salir
 
-		const tr = e.target.closest('tr');                           // [DOM] Encontramos la fila <tr>
+		const tr = e.target.closest('tr');                           // [DOM]td.control:before {
+
 		if (!tr) return;                                             // [DOM] Seguridad
 	
 		const rowApi = datatable_t155.row(tr);                            // [DT] Obtenemos instancia row() de DataTables

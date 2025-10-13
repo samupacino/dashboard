@@ -2,7 +2,7 @@
 <div id="modalEditarUsuario" class="modal-editar-usuario modalRegistro">
   <div class="modal-contenido-editar">
     <span class="cerrar-modal-editar" id="cerrarEditar">&times;</span>
-    <h2>Editar Usuario</h2>
+    <h2>EDITAR USUARIO</h2>
     <form id="formEditarUsuario" class="form-editar-usuario" data-id="">
       <input type="text" id="usernameEditar" name="username" placeholder="Usuario" required>
       <input type="text" id="nameCompleteEditar" name="name_complete" placeholder="Nombre completo" required>

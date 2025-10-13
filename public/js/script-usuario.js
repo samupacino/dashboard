@@ -305,7 +305,7 @@ function load_usuario_init() {                                   // [APP] Tu fun
 
 	// === CREAR INSTANCIA DATATABLE ===
 	 	const datatable_usuario = new DataTable(tabla, {                       // [DT] Constructor principal de DataTables
-		responsive: true,
+		//responsive: true,
 		destroy:true ,
 		processing: true,                                            // [DT] Muestra texto "Procesando..." durante AJAX
 		serverSide: true,                                           // [DT] Paginación y filtros hechos en cliente

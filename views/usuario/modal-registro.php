@@ -3,7 +3,7 @@
   <div id="modalRegistroUsuario" class="modal-registro-usuario modalRegistro">
     <div class="modal-contenido-registro">
       <span class="cerrar-modal-registro" id="cerrarRegistro">&times;</span>
-      <h2>Registro Usuario</h2>
+      <h2>REGISTRO USUARIO</h2>
       <form id="formRegistroUsuario" class="form-registro-usuario">
         <input type="text" id="usernameRegistro" name="username" placeholder="Usuario"  required>
         <input type="text" id="nameCompleteRegistro" name="name_complete" placeholder="Nombre completo"  required>
@@ -12,7 +12,7 @@
           <option value="invitado">Invitado</option>
           <option value="admin">Admin</option>
         </select>
-        <button type="submit">Registrar</button>
+        <button type="submit">Save Record</button>
         <div id="mensajeTablaMessage"></div>
         <div id="errorRegistro" class="mensaje-error-registro"></div>
       </form>
