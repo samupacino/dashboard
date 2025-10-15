@@ -4,7 +4,7 @@ function cargar_t155_init(){
 	editar_t155_init();
 	registro_t155_init();
 	onClickEliminar_confirmar();
-	/
+	
 }
 function load_t155(){
 
