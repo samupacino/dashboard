@@ -34,6 +34,15 @@
   <link rel="stylesheet" href="css/estilos-editar-modal.css?v=<?php echo time();?>">
   <link rel="stylesheet" href="css/estilos-mensaje-tabla.css?v=<?php echo time();?>">
   <link rel="stylesheet" href="css/estilos-datatable.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-iconos.css?v=<?php echo time();?>">
+
+
+
+  <!-- our project is using icons from Solid, Sharp Thin, Sharp Duotone Thin + Brands -->
+  <link href="fontawesome-free-7.1.0-web/css/fontawesome.css" rel="stylesheet" />
+  <link href="fontawesome-free-7.1.0-web/css/brands.css" rel="stylesheet" />
+  <link href="fontawesome-free-7.1.0-web/css/solid.css" rel="stylesheet" />
+
 
   <title>Dashboard</title>
  

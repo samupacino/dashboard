@@ -3,7 +3,8 @@ function cargar_t155_init(){
 	load_t155();
 	editar_t155_init();
 	registro_t155_init();
-	//registro_tag();
+	onClickEliminar_confirmar();
+	/
 }
 function load_t155(){
 
@@ -118,8 +119,8 @@ function load_t155(){
 						// type = 'display' | 'sort' | 'filter'
 						// row  = objeto completo de la fila (ej: {id:1,...})
 						// meta = info de índice de fila/columna
-					
-							return (`<button type="button" class="btn-editar btn btn-secondary" data-id="${row.id}">Editar</button>`);
+							return (`<i class="fas fa-edit fa-2x btn-editar btn-icon edit" data-id="${row.id}"></i>`);
+							//return (`<button type="button" class="btn-editar btn btn-secondary" data-id="${row.id}">Editar</button>`);
 							/*
 								// [DOM] Creamos botón HTML
 								// [DOM] Atributo data-id con el id de la fila
@@ -133,7 +134,8 @@ function load_t155(){
 						searchable: false,                                       // [DT]
 						className: 'dt-center',                                  // [DT]
 						render: function (data, type, row, meta) {               // [DT]
-							return (`<button type="button" class="btn-eliminar btn btn-danger" data-id="${row.id}">Eliminar</button>`);
+							return (`<i class="fa fa-trash fa-2x btn-eliminar btn-icon delete" aria-hidden="true" data-id="${row.id}"></i>`);
+							//return (`<button type="button" class="btn-eliminar btn btn-danger" data-id="${row.id}">Eliminar</button>`);
 						/*
 										// [DOM] Botón eliminar
 										// [DOM] Guardamos id en data-id
@@ -160,7 +162,11 @@ function load_t155(){
 	const tbody = tabla.querySelector('tbody');                    // [DOM] Seleccionamos <tbody> de la tabla
 
 	tbody.addEventListener('click', function (e) {                 // [DOM] Escuchamos clicks en todo el tbody
-		const boton = e.target.closest('button');                    // [DOM] Detectamos si clic fue en botón
+		
+		
+
+
+		const boton = e.target.closest('i');                    // [DOM] Detectamos si clic fue en botón
 		if (!boton) return;                                          // [DOM] Si no es botón → salir
 
 		const tr = e.target.closest('tr');                           // [DOM]td.control:before {
@@ -200,15 +206,34 @@ function registro_tag(){
 		modalRegistro.show();
 	
 }
-function onClickEliminar(fila, boton, tr, rowApi) {
+function onClickEliminar(fila, boton, tr, rowApi){
+
+	var eliminar = document.querySelector('#modal_eliminar_t155');
+	var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
+		backdrop: 'static'
+	});
+
+	console.log(fila);
+	eliminar.querySelector('.modal-body').dataset.idDelete = fila.id;
+	eliminar.querySelector('.modal-body').textContent = `¿Seguro que deseas eliminar el usuario con tag ${fila.tag}?`;
+	modal_eliminar.show();
 
 
-	const id = fila.id;
+}
+function onClickEliminar_confirmar() {
+
+	var eliminar = document.querySelector('#modal_eliminar_t155');
+	eliminar.querySelector('#modal_eliminar_t155_confirmar').addEventListener('click',function(){
 		
-	if (!confirm(`¿Seguro que deseas eliminar el usuario con ID ${id}?`)) {
-		return;
-	}
+		
+		var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
+			backdrop: 'static'
+		});
 
+		
+		var id = eliminar.querySelector('.modal-body').dataset.idDelete;
+
+		
 	
 
 		/*
@@ -234,83 +259,86 @@ function onClickEliminar(fila, boton, tr, rowApi) {
 		===============================================
 		*/
 
-	fetch(`/instrumentos/${id}`, {
-		method: 'DELETE',
-		headers: { 'Content-Type': 'application/json' }
-	})
-	.then(response => {
-			
-			
-		// Revisamos cabecera Content-Type para saber si es JSON
-		const contentType = response.headers.get("content-type");
-			//console.log(contentType.includes("application/json"));
-		if (contentType && contentType.includes("application/json")) {
-				// ✅ Caso: el servidor dice que devolvió JSON
-			return response.json().then(body => {
-				// Aquí tenemos acceso tanto al response como al body parseado
-			if (!response.ok) {
-					// Lanzamos error con ambos datos unidos
-
-				throw { status: response.status, body: body };
-			}
-				// Devolvemos objeto combinado { status, body } al siguiente then
-				return { status: response.status, body: body };
-			});
-
-		} else {
-				// ⚠️ Caso: no es JSON (ej. servidor devolvió HTML en error 500)
-			return response.text().then(texto => {
-			if (!response.ok) {
-					// Lanzamos error con texto plano dentro de un body simulado
-					throw { status: response.status, body: { mensaje: texto } };
-			}
-				// Devolvemos también como objeto combinado
-				return { status: response.status, body: { mensaje: texto } };
-			});
-
-		}
-	})
-	.then(resultado => {
-		// Solo entra aquí si el status fue 200–299
-		//window.dataTables['usuario'].ajax.reload();
-		//console.log("✅ OK:", resultado.body);
-		//console.log(resultado);
-		//mostrarSuccess(resultado.body.mensaje || "Operación realizada correctamente");
-		recargar_table_t155();
-		alert(resultado.body.mensaje || "Operación realizada correctamente");
-		//mostrarMensajeEnDataTable(resultado.body.mensaje || "Operación realizada correctamente");
-
-	})
-	.catch(err => {
-
-		//console.log(err.status);
-		//console.log(err.body);
-			
-		
-		
-		if (err.status === 401 && err.body?.status === 'session_expired') {
-			
-			loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
+		fetch(`/instrumentos/${id}`, {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' }
+		})
+		.then(response => {
 				
-	
-		} else if (err.status === 401 && err.body?.status === 'unauthorized'){
+				
+			// Revisamos cabecera Content-Type para saber si es JSON
+			const contentType = response.headers.get("content-type");
+				//console.log(contentType.includes("application/json"));
+			if (contentType && contentType.includes("application/json")) {
+					// ✅ Caso: el servidor dice que devolvió JSON
+				return response.json().then(body => {
+					// Aquí tenemos acceso tanto al response como al body parseado
+				if (!response.ok) {
+						// Lanzamos error con ambos datos unidos
 
-			mostrarErrorT155(err.body.mensaje);
-		} else {
+					throw { status: response.status, body: body };
+				}
+					// Devolvemos objeto combinado { status, body } al siguiente then
+					return { status: response.status, body: body };
+				});
 
-			//console.error("❌ Error de red:", err);
-			mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+			} else {
+					// ⚠️ Caso: no es JSON (ej. servidor devolvió HTML en error 500)
+				return response.text().then(texto => {
+				if (!response.ok) {
+						// Lanzamos error con texto plano dentro de un body simulado
+						throw { status: response.status, body: { mensaje: texto } };
+				}
+					// Devolvemos también como objeto combinado
+					return { status: response.status, body: { mensaje: texto } };
+				});
 
-		}
+			}
+		})
+		.then(resultado => {
+			// Solo entra aquí si el status fue 200–299
+			//window.dataTables['usuario'].ajax.reload();
+			//console.log("✅ OK:", resultado.body);
+			//console.log(resultado);
+			//mostrarSuccess(resultado.body.mensaje || "Operación realizada correctamente");
+			recargar_table_t155();
+			modal_eliminar.hide();
+			mostrarMensajeEnDataTableInstrumento(resultado.body.mensaje || "Operación realizada correctamente");
+			//mostrarMensajeEnDataTable(resultado.body.mensaje || "Operación realizada correctamente");
+
+		})
+		.catch(err => {
+
+			//console.log(err.status);
+			//console.log(err.body);
+				
+			
+			
+			if (err.status === 401 && err.body?.status === 'session_expired') {
+				
+				loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
+					
 		
-		// Aquí llegan:
-		//   a) Errores HTTP (400, 401, 500...) lanzados con throw
-		//   b) Errores de red reales (servidor caído, CORS, etc.)
-		if (err.body) {
-			//console.error(`❌ Error HTTP ${err.status}:`, err.body);
-			//loginModal.style.display = 'flex'; 
-			//alert(err.body.mensaje || "Error en la operación");
-		} 	
+			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
+
+				mostrarErrorT155(err.body.mensaje);
+			} else {
+
+				//console.error("❌ Error de red:", err);
+				mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+
+			}
+			
+			// Aquí llegan:
+			//   a) Errores HTTP (400, 401, 500...) lanzados con throw
+			//   b) Errores de red reales (servidor caído, CORS, etc.)
+			if (err.body) {
+				//console.error(`❌ Error HTTP ${err.status}:`, err.body);
+				//loginModal.style.display = 'flex'; 
+				//alert(err.body.mensaje || "Error en la operación");
+			} 	
+		});
+
 	});
 
 }

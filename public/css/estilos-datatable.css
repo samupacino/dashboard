@@ -7,24 +7,3 @@
 
 
 
-
-
-
- td.control:before {
-  content: '+';
-  color: green;
-  font-weight: bold;
-  font-size: 18px;
-  cursor: pointer;
-  margin-right: 5px;
-}
-
-tr.parent td.control:before {
-  content: '-';
-  color: red;
-}
-
-table.dataTable tr.child td {
-  background-color: #f8f9fa;
-  border-left: 4px solid #0d6efd;
-}

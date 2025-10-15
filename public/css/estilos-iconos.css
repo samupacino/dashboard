@@ -1,0 +1,38 @@
+
+
+.btn-icon {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+  background: #f0f0f0;
+}
+
+/* Colores por tipo de acción */
+.btn-icon.edit {
+  color: #0d6efd; /* azul bootstrap */
+}
+
+.btn-icon.edit:hover {
+  color: #0a58ca; /* azul más oscuro al pasar el mouse */
+}
+
+.btn-icon.delete {
+  color: #dc3545; /* rojo bootstrap */
+}
+
+.btn-icon.delete:hover {
+  color: #bb2d3b;
+}
+
+.btn-icon.view {
+  color: #198754; /* verde */
+}
+
+.btn-icon.view:hover {
+  color: #157347;
+}
