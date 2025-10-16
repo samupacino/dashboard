@@ -15,7 +15,7 @@
       <h5 class="text-uppercase border-bottom pb-1 mb-3">Contacto</h5>
       <ul class="list-unstyled small">
         <li class="mb-2"><i class="fa-solid fa-phone me-2"></i> +51 914 177 060</li>
-        <li class="mb-2"><i class="fa-solid fa-envelope me-2"></i> samlsr64@gmail.com</li>
+        <li class="mb-2"><i class="fa-solid fa-envelope me-2"></i> samlsr064@gmail.com</li>
         <li class="mb-2"><i class="fa-solid fa-location-dot me-2"></i> Perú</li>
         <li>
           <i class="fa-brands fa-linkedin me-2"></i>
@@ -50,7 +50,7 @@
         </h2>
 
         <p class="lh-lg">
-            Soy <strong>Técnico Controlista de Máquinas y Procesos Industriales</strong> con más de 14 años de experiencia 
+            Soy <strong>Técnico Controlista de Máquinas y Procesos Industriales</strong> con más de 10 años de experiencia 
             en la operación, control y supervisión de <strong>plantas criogénicas y sistemas de producción de gases industriales</strong> 
             en <strong>Linde Perú</strong>.
         </p>
