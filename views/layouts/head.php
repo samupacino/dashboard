@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="css/estilos-mensaje-tabla.css?v=<?php echo time();?>">
   <link rel="stylesheet" href="css/estilos-datatable.css?v=<?php echo time();?>">
   <link rel="stylesheet" href="css/estilos-iconos.css?v=<?php echo time();?>">
+  <link rel="stylesheet" href="css/estilos-perfil.css?v=<?php echo time();?>">
 
 
 

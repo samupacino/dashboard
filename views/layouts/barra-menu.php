@@ -33,7 +33,7 @@
 									<a class="nav-link" href="http://linkedin.com/in/samuel-lujan-s-708250112" target="_blank">My LinkedIn</a>
 								</li>
 								
-                      			<li class="nav-item"><a class="nav-link" href=" target="_blank">Who I Am </a></li>
+                      			<li class="nav-item"><button class="nav-link"  onclick="cargarVistaModulo('perfil')" target="_blank">Who I Am </button></li>
 
 							</ul>
 							

@@ -1,0 +1,40 @@
+/* === Paleta principal === */
+aside {
+  background-color: #63605a !important; /* Terracota claro */
+  color: #FAFAFA !important;
+}
+
+aside h5 {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+aside a {
+  color: #FAFAFA;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+aside a:hover {
+  color: #FFD580; /* Amarillo claro al pasar el mouse */
+}
+
+aside i {
+  color: #FFD580; /* Íconos dorados */
+}
+
+/* === Fondo y texto principal === */
+main {
+  background-color: #F4F4F4 !important; /* Beige claro */
+  color: #2E2E2E !important;
+}
+
+main h2,
+main h4 {
+  color: #B04A2F !important;
+  font-weight: 700;
+}
+
+ul li {
+  line-height: 1.7;
+}

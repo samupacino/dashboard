@@ -18,5 +18,6 @@ trabajar con bootstrap.bundle.min.js
 
 <script  id="script-usuario" src="/js/script-usuario.js?v=<?php echo time();?>"></script>
 <script  id="script-t155" src="/js/script-t155.js?v=<?php echo time();?>"></script>
+<script  id="script-perfil" src="/js/script-perfil.js?v=<?php echo time();?>"></script>
 </body>
 </html>

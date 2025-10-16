@@ -62,6 +62,8 @@ class Router {
         $this->add('POST',   '/instrumentos-t155/existe-nombre', 'app\\Controllers\\InstrumentoT155Controller@existeNombre');
 
         */
+
+        $this->add('GET',       '/perfil', 'app\\Controllers\\Perfilr@obtener');
     }
 
     private function add($method, $route, $handler) {

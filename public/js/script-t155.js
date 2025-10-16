@@ -1,3 +1,5 @@
+//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
+
 
 function cargar_t155_init(){
 	load_t155();
@@ -215,7 +217,7 @@ function onClickEliminar(fila, boton, tr, rowApi){
 
 	console.log(fila);
 	eliminar.querySelector('.modal-body').dataset.idDelete = fila.id;
-	eliminar.querySelector('.modal-body').textContent = `¿Seguro que deseas eliminar el usuario con tag ${fila.tag}?`;
+	eliminar.querySelector('.modal-body').textContent = `¿Seguro que deseas eliminar el tag ${fila.tag}?`;
 	modal_eliminar.show();
 
 

@@ -92,6 +92,15 @@ class VistaController
                 break;
 
                 
+            case 'perfil':
+                $ruta = ROOT . '/views/perfil/index.php';
+                if (!file_exists($ruta)) {
+                    $this->jsonError(500, 'Archivo de vista perfil/index.php no encontrado.');
+                    return;
+                }
+
+                require $ruta;
+                break;
 
             default:
                 $this->jsonError(404, 'Vista no encontrada.');

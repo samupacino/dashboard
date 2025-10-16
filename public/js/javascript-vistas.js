@@ -108,8 +108,9 @@ function cargarVistaModulo(nombreModulo) {
         const funcionInit = window[`cargar_${nombreModulo}_init`];
         const funcionrecarga = window[`recargar_tabla`];
         if (typeof funcionInit === 'function') {
+
           funcionInit();
-          login_obligado();
+          //login_obligado();
 
         } else {
           console.error(`No se encontró la función cargar_${nombreModulo}_init`);
