@@ -1,6 +1,4 @@
 
-
-
 function cargar_t155_init(){
 	load_t155();
 	editar_t155_init();
