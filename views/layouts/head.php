@@ -37,6 +37,8 @@
   <link rel="stylesheet" href="css/estilos-iconos.css?v=<?php echo time();?>">
   <link rel="stylesheet" href="css/estilos-perfil.css?v=<?php echo time();?>">
 
+  <link rel="stylesheet" href="css/estilos-pl3.css?v=<?php echo time();?>">
+
 
 
   <!-- our project is using icons from Solid, Sharp Thin, Sharp Duotone Thin + Brands -->
@@ -64,20 +66,3 @@
   ?>
 
   
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>DataTable Responsive Demo</title>
-  <!-- DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.min.css">
-
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- DataTables JS -->
-  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
-</head>
-<body>

@@ -1,28 +1,28 @@
 
 
 
-<div class="modal fade" id="modal_editar_t155" tabindex="-1" aria-labelledby="modalEditarT155Label" aria-hidden="true">
+<div class="modal fade" id="modal_editar_pl3" tabindex="-1" aria-labelledby="modalEditarPL3Label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg rounded-3">
       
       <!-- Encabezado gris -->
       <div class="modal-header bg-secondary-subtle border-bottom">
         <h5 class="modal-title fw-bold text-dark" id="modalEditarT155Label">
-          <i class="bi bi-pencil me-2 text-secondary"></i> Editar Instrumento T155
+          <i class="bi bi-pencil me-2 text-secondary"></i> Editar Instrumento PL3
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
       <!-- Cuerpo -->
       <div class="modal-body bg-light">
-        <form id="formInstrumentoT155_edit" class="needs-validation" novalidate>
+        <form id="formInstrumentoPL3_edit" class="needs-validation" novalidate>
           
           <div class="mb-3">
-            <label for="tag_t155_edit" class="form-label fw-semibold text-secondary">Tag del instrumento</label>
+            <label for="tag_pl3_edit" class="form-label fw-semibold text-secondary">Tag del instrumento</label>
             <input 
               type="text"
               class="form-control"
-              id="tag_t155_edit"
+              id="tag_pl3_edit"
               name="tag"
               maxlength="100"
               required
@@ -31,8 +31,8 @@
           </div>
 
           <div class="mb-3">
-            <label for="plataforma_t155_edit" class="form-label fw-semibold text-secondary">Plataforma</label>
-            <select class="form-select" id="plataforma_t155_edit" name="plataforma" required>
+            <label for="plataforma_pl3_edit" class="form-label fw-semibold text-secondary">Plataforma</label>
+            <select class="form-select" id="plataforma_pl3_edit" name="plataforma" required>
               <option value="">Seleccione una plataforma...</option>
               <!-- Opciones dinámicas se llenan con fetch -->
               <option value="1">Plataforma 1</option>
@@ -50,7 +50,7 @@
         </form>
 
         <!-- Mensaje dinámico -->
-        <div id="mensajeModalT155Edit" class="mt-2"></div>
+        <div id="mensajeModalPL3Edit" class="mt-2"></div>
       </div>
 
       <!-- Pie -->
@@ -58,7 +58,7 @@
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
-        <button type="button" class="btn btn-dark" id="modal_editar_t155_confirmar">
+        <button type="button" class="btn btn-dark" id="modal_editar_Pl3_confirmar">
           <i class="bi bi-save2"></i> Guardar Cambios
         </button>
       </div>

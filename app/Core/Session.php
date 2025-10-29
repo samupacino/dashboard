@@ -37,7 +37,7 @@ class Session {
      * @param int $timeoutMinutes Tiempo máximo de inactividad (min)
      * @return bool true si la sesión expiró, false si aún es válida
      */
-    public static function isExpired($timeoutMinutes = 51) {
+    public static function isExpired($timeoutMinutes = 1) {
         self::start();
 
         $now = time();

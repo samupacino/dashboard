@@ -1,17 +1,23 @@
 
 
-
-function cargar_t155_init(){
-	load_t155();
-	editar_t155_init();
-	registro_t155_init();
-	onClickEliminar_confirmar();
-	
+function recargar_table_pl3(){
+	if (window.dataTables['datatable_pl3']?.destroy instanceof Function){
+		window.dataTables['datatable_pl3'].ajax.reload();
+	}
 }
-function load_t155(){
+
+
+function cargar_pl3_init(){
+    load_pl3();
+    registro_pl3_init();
+    onClickEliminar_confirmar_pl3();
+	editar_pl3_init();
+}
+
+function load_pl3(){
 
     
-	const tabla = document.getElementById('t155'); // ID de la tabla
+	const tabla = document.getElementById('pl3'); // ID de la tabla
 
 
 	if (!tabla) {                                                  // [DOM] Verifica si existe
@@ -19,19 +25,21 @@ function load_t155(){
 		console.log("de fuera en init");
 		return;                                                      // [DOM] Sale de la función
 	}
+
+
 	window.dataTables = window.dataTables || {};
 
-	if (window.dataTables['datatable_t155']?.destroy instanceof Function) {
+	if (window.dataTables['datatable_pl3']?.destroy instanceof Function) {
 		console.log("nuevo ingreso datatable");
-    	window.dataTables['datatable_t155'].destroy();
-    	delete window.dataTables['datatable_t155'];
+    	window.dataTables['datatable_pl3'].destroy();
+    	delete window.dataTables['datatable_pl3'];
 	}
 
 
 	// Crear nueva instancia y guardarla globalmente
    
-	let datatable_t155 = new DataTable(tabla,{
-		 responsive:true,
+	let datatable_pl3 = new DataTable(tabla,{
+		responsive:true,
  		//responsive: true,
 		destroy:true ,
 		processing:true, /*
@@ -56,7 +64,7 @@ function load_t155(){
 			
 			},
         ajax:{
-			url: '/instrumentos',
+			url: '/instrumentosPL3',
 			dataSrc: function (json) {  // [DT] Función que transforma la respuesta JSON
 				// Solo entra aquí si el servidor respondió 200 OK
 				
@@ -160,7 +168,7 @@ function load_t155(){
     });
 	
 	//Guardar esta instancia bajo el nombre del módulo 'datatable_t155'
-  	window.dataTables['datatable_t155'] = datatable_t155;
+  	window.dataTables['datatable_pl3'] = datatable_pl3;
 	const tbody = tabla.querySelector('tbody');                    // [DOM] Seleccionamos <tbody> de la tabla
 
 	tbody.addEventListener('click', function (e) {                 // [DOM] Escuchamos clicks en todo el tbody
@@ -175,18 +183,18 @@ function load_t155(){
 
 		if (!tr) return;                                             // [DOM] Seguridad
 	
-		const rowApi = datatable_t155.row(tr);                            // [DT] Obtenemos instancia row() de DataTables
+		const rowApi = datatable_pl3.row(tr);                            // [DT] Obtenemos instancia row() de DataTables
 
 		const fila = rowApi.data();                                  // [DT] Obtenemos datos JSON de la fila
 	
 		//console.log(fila);
 		if (boton.classList.contains('btn-editar')) {                // [DOM] Si el botón tiene clase editar
 				
-			onClickEditar(fila, boton, tr, rowApi);                    // [APP] Llamamos a función de negocio editar
+			onClickEditarPL3(fila, boton, tr, rowApi);                    // [APP] Llamamos a función de negocio editar
 		
 		} else if (boton.classList.contains('btn-eliminar')) {       // [DOM] Si es eliminar
 
-			onClickEliminar(fila, boton, tr, rowApi);                  // [APP] Llamamos a función de negocio eliminar
+			onClickEliminarPL3(fila, boton, tr, rowApi);                  // [APP] Llamamos a función de negocio eliminar
 		}
 
 
@@ -194,23 +202,102 @@ function load_t155(){
 
 
 };
-function registro_tag(){
+function onClickEditarPL3(fila, boton, tr, rowApi) {              // [APP] Tu función para editar
+	
+	var myModalEl = document.querySelector('#modal_editar_pl3');
+	var modalEditar = bootstrap.Modal.getOrCreateInstance(myModalEl,{
+		backdrop: 'static'
+	
+	}); // Returns a Bootstrap modal instance
+
+	const data = rowApi.data(); // Obtenemos los datos de esa fila
+
+	const formEditar = document.getElementById('formInstrumentoPL3_edit');
+	
+	// Seteamos los valores en los campos
+	document.getElementById('tag_pl3_edit').value = data.tag;
+	document.getElementById('plataforma_pl3_edit').value = data.plataforma;
 
 	
+	formEditar.dataset.idEditar = data.id; // Guardamos el ID en un atributo personalizado
+
 	
-		var myModalEl = document.querySelector('#modal_registro_t155');
-		var modalRegistro = bootstrap.Modal.getOrCreateInstance(myModalEl,{
-			backdrop: 'static'
-		
-		}); // Returns a Bootstrap modal instance
-
-
-		modalRegistro.show();
+  	modalEditar.show();
 	
 }
-function onClickEliminar(fila, boton, tr, rowApi){
+function editar_pl3_init(){
 
-	var eliminar = document.querySelector('#modal_eliminar_t155');
+	const modalConfirmar = document.getElementById('modal_editar_Pl3_confirmar');
+	modalConfirmar.addEventListener('click',function(){
+
+		var myModalEl = document.querySelector('#modal_editar_pl3');
+		var modalEditar = bootstrap.Modal.getOrCreateInstance(myModalEl,{
+			backdrop: 'static'
+		
+		}); 
+		const formEditarPL3 =  document.getElementById('formInstrumentoPL3_edit');
+		const formData = new FormData(formEditarPL3);
+		const data = Object.fromEntries(formData.entries());
+
+		const tagId = formEditarPL3.dataset.idEditar;
+
+		//console.log(data);
+
+			
+		fetch(`/instrumentosPL3/${tagId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(data)
+		})
+		.then(response => {
+			const contentType = response.headers.get("content-type");
+
+			if (contentType && contentType.includes("application/json")) {
+				return response.json().then(body => {
+
+					if (!response.ok) throw { status: response.status, body: body };
+						return { status: response.status, body: body };
+
+				});
+			} else {
+				return response.text().then(texto => {
+						if (!response.ok) throw { status: response.status, body: { mensaje: texto } };
+						return { status: response.status, body: { mensaje: texto } };
+					});
+				}
+		})
+		.then(resultado => {
+	
+			modalEditar.hide();
+			recargar_table_pl3();
+			//mostrarMensajeEnModalRegistro(resultado.body.mensaje);
+			mostrarMensajeEnDataTablePL3(resultado.body.mensaje);
+			formEditarPL3.reset();
+			
+
+		})
+		.catch(err => {
+			console.log(err);
+			modalEditar.hide();
+			formEditarPL3.reset();
+			
+			if (err.status === 401 && err.body?.status === 'session_expired') {
+				loginModal.style.display = 'flex';
+				//login_modal_relogin();
+			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
+					mostrarErrorPL3(err.body.mensaje);
+			} else {
+					mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+			}
+		});		
+		
+	});
+}
+function onClickEliminarPL3(fila, boton, tr, rowApi){
+
+	var eliminar = document.querySelector('#modal_eliminar_pl3');
 	var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
 		backdrop: 'static'
 	});
@@ -222,10 +309,10 @@ function onClickEliminar(fila, boton, tr, rowApi){
 
 
 }
-function onClickEliminar_confirmar() {
+function onClickEliminar_confirmar_pl3() {
 
-	var eliminar = document.querySelector('#modal_eliminar_t155');
-	eliminar.querySelector('#modal_eliminar_t155_confirmar').addEventListener('click',function(){
+	var eliminar = document.querySelector('#modal_eliminar_pl3');
+	eliminar.querySelector('#modal_eliminar_pl3_confirmar').addEventListener('click',function(){
 		
 		
 		var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
@@ -261,7 +348,7 @@ function onClickEliminar_confirmar() {
 		===============================================
 		*/
 
-		fetch(`/instrumentos/${id}`, {
+		fetch(`/instrumentosPL3/${id}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' }
 		})
@@ -303,9 +390,9 @@ function onClickEliminar_confirmar() {
 			//console.log("✅ OK:", resultado.body);
 			//console.log(resultado);
 			//mostrarSuccess(resultado.body.mensaje || "Operación realizada correctamente");
-			recargar_table_t155();
+			recargar_table_pl3();
 			modal_eliminar.hide();
-			mostrarMensajeEnDataTableInstrumento(resultado.body.mensaje || "Operación realizada correctamente");
+			mostrarMensajeEnDataTablePL3(resultado.body.mensaje || "Operación realizada correctamente");
 			//mostrarMensajeEnDataTable(resultado.body.mensaje || "Operación realizada correctamente");
 
 		})
@@ -323,11 +410,11 @@ function onClickEliminar_confirmar() {
 		
 			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
 
-				mostrarErrorT155(err.body.mensaje);
+				mostrarErrorPL3(err.body.mensaje);
 			} else {
 
 				//console.error("❌ Error de red:", err);
-				mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+				mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
 
 			}
 			
@@ -344,109 +431,38 @@ function onClickEliminar_confirmar() {
 	});
 
 }
-// === HANDLERS PERSONALIZADOS ===
-function onClickEditar(fila, boton, tr, rowApi) {              // [APP] Tu función para editar
-	
-	var myModalEl = document.querySelector('#modal_editar_t155');
-	var modalEditar = bootstrap.Modal.getOrCreateInstance(myModalEl,{
-		backdrop: 'static'
-	
-	}); // Returns a Bootstrap modal instance
 
-	const data = rowApi.data(); // Obtenemos los datos de esa fila
+function mostrarMensajeEnDataTablePL3(texto, tipo = "success") {
+  const mensaje = document.getElementById("mensajeTablaPL3");
 
-	const formEditar = document.getElementById('formInstrumentoT155_edit');
-	
-	// Seteamos los valores en los campos
-	document.getElementById('tag_t155_edit').value = data.tag;
-	document.getElementById('plataforma_t155_edit').value = data.plataforma;
+  mensaje.className = tipo;  // success o error
+  mensaje.textContent = texto;
+  mensaje.style.display = "block";
 
-	
-	formEditar.dataset.idEditar = data.id; // Guardamos el ID en un atributo personalizado
-
-	
-  	modalEditar.show();
-	
-
+  setTimeout(() => {
+    mensaje.style.display = "none";
+  }, 2000);
 }
-function recargar_table_t155(){
 
-	if (window.dataTables['datatable_t155']?.destroy instanceof Function){
-		window.dataTables['datatable_t155'].ajax.reload();
-	}
-}
-function editar_t155_init(){
 
-	const modalConfirmar = document.getElementById('modal_editar_t155_confirmar');
-	modalConfirmar.addEventListener('click',function(){
+function registro_tag_pl3(){
 
-		var myModalEl = document.querySelector('#modal_editar_t155');
-		var modalEditar = bootstrap.Modal.getOrCreateInstance(myModalEl,{
+	
+       
+
+		var myModalEl = document.querySelector('#modal_registro_pl3');
+		var modalRegistro = bootstrap.Modal.getOrCreateInstance(myModalEl,{
 			backdrop: 'static'
 		
-		}); 
-		const formEditarT155 =  document.getElementById('formInstrumentoT155_edit');
-		const formData = new FormData(formEditarT155);
-		const data = Object.fromEntries(formData.entries());
+		}); // Returns a Bootstrap modal instance
 
-		const tagId = formEditarT155.dataset.idEditar;
 
-		//console.log(data);
-
-			
-		fetch(`/instrumentos/${tagId}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		})
-		.then(response => {
-			const contentType = response.headers.get("content-type");
-
-			if (contentType && contentType.includes("application/json")) {
-				return response.json().then(body => {
-
-					if (!response.ok) throw { status: response.status, body: body };
-						return { status: response.status, body: body };
-
-				});
-			} else {
-				return response.text().then(texto => {
-						if (!response.ok) throw { status: response.status, body: { mensaje: texto } };
-						return { status: response.status, body: { mensaje: texto } };
-					});
-				}
-		})
-		.then(resultado => {
+		modalRegistro.show();
 	
-			modalEditar.hide();
-			recargar_table_t155();
-			//mostrarMensajeEnModalRegistro(resultado.body.mensaje);
-			mostrarMensajeEnDataTableInstrumento(resultado.body.mensaje);
-			formEditarT155.reset();
-			
-
-		})
-		.catch(err => {
-			console.log(err);
-			modalEditar.hide();
-			formEditarT155.reset();
-			
-			if (err.status === 401 && err.body?.status === 'session_expired') {
-				loginModal.style.display = 'flex';
-				//login_modal_relogin();
-			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorT155(err.body.mensaje);
-			} else {
-					mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
-			}
-		});		
-		
-	});
 }
-function mostrarMensajeEnDataTableInstrumento(texto, tipo = "success") {
-  const mensaje = document.getElementById("mensajeTablaT155");
+
+function mostrarMensajeEnModalRegistroPL3(texto, tipo = "success") {
+  const mensaje = document.getElementById("mensajeModalPL3");
 
   mensaje.className = tipo;  // success o error
   mensaje.textContent = texto;
@@ -457,35 +473,23 @@ function mostrarMensajeEnDataTableInstrumento(texto, tipo = "success") {
   }, 2000);
 }
 
-function mostrarMensajeEnModalRegistroT155(texto, tipo = "success") {
-  const mensaje = document.getElementById("mensajeModalT155");
+function registro_pl3_init(){
 
-  mensaje.className = tipo;  // success o error
-  mensaje.textContent = texto;
-  mensaje.style.display = "block";
-
-  setTimeout(() => {
-    mensaje.style.display = "none";
-  }, 2000);
-}
-
-function registro_t155_init(){
-
-	const modalConfirmar = document.getElementById('modal_registro_t155_confirmar');
+	const modalConfirmar = document.getElementById('modal_registro_pl3_confirmar');
 	modalConfirmar.addEventListener('click',function(){
 
-		var myModalEl = document.querySelector('#modal_registro_t155');
+		var myModalEl = document.querySelector('#modal_registro_pl3');
 		var modalRegistro = bootstrap.Modal.getOrCreateInstance(myModalEl,{
 			backdrop: 'static'
 		
 		});
 		
 		
-		const formRegistroT155 =  document.getElementById('formInstrumentoT155_registro');
-		const formData = new FormData(formRegistroT155);
+		const formRegistroPL3 =  document.getElementById('formInstrumentoPL3_registro');
+		const formData = new FormData(formRegistroPL3);
 		const data = Object.fromEntries(formData.entries());
 
-		fetch(`/instrumentos`, {
+		fetch(`/instrumentosPL3`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -512,24 +516,24 @@ function registro_t155_init(){
 		.then(resultado => {
 	
 			//modalRegistro.hide();
-			recargar_table_t155();
-			mostrarMensajeEnModalRegistroT155(resultado.body.mensaje);
+			recargar_table_pl3();
+			mostrarMensajeEnModalRegistroPL3(resultado.body.mensaje);
 			//mostrarMensajeEnDataTableInstrumento(resultado.body.mensaje);
-			formRegistroT155.reset();
+			formRegistroPL3.reset();
 			
 
 		})
 		.catch(err => {
 			console.log(err);
 			modalRegistro.hide();
-			formRegistroT155.reset();
+			formRegistroPL3.reset();
 
 			if (err.status === 401 && err.bmensajeTablaody?.status === 'session_expired') {
 				loginModal.style.display = 'flex';
 			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorT155(err.body.mensaje);
+					mostrarErrorPL3(err.body.mensaje);
 			} else {
-					mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+					mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
 			}
 		});		
 		
@@ -537,9 +541,8 @@ function registro_t155_init(){
 
 }
 
-
 // Función que devuelve un manejador de modal "privado"
-function mostrarErrorT155(mensaje) {
+function mostrarErrorPL3(mensaje) {
   
     const modalElement = document.querySelector('#modal_error');
     modalError = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -554,7 +557,7 @@ function mostrarErrorT155(mensaje) {
 
 
 // Función que devuelve un manejador de modal "privado"
-function mostrarSuccessT155(mensaje) {
+function mostrarSuccessPL3(mensaje) {
   
     const modalElement = document.getElementById('modal_success');
     const modalSuccess = new bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -562,41 +565,3 @@ function mostrarSuccessT155(mensaje) {
     document.querySelector('.body_mensaje_success').textContent = mensaje;
     modalSuccess.show();
  };
-
-
-
-/*
-NOTA IMPORTANTE SOBRE LA RESPUESTA DE DATATABLES
-
-En PHP devolvemos un array asociativo como este:
-return [
-    'draw' => (int)$draw,
-    'recordsTotal' => $recordsTotal,
-    'recordsFiltered' => $recordsFiltered,
-    'data' => $data
-];
-
-⚡ En PHP:
-- Eso es un "array" (porque PHP no diferencia entre array asociativo y numérico).
-- is_array(...) devuelve TRUE.
-
-⚡ En JSON (respuesta al cliente):
-{
-  "draw": 1,
-  "recordsTotal": 100,
-  "recordsFiltered": 50,
-  "data": [
-    { "id": 1, "username": "samuel" },
-    { "id": 2, "username": "lucas" }
-  ]
-}
-
-⚡ En JavaScript:
-- Lo que llega es un OBJETO (con propiedades draw, recordsTotal, etc.).
-- Por eso Array.isArray(respuesta) devuelve FALSE.
-- Pero Array.isArray(respuesta.data) devuelve TRUE (porque "data" sí es un array de objetos).
-
-👉 Resumen:
-- Estructura completa = objeto (clave:valor).
-- Propiedad "data"     = array de filas que DataTables necesita.
-*/

@@ -95,7 +95,9 @@ function login_obligado(){
       //alert(usuario.value);
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
-      //console.log(data);
+      console.log(data);
+
+   
           fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

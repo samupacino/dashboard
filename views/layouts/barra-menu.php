@@ -19,6 +19,7 @@
 									<ul class="dropdown-menu mt-lg-3" aria-labelledby="navbarDropdownHelp">
 										<li><button class="dropdown-item" onclick="cargarVistaModulo('usuario')">Usuarios</button></li>
 										<li><button class="dropdown-item" onclick="cargarVistaModulo('t155')">T155</button></li>
+										<li><button class="dropdown-item" onclick="cargarVistaModulo('pl3')">PL3</button></li>
 										 
 										<!-- <li><a class="dropdown-item" href="" target="_blank"></a></li>
 										<li><a class="dropdown-item" href="" target="_blank"></a></li>

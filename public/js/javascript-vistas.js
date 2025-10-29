@@ -110,7 +110,7 @@ function cargarVistaModulo(nombreModulo) {
         if (typeof funcionInit === 'function') {
 
           funcionInit();
-          //login_obligado();
+          login_obligado();
 
         } else {
           console.error(`No se encontró la función cargar_${nombreModulo}_init`);

@@ -1,0 +1,36 @@
+
+#mensajeModalPL3 { 
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeModalPL3.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeModalPL3.error {
+  background: #dc3545;
+  color: white;
+}
+
+
+
+#mensajeTablaPL3{
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeTablaPL3.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeTablaPL3.error {
+  background: #dc3545;
+  color: white;
+}

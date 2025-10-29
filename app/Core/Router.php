@@ -19,12 +19,25 @@ class Router {
 
     private function registerRoutes() {
 
+        /*PLANTA PL3*/
+
+        $this->add('GET',       '/instrumentosPL3', 'app\\Controllers\\InstrumentoPL3Controller@listar');
+        $this->add('DELETE',    '/instrumentosPL3/{id}', 'app\\Controllers\\InstrumentoPL3Controller@eliminar');
+        $this->add('PUT',       '/instrumentosPL3/{id}', 'app\\Controllers\\InstrumentoPL3Controller@actualizar');
+        $this->add('POST',      '/instrumentosPL3', 'app\\Controllers\\InstrumentoPL3Controller@guardar');
+
+
+        /*
+        PLANTA T155
+        */
         $this->add('GET',       '/instrumentos', 'app\\Controllers\\InstrumentoT155Controller@listar');
         $this->add('DELETE',    '/instrumentos/{id}', 'app\\Controllers\\InstrumentoT155Controller@eliminar');
         $this->add('PUT',       '/instrumentos/{id}', 'app\\Controllers\\InstrumentoT155Controller@actualizar');
         $this->add('POST',      '/instrumentos', 'app\\Controllers\\InstrumentoT155Controller@guardar');
 
+
         $this->add('GET', '/dashboard/{tipo}', 'app\\Controllers\\VistaController@vistaParcial');
+        
         //$this->add('GET', '/dashboard/', 'app\\Controllers\\VistaController@vistaParcial');
 
 

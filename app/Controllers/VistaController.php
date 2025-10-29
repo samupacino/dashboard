@@ -102,6 +102,15 @@ class VistaController
                 require $ruta;
                 break;
 
+            case 'pl3':
+                $ruta = ROOT . '/views/instrumento_pl3/index.php';
+                if (!file_exists($ruta)) {
+                    $this->jsonError(500, 'Archivo de vista perfil/index.php no encontrado.');
+                    return;
+                }
+
+                require $ruta;
+                break;
             default:
                 $this->jsonError(404, 'Vista no encontrada.');
                 break;

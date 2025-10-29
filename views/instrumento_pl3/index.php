@@ -1,21 +1,17 @@
-
 <?php
-  include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
-  include_once ROOT.'/views/layouts/modal-requerido-login.php';
-  include_once ROOT.'/views/instrumento_t155/modal-eliminar.php';
-  include_once'modal-registro-t155.php';
-  include_once'moda-editar-t155.php';
 
+   include_once'modal-registro-pl3.php';
+   include_once'modal-eliminar-PL3.php';
+   include_once'modal-editar-pl3.php';
+   include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
 
-
-
+   include_once ROOT.'/views/layouts/modal-requerido-login.php';
+   
 ?>
-
-
 <!-- Encabezado fijo -->
 <header class="sticky-top bg-light text-center py-3 shadow-sm border-bottom z-0">
   <h2 class="fw-bold text-uppercase text-dark d-inline-block pb-1 mb-0 border-bottom border-3 border-primary">
-    Instrumentos T155
+    Instrumentos PL3
   </h2>
 </header>
 
@@ -24,23 +20,23 @@
   <!-- Barra de acciones -->
   <section class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <div class="btn-group" role="group" aria-label="Acciones principales">
-      <button id="btnAbrirRegistroT155" class="btn btn-primary" onclick="registro_tag()">
+      <button id="btnAbrirRegistroPL3" class="btn btn-primary" onclick="registro_tag_pl3()">
         <i class="bi bi-plus-circle"></i> Registrar TAG
       </button>
-      <button id="recargarTablaT155" class="btn btn-outline-secondary" onclick="recargar_table_t155()">
+      <button id="recargarTablaPL3" class="btn btn-outline-secondary" onclick="recargar_table_pl3()">
         <i class="bi bi-arrow-clockwise"></i> Recargar
       </button>
     </div>
   </section>
 
   <!-- Mensaje dinámico -->
-  <div id="mensajeTablaT155" class="alert alert-info d-none" role="status" aria-live="polite"></div>
+  <div id="mensajeTablaPL3" class="alert alert-info d-none" role="status" aria-live="polite"></div>
 
   <!-- Tabla de datos -->
   <section class="table-responsive">
-    <table id="t155" class="table table-striped table-bordered table-hover align-middle nowrap dt-responsive w-100">
+    <table id="pl3" class="table table-striped table-bordered table-hover align-middle nowrap dt-responsive w-100">
       <caption class="caption-top fw-semibold text-secondary">
-        Lista actualizada de instrumentos T155
+        Lista actualizada de instrumentos PL3
       </caption>
       <thead class="table-dark text-center">
         <tr>

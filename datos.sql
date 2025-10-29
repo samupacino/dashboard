@@ -22,9 +22,9 @@ CREATE TABLE usuario (
 
 
 
-CREATE TABLE instrumento_pl2 (
+CREATE TABLE instrumento_pl3 (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
+    tag VARCHAR(255) NOT NULL UNIQUE,
     plataforma INT NOT NULL,
     FOREIGN KEY (plataforma) REFERENCES plataformas(id)
 );
@@ -59,4 +59,4 @@ VALUES ('samuel', 'samuel joel', '$2y$10$9N305Q5Y0D75.geqrVCx.Oy/Y6xLLtB.13sq4iC
 mysql> SELECT COUNT(*) AS total FROM (SELECT i.id, i.tag, p.nombre as escalon FROM instrumento_t155 i 
 JOIN plataformas p ON i.plataforma = p.id WHERE i.id LIKE 'A5F-989' OR i.tag LIKE 'A5F-989' OR escalon LIKE 'A5F-989') 
 AS subconsulta_filtrada;
-ERROR 1054 (42S22): Unknown column 'escalon' in 'where clause';
+
