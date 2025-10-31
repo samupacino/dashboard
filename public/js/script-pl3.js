@@ -8,6 +8,7 @@ function recargar_table_pl3(){
 
 
 function cargar_pl3_init(){
+	login_obligado();
     load_pl3();
     registro_pl3_init();
     onClickEliminar_confirmar_pl3();
@@ -76,6 +77,18 @@ function load_pl3(){
 				return [];                                               // [DT] Devuelve vacío para no romper la tabla
 			},
 			
+/*
+
+			if (err.status === 401 && err.body?.status === 'session_expired') {
+				loginModal.style.display = 'flex';
+				//login_modal_relogin();
+			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
+					mostrarErrorPL3(err.body.mensaje);
+			} else {
+					mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+			}
+
+			*/
 			error: function (response) {                               // [DT] Manejo de errores HTTP ≠ 200
 				
 				try {                                                    // [APP] Intentamos parsear respuesta
@@ -84,17 +97,17 @@ function load_pl3(){
 						body: JSON.parse(response.responseText)              // [APP] Convertimos body en objeto JS
 					};
 		
-				if (resultado.status === 401 && resultado.body?.status === 'unauthorized') {
+				if (resultado.status === 401 && resultado.body?.status === 'session_expired') {
 				
 					loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 					
 					return;                                              // [APP] Evitamos ejecutar alert después
 				}
 
-				mostrarError(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
+				mostrarErrorPL3(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
 				} catch (e) {
 					//console.error('Error parseando JSON de error:', e);    // [APP] Log de error si JSON no es válido
-					mostrarError('Error crítico de servidor:' , e);                    // [APP]
+					mostrarErrorPL3('Error crítico de servidor:' , e);                    // [APP]
 				}
 			}
 

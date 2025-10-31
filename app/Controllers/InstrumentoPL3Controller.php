@@ -24,8 +24,6 @@ class InstrumentoPL3Controller{
         Session::renovarTiempo();
     }
 
-    
-
     public function listar(){
 
         $this->verificarSesion();
@@ -132,13 +130,7 @@ class InstrumentoPL3Controller{
             return Response::error("Error inesperado: " . $e->getMessage(), 500);
         }
 
-/*
-        return $success
-                ? Response::success([], 'Usuario actualizado correctamente')
-                : Response::error('Error al actualizar usuario', 500);
-        } catch (Throwable $e) {
-            return Response::error("Error al actualizar usuario: " . $e->getMessage(), 500);
-        }*/
+
 
 
         

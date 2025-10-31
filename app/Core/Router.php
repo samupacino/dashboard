@@ -19,6 +19,7 @@ class Router {
 
     private function registerRoutes() {
 
+     
         /*PLANTA PL3*/
 
         $this->add('GET',       '/instrumentosPL3', 'app\\Controllers\\InstrumentoPL3Controller@listar');
@@ -36,8 +37,6 @@ class Router {
         $this->add('POST',      '/instrumentos', 'app\\Controllers\\InstrumentoT155Controller@guardar');
 
 
-        $this->add('GET', '/dashboard/{tipo}', 'app\\Controllers\\VistaController@vistaParcial');
-        
         //$this->add('GET', '/dashboard/', 'app\\Controllers\\VistaController@vistaParcial');
 
 
@@ -56,13 +55,22 @@ class Router {
         $this->add('DELETE', '/api/usuarios/{id}', 'app\\Controllers\\UsuarioController@eliminar');
      */
 
+     
         $this->add('GET', '/login', 'app\\Controllers\\VistaController@loginView');
         $this->add('POST', '/login', 'app\\Controllers\\UsuarioController@login');
         $this->add('GET', '/login/check-session', 'app\\Controllers\\UsuarioController@verificarSesions');
         $this->add('POST', '/login/logout', 'app\\Controllers\\UsuarioController@logout');
 
-        $this->add('GET', '/dashboard', 'app\\Controllers\\VistaController@dashboardView');
 
+
+  
+       
+        $this->add('GET','/dashboard/ingles', 'app\\Controllers\\VistaController@ingles');
+        $this->add('GET', '/dashboard', 'app\\Controllers\\VistaController@dashboardView');
+       
+        $this->add('GET', '/dashboard/{tipo}', 'app\\Controllers\\VistaController@vistaParcial');
+    
+       
 
         /*
         $this->add('GET',    '/instrumentos-t155',        'app\\Controllers\\InstrumentoT155Controller@listar');
@@ -76,7 +84,15 @@ class Router {
 
         */
 
-        $this->add('GET',       '/perfil', 'app\\Controllers\\Perfilr@obtener');
+        $this->add('GET','/', 'app\\Controllers\\VistaController@menu');
+
+
+        $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles');
+        $this->add('GET','/ingles/search', 'app\\Controllers\\InglesController@test');
+
+
+
+     
     }
 
     private function add($method, $route, $handler) {

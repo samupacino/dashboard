@@ -14,7 +14,7 @@ function cerrar_sesion(){
 			.then(res => {
 			if (res.status === 'logout') {
 				//alert(res.mensaje || 'Sesión cerrada');
-				window.location.href = '/login'; // 🔁 Redirección automática
+				window.location.href = '/'; // 🔁 Redirección automática
 			} else {
 				alert('Respuesta inesperada al cerrar sesión');
 			}

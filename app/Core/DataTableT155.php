@@ -12,7 +12,7 @@ class DataTableT155
    
     public function __construct(PDO $pdo, string $tabla, array $columnas)
     {
-        $this->pdo = Database::getInstance();
+        $this->pdo = Database::getInstance("PlataformaDB");
         $this->tabla = $tabla;
         $this->columnas = $columnas;
     }

@@ -10,7 +10,7 @@ class Usuario {
     private $db;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = Database::getInstance("PlataformaDB");
     }
     public function test(){
         echo "samuel desde probando";

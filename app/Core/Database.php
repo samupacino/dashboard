@@ -6,14 +6,14 @@ use PDOException;
 use Exception;
 
 class Database {
-    private static $instance = null;
+    private static $instance = null;//PlataformaDB
 
-    public static function getInstance() {
+    public static function getInstance($database) {
        
         if (!self::$instance) {
             try {
                 self::$instance = new PDO(
-                    'mysql:host=localhost;dbname=PlataformaDB',
+                    "mysql:host=localhost;dbname={$database}",
                     'root',
                     'samuellujan1989'
                 );

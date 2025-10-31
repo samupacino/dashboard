@@ -18,6 +18,16 @@ class VistaController
         require_once ROOT . '/views/login.php';
     }
 
+    public function menu(){
+     
+        require_once ROOT . '/views/menu/menu.php';
+     
+    }
+    public function ingles(){
+     
+        require_once ROOT . '/views/ingles/index.php';
+     
+    }
     // Vista principal del dashboard
     public function dashboardView()
     {

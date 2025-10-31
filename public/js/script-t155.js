@@ -2,6 +2,7 @@
 
 
 function cargar_t155_init(){
+	login_obligado();
 	load_t155();
 	editar_t155_init();
 	registro_t155_init();
@@ -76,17 +77,17 @@ function load_t155(){
 						body: JSON.parse(response.responseText)              // [APP] Convertimos body en objeto JS
 					};
 		
-				if (resultado.status === 401 && resultado.body?.status === 'unauthorized') {
+				if (resultado.status === 401 && resultado.body?.status === 'session_expired') {
 				
 					loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 					
 					return;                                              // [APP] Evitamos ejecutar alert después
 				}
 
-				mostrarError(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
+				mostrarErrorT155(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
 				} catch (e) {
 					//console.error('Error parseando JSON de error:', e);    // [APP] Log de error si JSON no es válido
-					mostrarError('Error crítico de servidor:' , e);                    // [APP]
+					mostrarErrorT155('Error crítico de servidor:' , e);                    // [APP]
 				}
 			}
 
