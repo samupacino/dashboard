@@ -38,7 +38,7 @@
 <div class="modal fade" id="modalEnVocab" tabindex="-1" aria-labelledby="modalEnVocabLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-      <form id="form-en-vocab" class="needs-validation" novalidate method="post" action="/en_vocab/save">
+      <form id="form-en-vocab" class="needs-validation" novalidate method="post" action="#">
         <div class="modal-header">
           <h5 class="modal-title" id="modalEnVocabLabel">Registrar palabra / expresión</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -159,7 +159,7 @@
 
         <div class="modal-footer">
           <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="submit" class="btn btn-primary">GUARDAR</button>
         </div>
       </form>
     </div>
@@ -168,7 +168,7 @@
 
 
 <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/ingles.js?v=<?php echo time();?>"></script>
+<script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script>
 
 
 <script>
@@ -179,6 +179,8 @@ function openEnVocabModal(){
     form.reset();
     form.classList.remove('was-validated');
   }
+
+
 }
 </script>
 

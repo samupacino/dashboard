@@ -11,9 +11,11 @@
 
     class InglesController{
 
-        public function test(){
+        public function search(){
+
             $ingles = new InglesModel();
-            $ingles->test();
+            echo json_encode($ingles->search(),JSON_UNESCAPED_UNICODE);
+
         }
 
     }

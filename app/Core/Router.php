@@ -88,7 +88,9 @@ class Router {
 
 
         $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles');
-        $this->add('GET','/ingles/search', 'app\\Controllers\\InglesController@test');
+
+        $this->add('GET','/api/ingles/search', 'app\\Controllers\\InglesController@search');
+
 
 
 
@@ -120,6 +122,10 @@ class Router {
                 array_shift($matches);
 
     
+                //echo json_encode([1=>$handler,2=>$matches]);
+
+                //return;
+               
                 return $this->dispatch($handler, $matches);
             }
         } 
@@ -135,6 +141,8 @@ class Router {
        
         $controller = new $class;
       
+        //echo json_encode([1=>$handler,2=>$params]);
+        //return;
         call_user_func_array([$controller, $method], $params);
     }
     public function samuel_lujan(){
