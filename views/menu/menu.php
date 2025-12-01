@@ -42,8 +42,8 @@
       <i class="fa-solid fa-gauge-high me-2"></i> Dashboard
     </a>
 
-    <a href="/ingles" class="btn btn-outline-success py-3 rounded-4 fw-bold text-uppercase shadow-sm border-2">
-      <i class="fa-solid fa-circle-info me-2"></i> Ingles
+    <a href="#" class="btn btn-outline-success py-3 rounded-4 fw-bold text-uppercase shadow-sm border-2">
+      <i class="fa-solid fa-circle-info me-2"></i> 
     </a>
 
     <a href="#" class="btn btn-outline-success py-3 rounded-4 fw-bold text-uppercase shadow-sm border-2">

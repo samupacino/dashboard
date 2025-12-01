@@ -1,14 +1,17 @@
 
 function limpiarModalesAnteriores() {
   // Buscar todos los modales existentes en el DOM
-  document.querySelectorAll(".modal").forEach(modalEl => {
+  document.querySelectorAll(".modal.modal-dinamico").forEach(modalEl => {
     // Si había una instancia activa, destruirla
     const instance = bootstrap.Modal.getInstance(modalEl);
+    
+    console.log(modalEl);
     if (instance) {
       console.log(modalEl);
       instance.dispose();
     }
     // Quitar el HTML del modal
+    
     modalEl.remove();
   });
 }

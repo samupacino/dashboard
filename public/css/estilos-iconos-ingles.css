@@ -1,0 +1,57 @@
+
+
+
+.btn-icon {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+  background: #f0f0f0;
+}
+
+/* Colores por tipo de acción */
+.btn-icon.edit {
+  color: #0d6efd; /* azul bootstrap */
+}
+
+.btn-icon.edit:hover {
+  color: #0a58ca; /* azul más oscuro al pasar el mouse */
+}
+
+.btn-icon.delete {
+  color: #dc3545; /* rojo bootstrap */
+}
+
+.btn-icon.delete:hover {
+  color: #bb2d3b;
+}
+
+.btn-icon.view {
+  color: #198754; /* verde */
+}
+
+.btn-icon.view:hover {
+  color: #157347;
+}
+
+
+
+
+
+/* dos columnas balanceadas en el detalle */
+.dt-key{ width:20%; font-weight:600; color:#495057; padding-right:.75rem; vertical-align:top; }
+.dt-val{ width:64%; }
+
+/* chip del nivel */
+.dt-level{
+  display:inline-block; padding:.125rem .45rem; border-radius:.5rem;
+  font-weight:600; background:#eef1f4; border:1px solid #dee2e6;
+}
+
+/* opcional: estrecha un poco el padding del detalle */
+table.dataTable.dtr-inline .dtr-details, 
+table.table-sm td, table.table-sm th { padding-top:.35rem; padding-bottom:.35rem; }

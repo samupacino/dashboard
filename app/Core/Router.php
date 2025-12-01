@@ -88,11 +88,12 @@ class Router {
 
 
         $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles');
-
+						
         $this->add('GET','/api/ingles/search', 'app\\Controllers\\InglesController@search');
-
-
-
+        $this->add('POST','/api/ingles/registro', 'app\\Controllers\\InglesController@guardar');
+        $this->add('PUT','/api/ingles/actualizar', 'app\\Controllers\\InglesController@actualizar');
+ 		$this->add('GET','/api/ingles/listar', 'app\\Controllers\\InglesController@listar');
+		$this->add('DELETE','/api/ingles/{id}', 'app\\Controllers\\InglesController@eliminar');
 
      
     }

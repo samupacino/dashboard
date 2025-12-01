@@ -24,13 +24,15 @@
     <table id="usuario" class="table table-striped table-bordered nowrap dt-responsive w-100">
       <thead class="table-dark text-center">
         <tr>
-          <th>ID</th>
-          <th>NOMBRE</th>
-          <th>CORREO</th>
-          <th>ROL</th>
+			
+			<th>ID</th>
+			<th>NOMBRE</th>
+			<th>NAME COMPLETE</th>
+			<th>ROL</th>
+		
         </tr>
       </thead>
-      <tbody class="">
+      <tbody class="">DataTable.Responsive
         <!-- Cargado dinámicamente -->
       </tbody>
     </table>

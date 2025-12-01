@@ -1,4 +1,4 @@
-<div class="modal fade" id="modal_registro_t155" tabindex="-1" aria-labelledby="modalRegistroT155Label" aria-hidden="true">
+<div class="modal fade modal-dinamico" id="modal_registro_t155" tabindex="-1" aria-labelledby="modalRegistroT155Label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg rounded-3">
       

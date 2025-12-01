@@ -29,11 +29,11 @@ class DataTablePL3
         $draw = $_GET['draw'] ?? 1;
         $start = $_GET['start'] ?? 0;
         $length = $_GET['length'] ?? 10;
-        $search = $_GET['search']['value'] ?? 'P';
+        $search = $_GET['search']['value'] ?? 'e';
         $orderColumnIndex = $_GET['order'][0]['column'] ?? 0;
         $orderDir = $_GET['order'][0]['dir'] ?? 'asc';
-
-
+		
+		
         
         // 🔧 MODIFICADO: Extraer alias limpio para el ordenamiento
         // Si tienes columnas tipo "p.nombre AS plataforma", se extrae el alias "plataforma"
@@ -164,7 +164,8 @@ SELECT * FROM (
          
            
         }
-     
+        
+     	
     
         // 🔧 MODIFICADO: Contar con filtro aplicado también usando subconsulta
         if ($where) {//SOLO ENTRA AQUI SI EXISTE DATOS A BUSCAR MEDIANTE FILTRADO PARA CONTAR EL TOTAL DE LO BUSCADO

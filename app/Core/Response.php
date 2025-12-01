@@ -93,7 +93,7 @@ class Response
         self::json([
             'status' => 'unauthorized',
             'mensaje' => $mensaje
-        ], 401);
+        ], 403);
     }
 
     /**

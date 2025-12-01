@@ -104,10 +104,10 @@ function load_pl3(){
 					return;                                              // [APP] Evitamos ejecutar alert después
 				}
 
-				mostrarErrorPL3(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
+				mostrarErrorGENERAL(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
 				} catch (e) {
 					//console.error('Error parseando JSON de error:', e);    // [APP] Log de error si JSON no es válido
-					mostrarErrorPL3('Error crítico de servidor:' , e);                    // [APP]
+					mostrarErrorGENERAL('Error crítico de servidor:' , e);                    // [APP]
 				}
 			}
 
@@ -299,10 +299,12 @@ function editar_pl3_init(){
 			if (err.status === 401 && err.body?.status === 'session_expired') {
 				loginModal.style.display = 'flex';
 				//login_modal_relogin();
-			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorPL3(err.body.mensaje);
+			} else if (err.status === 403 && err.body?.status === 'unauthorized') {
+					console.log("ahora si funciona ");
+					mostrarErrorGENERAL(err.body.mensaje);
 			} else {
-					mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+				
+					mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 			}
 		});		
 		
@@ -419,15 +421,15 @@ function onClickEliminar_confirmar_pl3() {
 			if (err.status === 401 && err.body?.status === 'session_expired') {
 				
 				loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
-					
-		
+				console.log(err);
+				console.log("entre aqui");
 			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
 
-				mostrarErrorPL3(err.body.mensaje);
+				mostrarErrorGENERAL(err.body.mensaje);
 			} else {
 
 				//console.error("❌ Error de red:", err);
-				mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+				mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 
 			}
 			
@@ -544,9 +546,9 @@ function registro_pl3_init(){
 			if (err.status === 401 && err.bmensajeTablaody?.status === 'session_expired') {
 				loginModal.style.display = 'flex';
 			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorPL3(err.body.mensaje);
+					mostrarErrorGENERAL(err.body.mensaje);
 			} else {
-					mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+					mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 			}
 		});		
 		
@@ -554,16 +556,7 @@ function registro_pl3_init(){
 
 }
 
-// Función que devuelve un manejador de modal "privado"
-function mostrarErrorPL3(mensaje) {
-  
-    const modalElement = document.querySelector('#modal_error');
-    modalError = bootstrap.Modal.getOrCreateInstance(modalElement);
-    
-    document.querySelector('.body_mensaje_error').textContent = mensaje;
-    modalError.show();
-  
-}
+
 
 // Creamos el "manejador" de error
 //const mostrarError = crearModalError();

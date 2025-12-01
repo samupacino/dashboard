@@ -2,6 +2,7 @@
 namespace app\Controllers;
 
 use app\Core\Session;
+use app\Core\Response;
 
 class VistaController
 {
@@ -23,11 +24,65 @@ class VistaController
         require_once ROOT . '/views/menu/menu.php';
      
     }
-    public function ingles(){
+    
+	public function ingles(){
+		Session::start();
+
+		$esAjax = $this->isAjaxRequest();
+
+		// ====== Validación de sesión / rol ======
+		if (!Session::isAdmin()) {
+			// Si viene por fetch → JSON
+			if ($esAjax) {
+				
+				Response::error('No tienes permisos para ver esta sección.',403);
+				//$this->jsonError(403, 'No tienes permisos para ver esta sección.');
+				//return;
+			}
+		
+			// Si viene por navegación normal → redirigir o mostrar vista 403
+			header('Location: /'); // o /login o /error403
+			exit;
+		}
+
+		// ====== Si ES admin ======
+		if ($esAjax) {
+			// Llamada hecha por fetch → NO renderizamos la vista aquí.
+			// Solo avisamos al front que puede ir a la URL real.
+			Response::success(['redirect' => '/ingles']);
+			//http_response_code(200);
+        	//header('Content-Type: application/json');
+        	//echo json_encode(['redirect' => '/ingles']);
+			
+			return;
+		}
+
+		// Navegación normal (no AJAX): renderizar vista directamente
+		
+		require_once ROOT . '/views/ingles/index.php';
+	}
+	
+	protected function isAjaxRequest(): bool
+	{
+		return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+			&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+	}
+
+
+    /*public function ingles(){
+		
+		Session::start();
+
+       // Solo admin puede acceder
+       if (!Session::isAdmin()) {
+          $this->jsonError(403, 'No tienes permisos para ver usuarios.');
+          return;
+       }
+
      
         require_once ROOT . '/views/ingles/index.php';
      
-    }
+    }*/
     // Vista principal del dashboard
     public function dashboardView()
     {
@@ -60,6 +115,8 @@ class VistaController
         header('Content-Type: application/json');
         echo json_encode(['error' => $message]);
     }
+    
+
 
     // Vista parcial que se carga dinámicamente según el módulo
     public function vistaParcial($modulo)

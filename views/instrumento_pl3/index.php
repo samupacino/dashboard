@@ -3,7 +3,7 @@
    include_once'modal-registro-pl3.php';
    include_once'modal-eliminar-PL3.php';
    include_once'modal-editar-pl3.php';
-   include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
+   //include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
 
    include_once ROOT.'/views/layouts/modal-requerido-login.php';
    

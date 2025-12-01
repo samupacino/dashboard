@@ -1,0 +1,17 @@
+
+#mensajeTablaINGLES{
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeTablaINGLES.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeTablaINGLES.error {
+  background: #dc3545;
+  color: white;
+}

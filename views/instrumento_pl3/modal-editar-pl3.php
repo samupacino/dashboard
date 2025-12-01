@@ -1,7 +1,7 @@
 
 
 
-<div class="modal fade" id="modal_editar_pl3" tabindex="-1" aria-labelledby="modalEditarPL3Label" aria-hidden="true">
+<div class="modal fade modal-dinamico" id="modal_editar_pl3" tabindex="-1" aria-labelledby="modalEditarPL3Label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg rounded-3">
       

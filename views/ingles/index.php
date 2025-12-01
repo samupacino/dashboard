@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+	
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,13 +16,34 @@
     <link href="fontawesome-free-7.1.0-web/css/fontawesome.css" rel="stylesheet" />
     <link href="fontawesome-free-7.1.0-web/css/brands.css" rel="stylesheet" />
     <link href="fontawesome-free-7.1.0-web/css/solid.css" rel="stylesheet" />
+    
+    
+     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+  	<!-- Estas dos lineas es para usar datatable-->
+  	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />
+  	<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script> 
+
+ 	<!-- DataTables CSS AGREUE ESTO ULTIMO ACUERDATE CTM-->
+  	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.7/css/responsive.dataTables.min.css">
+  	<script src="https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.min.js"></script> 
 
 
+
+
+	<!-- ESTILOS GENERAL-->
+	<link rel="stylesheet" href="css/estilos-iconos-ingles.css?v=<?php echo time();?>">
+	<link rel="stylesheet" href="css/estilos-mensaje-ingles.css?v=<?php echo time();?>">
 <style>
 /* ===== Scroll interno del modal ===== */
 .modal-dialog-scrollable .modal-content {
   max-height: 90vh;       /* ocupa 90% de la altura de la ventana */
   overflow-y: auto;       /* permite desplazamiento vertical */
+  
+  
+  
+  
+  
 }
 </style>
         
@@ -28,161 +51,97 @@
 </head>
 <body>
 
+<?php
 
- <!-- Botón para abrir modal -->
-<div class="container my-4">
-  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEnVocab" onclick="openEnVocabModal()">Nueva palabra</button>
-</div>
+	include_once'modal-eliminar-ingles.php';
+	
+?>
 
-<!-- Modal -->
-<div class="modal fade" id="modalEnVocab" tabindex="-1" aria-labelledby="modalEnVocabLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <form id="form-en-vocab" class="needs-validation" novalidate method="post" action="#">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalEnVocabLabel">Registrar palabra / expresión</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
+<?php
 
-        <div class="modal-body">
-          <div class="row g-3">
+	include_once'modal-registro-ingles.php';
+?>
 
-            <input type="hidden" name="id" id="id">
 
-            <!-- English -->
-            <div class="col-12 col-lg-6">
-              <label for="english" class="form-label">English <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="english" name="english" maxlength="120" required placeholder="Go up">
-              <div class="invalid-feedback">Ingresa la palabra/frase en inglés.</div>
-            </div>
 
-            <!-- Pronunciation -->
-            <div class="col-12 col-lg-6">
-              <label for="pronunciation" class="form-label">Pronunciation</label>
-              <input type="text" class="form-control" id="pronunciation" name="pronunciation" maxlength="120" placeholder="gou ap">
-              <div class="form-text">Fonética aproximada.</div>
-            </div>
 
-            <!-- Spanish -->
-            <div class="col-12 col-lg-6">
-              <label for="spanish" class="form-label">Spanish <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="spanish" name="spanish" maxlength="180" required placeholder="Subir">
-              <div class="invalid-feedback">Ingresa la traducción al español.</div>
-            </div>
 
-            <!-- POS -->
-            <div class="col-12 col-lg-6">
-              <label for="pos" class="form-label">Part of Speech (POS) <span class="text-danger">*</span></label>
-              <select class="form-select" id="pos" name="pos" required>
-                <option value="" selected disabled>Selecciona un tipo…</option>
-                <option value="verb">verb</option>
-                <option value="phrasal_verb">phrasal_verb</option>
-                <option value="noun">noun</option>
-                <option value="adjective">adjective</option>
-                <option value="adverb">adverb</option>
-                <option value="expression">expression</option>
-              </select>
-              <div class="invalid-feedback">Selecciona el tipo gramatical.</div>
-            </div>
 
-            <!-- Level -->
-            <div class="col-12 col-lg-6">
-              <label for="level" class="form-label">Level (CEFR)</label>
-              <select class="form-select" id="level" name="level">
-                <option value="" selected>— sin nivel —</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-                <option value="C2">C2</option>
-              </select>
-              <div class="form-text">Opcional: nivel de dificultad.</div>
-            </div>
 
-            <!-- Example EN -->
-            <div class="col-12 col-lg-6">
-              <label for="example_en" class="form-label">Example (EN)</label>
-              <input type="text" class="form-control" id="example_en" name="example_en" maxlength="240" placeholder="Prices go up in summer.">
-            </div>
 
-            <!-- Example ES -->
-            <div class="col-12 col-lg-6">
-              <label for="example_es" class="form-label">Ejemplo (ES)</label>
-              <input type="text" class="form-control" id="example_es" name="example_es" maxlength="240" placeholder="Los precios suben en verano.">
-            </div>
 
-            <!-- Notes -->
-            <div class="col-12">
-              <label for="notes" class="form-label">Notes</label>
-              <textarea class="form-control" id="notes" name="notes" rows="2" maxlength="240" placeholder="directions, time, etc."></textarea>
-            </div>
+<!-- Encabezado fijo -->
+<header class="sticky-top bg-light py-3 shadow-sm border-bottom">
+  <div class="container text-center">
 
-            <!-- Opposite: búsqueda + lista + hidden -->
-            <div class="col-12">
-              <label class="form-label d-block">Opposite (buscar y seleccionar)</label>
-              <div class="row g-2 align-items-start">
-                <div class="col-12 col-md-6">
-                  <input type="text" class="form-control" id="opposite_query"
-                         placeholder="Escribe para buscar: Go down, Come out…"
-                         aria-describedby="helpOpposite">
-                  <div id="helpOpposite" class="form-text">Escribe parte del inglés y luego elige.</div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <select class="form-select" id="opposite_list" size="6" aria-describedby="oppositeInvalid" title="Resultados">
-                    <!-- opciones dinámicas -->
-                  </select>
-                  <div id="oppositeInvalid" class="invalid-feedback">Selecciona un opuesto válido o deja vacío.</div>
-                </div>
-              </div>
-              <input type="hidden" id="opposite_id" name="opposite_id">
-            </div>
+    <!-- Título -->
+    <h2 class="fw-bold text-uppercase text-dark d-inline-block pb-1 mb-2 border-bottom border-3 border-primary">
+      Palabras en Ingles
+    </h2>
 
-            <!-- Source -->
-            <div class="col-12 col-lg-6">
-              <label for="source" class="form-label">Source</label>
-              <input type="text" class="form-control" id="source" name="source" maxlength="120" placeholder="libreta, foto, app…">
-            </div>
-
-            <!-- Created/Updated -->
-            <div class="col-12 col-lg-3">
-              <label class="form-label">Created At</label>
-              <input type="text" class="form-control" id="created_at" value="(auto)" disabled>
-            </div>
-            <div class="col-12 col-lg-3">
-              <label class="form-label">Updated At</label>
-              <input type="text" class="form-control" id="updated_at" value="(auto)" disabled>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
-          <button type="submit" class="btn btn-primary">GUARDAR</button>
-        </div>
-      </form>
+    <!-- Botón centrado -->
+    <div class="mt-2">
+      <a href="/dashboard" class="btn btn-outline-success px-4 py-2 rounded-4 fw-bold text-uppercase shadow-sm border-2">
+        <i class="fa-solid fa-circle-info me-2"></i> Retornar al Dashboard
+      </a>
     </div>
+
   </div>
-</div>
+</header>
 
 
+<!-- Contenido principal -->
+<main class="container my-4">
+	
+	
+
+	
+  <!-- Barra de acciones -->
+  <section class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="btn-group" role="group" aria-label="Acciones principales">
+      	<button class="btn btn-primary"  id="abrirModal" onclick="">
+        <i class="bi bi-plus-circle"></i> Registrar TAG
+      </button>
+      <button id="recargarTablaINGLES" class="btn btn-outline-secondary" onclick="recargar_table_ingles()">
+        <i class="bi bi-arrow-clockwise"></i> Recargar
+      </button>
+    </div>
+  </section>
+
+
+
+  <!-- Mensaje dinámico -->
+  <div id="mensajeTablaINGLES" class="alert alert-info d-none" role="status" aria-live="polite"></div>
+
+  <!-- Tabla de datos -->
+  <section class="table-responsive"> 
+    <table id="ingles" width="100%" class="responsive nowrap table table-striped table-bordered table-hover align-middle nowrap dt-responsive w-100">
+      <caption class="caption-top fw-semibold text-secondary">
+        Lista actualizada: 
+      </caption>
+      <thead class="table-dark text-center">
+        <tr>
+
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Cargado dinámicamente -->
+      </tbody>
+    </table>
+  </section>
+</main>
+
+
+
+<!--
+Si solo usas componentes simples (modal, collapse, alert, etc.) podrías usar bootstrap.min.js, 
+pero como casi siempre en un proyecto real aparece un dropdown o un tooltip, lo común es 
+trabajar con bootstrap.bundle.min.js
+-->
 <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script>
 
-
-<script>
-// Ejemplo básico de inicialización de modal
-function openEnVocabModal(){
-  const form = document.getElementById('form-en-vocab');
-  if(form){
-    form.reset();
-    form.classList.remove('was-validated');
-  }
-
-
-}
-</script>
-
-
+<script src="/js/ingles_datatable.js?v=<?php echo time();?>"></script>
+<script src="/js/script-ingles-registro-editar.js?v=<?php echo time();?>"></script>
+<script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script> 
+	
 </body>

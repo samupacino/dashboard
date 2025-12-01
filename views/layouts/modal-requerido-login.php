@@ -1,5 +1,5 @@
   <!-- Modal login oculto -->
-  <div class="modal" id="loginModal">
+  <div class="modal modal-dinamico" id="loginModal">
     <div class="modal-content">
       <h2>== LOGIN REQUERIDO ==</h2>
       <form id="modalLoginForm" method="POST">

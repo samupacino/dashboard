@@ -35,7 +35,9 @@
 								</li>
 								
                       			<li class="nav-item"><button class="nav-link"  onclick="cargarVistaModulo('perfil')" target="_blank">Who I Am </button></li>
-
+                      			<li class="nav-item">
+									<button class="nav-link"  target="_blank" id="ingresar_ingles">Ingles</button>
+								</li>
 							</ul>
 							
 							<div class="d-flex">
@@ -61,5 +63,7 @@
 			//include'cuerpo.php';
 		
 		?>
+		
+		
 	
 

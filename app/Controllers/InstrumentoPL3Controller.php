@@ -77,6 +77,7 @@ class InstrumentoPL3Controller{
     }
 
     public function eliminar($id){
+	
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
@@ -88,8 +89,8 @@ class InstrumentoPL3Controller{
             $exito = $modelo->eliminar($id);
 
             return $exito
-                ? Response::success([], 'Usuario eliminado correctamente' . $exit)
-                : Response::error('Error al eliminar usuario', 500);
+                ? Response::success([], 'Instrumento eliminado correctamente' . $exit)
+                : Response::error('Error al eliminar instrumento', 500);
         } catch (Throwable $e) {
             return Response::error("Error al eliminar instrumento: " . $e->getMessage(), 500);
         }
@@ -100,7 +101,7 @@ class InstrumentoPL3Controller{
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado', 403);
         }
 
             

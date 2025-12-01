@@ -1,4 +1,4 @@
-<div class="modal" id="modal_eliminar_t155" tabindex="-1">
+<div class="modal modal-dinamico" id="modal_eliminar_t155" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

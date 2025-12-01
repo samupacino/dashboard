@@ -18,6 +18,9 @@ class Database {
                     'samuellujan1989'
                 );
                 self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+             
+        		//self::$instance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        		
             } catch (PDOException $e) {
                 // Lanzamos la excepción para que el controlador pueda capturarla
                 throw new Exception('Error al conectar con la base de datos: ' . $e->getMessage(), 500);

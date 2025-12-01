@@ -53,11 +53,15 @@
 <body>
 
   <?php
-    include_once'barra-menu.php';
+  	
+ 	include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
+    
   ?>
   
   <?php
+  include_once'barra-menu.php';
     //include_once'modal-requerido-login.php';
+   
   ?>
 
   <?php

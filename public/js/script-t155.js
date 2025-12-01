@@ -84,10 +84,10 @@ function load_t155(){
 					return;                                              // [APP] Evitamos ejecutar alert después
 				}
 
-				mostrarErrorT155(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
+				mostrarErrorGENERAL(resultado.body?.mensaje || 'Error desconocido'); // [APP] Mostramos mensaje de error
 				} catch (e) {
 					//console.error('Error parseando JSON de error:', e);    // [APP] Log de error si JSON no es válido
-					mostrarErrorT155('Error crítico de servidor:' , e);                    // [APP]
+					mostrarErrorGENERAL('Error crítico de servidor:' , e);                    // [APP]
 				}
 			}
 
@@ -324,11 +324,11 @@ function onClickEliminar_confirmar() {
 		
 			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
 
-				mostrarErrorT155(err.body.mensaje);
+				mostrarErrorGENERAL(err.body.mensaje);
 			} else {
 
 				//console.error("❌ Error de red:", err);
-				mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+				mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 
 			}
 			
@@ -438,9 +438,9 @@ function editar_t155_init(){
 				loginModal.style.display = 'flex';
 				//login_modal_relogin();
 			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorT155(err.body.mensaje);
+					mostrarErrorGENERAL(err.body.mensaje);
 			} else {
-					mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+					mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 			}
 		});		
 		
@@ -528,9 +528,9 @@ function registro_t155_init(){
 			if (err.status === 401 && err.bmensajeTablaody?.status === 'session_expired') {
 				loginModal.style.display = 'flex';
 			} else if (err.status === 401 && err.body?.status === 'unauthorized') {
-					mostrarErrorT155(err.body.mensaje);
+					mostrarErrorGENERAL(err.body.mensaje);
 			} else {
-					mostrarErrorT155(err.body?.mensaje || "No se pudo conectar con el servidor");
+					mostrarErrorGENERAL(err.body?.mensaje || "No se pudo conectar con el servidor");
 			}
 		});		
 		
@@ -538,31 +538,6 @@ function registro_t155_init(){
 
 }
 
-
-// Función que devuelve un manejador de modal "privado"
-function mostrarErrorT155(mensaje) {
-  
-    const modalElement = document.querySelector('#modal_error');
-    modalError = bootstrap.Modal.getOrCreateInstance(modalElement);
-    
-    document.querySelector('.body_mensaje_error').textContent = mensaje;
-    modalError.show();
-  
-}
-
-// Creamos el "manejador" de error
-//const mostrarError = crearModalError();
-
-
-// Función que devuelve un manejador de modal "privado"
-function mostrarSuccessT155(mensaje) {
-  
-    const modalElement = document.getElementById('modal_success');
-    const modalSuccess = new bootstrap.Modal.getOrCreateInstance(modalElement);
-    
-    document.querySelector('.body_mensaje_success').textContent = mensaje;
-    modalSuccess.show();
- };
 
 
 

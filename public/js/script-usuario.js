@@ -305,7 +305,30 @@ function load_usuario_init() {                                   // [APP] Tu fun
 
 	// === CREAR INSTANCIA DATATABLE ===
 	 	const datatable_usuario = new DataTable(tabla, {                       // [DT] Constructor principal de DataTables
-		//responsive: true,
+		 
+		 
+		responsive: {
+			details: {
+			  type: 'inline',              // muestra “detalles” debajo
+			  target: 1         // clic en la celda de control
+			}
+		},
+		columnDefs: [
+			
+			
+			
+			{ targets: 0, visible: false, searchable: false },
+			{ targets: 1, className: 'control' }, // NOMBRE
+
+			// Columnas que van al “detalle” al expandir la fila
+			{ targets: 2, className: 'all ' }, // CORREO
+			{ targets: 3, className: 'all' },  // ROL
+
+		],
+		
+		
+		
+		
 		destroy:true ,
 		processing: true,                                            // [DT] Muestra texto "Procesando..." durante AJAX
 		serverSide: true,                                           // [DT] Paginación y filtros hechos en cliente
@@ -323,8 +346,9 @@ function load_usuario_init() {                                   // [APP] Tu fun
 		dataSrc: function (json) {  // [DT] Función que transforma la respuesta JSON
 			// Solo entra aquí si el servidor respondió 200 OK
 			
-		
+			
 			if (Array.isArray(json.data)) { // [APP] Validación de tu contrato de API
+				//alert(json.data);
 				return json.data;                                      // [DT] Devuelve array de datos para pintar filas
 			}
 			alert('Respuesta inesperada del servidor. No se puede construir la tabla.');          // [APP] Si llega 200 pero no es success → alerta
@@ -355,14 +379,17 @@ function load_usuario_init() {                                   // [APP] Tu fun
 
 
 		// === DEFINICIÓN DE COLUMNAS ===
-		columns: [                                                   // [DT] Configuración de columnas de la tabla
-			{ data: 'id', visible: false },                                            // [DT] Columna id (mapea campo id del JSON)
+		columns: [  
+			
+													// [DT] Configuración de columnas de la tabla
+			{ data: 'id'},                                            // [DT] Columna id (mapea campo id del JSON)
 			{ data: 'username'},                                      // [DT] Columna username
 			{ data: 'name_complete' },                                 // [DT] Columna nombre completo
 			{ data: 'rol' },                                           // [DT] Columna rol
-
+			
 			{                                                          
 			data: null,                                              // [DT] No usa un campo → fabricamos contenido
+			title: 'EDITAR',
 			orderable: false,                                        // [DT] No ordenable
 			searchable: false,                                       // [DT] No filtrable
 			/*
@@ -370,7 +397,7 @@ function load_usuario_init() {                                   // [APP] Tu fun
 				No. dt-center no es una clase de Bootstrap.
 				Es una clase de DataTables, no de Bootstrap.
 			*/
-			className: 'dt-center',                                  // [DT] Centrado
+			className: 'dt-center none',                                  // [DT] Centrado
 			render: function (data, type, row, meta) {               // [DT] Firma reglamentaria (data, type, row, meta)
 				// data = valor de la celda (null aquí)
 				// type = 'display' | 'sort' | 'filter'
@@ -387,9 +414,10 @@ function load_usuario_init() {                                   // [APP] Tu fun
 			},
 			{
 			data: null,                                              // [DT] Columna personalizada para botón eliminar
+			title: 'ELIMINAR',
 			orderable: false,                                        // [DT]
 			searchable: false,                                       // [DT]
-			className: 'dt-center',                                  // [DT]
+			className: 'dt-center none',                                  // [DT]
 			render: function (data, type, row, meta) {               // [DT]
 			return (`<button type="button" class="btn-eliminar btn btn-danger" data-id="${row.id}">Eliminar</button>`);
 				/*
@@ -401,12 +429,23 @@ function load_usuario_init() {                                   // [APP] Tu fun
 				}
 			}
 		],
+		
+		
+		
 
+		
+		
+		
 		createdRow: function (row, data, dataIndex) {                // [DT] Callback al crear cada fila
 			//console.log(data);
 			row.dataset.rowId = data.id;                               // [DOM] Insertamos atributo data-row-id en el <tr>
 		}
 	});
+
+
+
+
+
 
   	// === DELEGACIÓN DE EVENTOS ===
   	const tbody = tabla.querySelector('tbody');                    // [DOM] Seleccionamos <tbody> de la tabla
