@@ -8,7 +8,7 @@ function recargar_table_pl3(){
 
 
 function cargar_pl3_init(){
-	login_obligado();
+	//login_obligado();
     load_pl3();
     registro_pl3_init();
     onClickEliminar_confirmar_pl3();
@@ -17,7 +17,6 @@ function cargar_pl3_init(){
 
 function load_pl3(){
 
-    
 	const tabla = document.getElementById('pl3'); // ID de la tabla
 
 
@@ -97,8 +96,9 @@ function load_pl3(){
 						body: JSON.parse(response.responseText)              // [APP] Convertimos body en objeto JS
 					};
 		
+				//console.log(response);
 				if (resultado.status === 401 && resultado.body?.status === 'session_expired') {
-				
+					console.log("entre");
 					loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 					
 					return;                                              // [APP] Evitamos ejecutar alert después
@@ -414,7 +414,7 @@ function onClickEliminar_confirmar_pl3() {
 		.catch(err => {
 
 			//console.log(err.status);
-			//console.log(err.body);
+			console.log(err);
 				
 			modal_eliminar.hide();
 			
@@ -422,9 +422,9 @@ function onClickEliminar_confirmar_pl3() {
 				
 				loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 				console.log(err);
-				console.log("entre aqui");
-			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
-
+				
+			} else if (err.status === 403 && err.body?.status === 'unauthorized'){
+console.log("entre unathorized");
 				mostrarErrorGENERAL(err.body.mensaje);
 			} else {
 

@@ -18,9 +18,9 @@ class InstrumentoT155Controller
             Response::unauthorized('No autenticado');
         }
 
-        if (Session::isExpired()) {
+        if (Session::isExpired(1)) {
             Session::destroy();
-            Response::sessionExpired('Sesión expirada CACHERO');
+            Response::sessionExpired('Sesión expirada');
         }
 
         Session::renovarTiempo();
@@ -44,10 +44,10 @@ class InstrumentoT155Controller
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado para registrar', 403);
         }
 
-        try {
+        try {	
             $data = json_decode(file_get_contents('php://input'), true);
             $tag = trim($data['tag'] ?? '');
             $plataforma = $data['plataforma'] ?? null;
@@ -97,7 +97,7 @@ class InstrumentoT155Controller
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado para actualizar', 403);
         }
 
         try {
@@ -132,7 +132,7 @@ class InstrumentoT155Controller
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado para eliminar', 403);
         }
         
         try {

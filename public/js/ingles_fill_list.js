@@ -1,6 +1,7 @@
 
 
-
+(function () {
+  'use strict';
 
 /******************************************************
  * CONFIGURACIÓN Y REFERENCIAS A ELEMENTOS DEL DOM
@@ -19,7 +20,7 @@ var inputOcultoOppositeId  = document.getElementById('opposite_id');     // Hidd
 var divMensajeInvalido     = document.getElementById('oppositeInvalid'); // Mensaje de error/invalidación
 var formularioEnVocab      = document.getElementById('form-en-vocab');   // Formulario principal
 
-
+const modalEl = document.getElementById('modalEnVocab');
 
 
 // Para ver mejor el flujo en la consola
@@ -400,121 +401,110 @@ function manejadorSeleccionarEnLista() {
 	
 	
 	
-	document.addEventListener('DOMContentLoaded', function inicializar() {
-
-		const modalEl = document.getElementById('modalEnVocab');
-		modalEl.addEventListener('shown.bs.modal', () => {
-			
-			
-			// Prefetch inicial (opcional)
-			buscarOpuestosEnServidor('')
-			.then(function (listaInicial) {
-				
-
-			dibujarResultadosEnSelect(listaInicial);
-			
-		
-		});
-		
-	});
 	
+		
+	modalEl.addEventListener('shown.bs.modal', () => {
+				
+				
+				// Prefetch inicial (opcional)
+				buscarOpuestosEnServidor('')
+				.then(function (listaInicial) {
+				
+					dibujarResultadosEnSelect(listaInicial);
+
+				});
+			
+	});
+
  
 
-  // --- Limpieza visual del error custom al escribir o elegir ---
-  if (inputBusquedaOpuesto && divMensajeInvalido) {
-    inputBusquedaOpuesto.addEventListener('input', function () {
-      // si borra el texto, ocultamos el feedback custom
-      if (inputBusquedaOpuesto.value.trim() === '') {
-        divMensajeInvalido.style.display = 'none';
-        // también quitamos estado inválido visual si lo usaste
-        selectResultadosOpuesto?.classList.remove('is-invalid');
-      }
-    });
-  }
-  if (selectResultadosOpuesto && divMensajeInvalido) {
-    selectResultadosOpuesto.addEventListener('change', function () {
-      // si selecciona algo, ocultamos el feedback custom
-      divMensajeInvalido.style.display = 'none';
-      selectResultadosOpuesto.classList.remove('is-invalid');
-    });
-  }
-  
- 
-
-  // Integración con el submit del formulario principal
-  if (formularioEnVocab) {
+	  // --- Limpieza visual del error custom al escribir o elegir ---
+	  if (inputBusquedaOpuesto && divMensajeInvalido) {
+		inputBusquedaOpuesto.addEventListener('input', function () {
+		  // si borra el texto, ocultamos el feedback custom
+		  if (inputBusquedaOpuesto.value.trim() === '') {
+			divMensajeInvalido.style.display = 'none';
+			// también quitamos estado inválido visual si lo usaste
+			selectResultadosOpuesto?.classList.remove('is-invalid');
+		  }
+		});
+	  }
 	  
-    formularioEnVocab.addEventListener('submit', function manejarSubmit(evento) {
-      // SIEMPRE: detener envío para validar primero
-      evento.preventDefault();
-      evento.stopPropagation();
-      
-     
-      
-  
-
-      // 1) Validación nativa Bootstrap 5 (required, pattern, etc.)
-      //    Requiere: <form class="needs-validation" novalidate>
-      var esValidoHTML5 = formularioEnVocab.checkValidity();
-      if (!esValidoHTML5) {
-        formularioEnVocab.classList.add('was-validated');
-        debugLog('[submit] Validación HTML5/Bootstrap falló');
-        return; // no seguimos si hay campos requeridos vacíos o inválidos
-      }
-
-      // 2) Regla especial para “opposite”: si escribió algo en el buscador
-      //    pero NO eligió del select, marcamos error custom.
-      var textoDigitado = inputBusquedaOpuesto ? inputBusquedaOpuesto.value.trim() : '';
-      var idOculto      = inputOcultoOppositeId ? inputOcultoOppositeId.value : '';
-      var escribioPeroNoEligio = (textoDigitado !== '' && !idOculto);
-
-      if (escribioPeroNoEligio) {
-        // feedback custom (tu DIV)
-        if (divMensajeInvalido) divMensajeInvalido.style.display = 'block';
-        // opcional: estilo Bootstrap de inválido al <select>
-        if (selectResultadosOpuesto) {
-          selectResultadosOpuesto.classList.add('is-invalid');
-          selectResultadosOpuesto.focus();
-        }
-        debugLog('[submit] Texto escrito pero sin selección. Validación detenida.');
-        return;
-      }
-
-      // 3) Si todo OK -> recolectar datos y proceder (enviar o lo que prefieras)
-      var datosFormulario = new FormData(formularioEnVocab);
-      var objetoPlano = Object.fromEntries(datosFormulario.entries());
-      //const url = formularioEnVocab.action; // ✅ obtiene la ruta actual (create o update)
-      debugLog('[submit] Datos listos para enviar ✅', objetoPlano);
-      
-   
-      var url = formularioEnVocab.getAttribute('action');
-      
-      
-      var method = formularioEnVocab.dataset.method;
-      
-      
-     	
-	  envio_data(url,objetoPlano,method);
+	  if (selectResultadosOpuesto && divMensajeInvalido) {
+		selectResultadosOpuesto.addEventListener('change', function () {
+		  // si selecciona algo, ocultamos el feedback custom
+		  divMensajeInvalido.style.display = 'none';
+		  selectResultadosOpuesto.classList.remove('is-invalid');
+		});
+	  }
+	  
 	 
+
+	  // Integración con el submit del formulario principal
+	  if (formularioEnVocab) {
+		  
+		formularioEnVocab.addEventListener('submit', function manejarSubmit(evento) {
+		  // SIEMPRE: detener envío para validar primero
+		  evento.preventDefault();
+		  evento.stopPropagation();
+		  
+		 
+		  
 	  
 
+		  // 1) Validación nativa Bootstrap 5 (required, pattern, etc.)
+		  //    Requiere: <form class="needs-validation" novalidate>
+		  var esValidoHTML5 = formularioEnVocab.checkValidity();
+		  if (!esValidoHTML5) {
+			formularioEnVocab.classList.add('was-validated');
+			debugLog('[submit] Validación HTML5/Bootstrap falló');
+			return; // no seguimos si hay campos requeridos vacíos o inválidos
+		  }
 
-      // Si quieres enviar el form “normalmente” al servidor:
-      // formularioEnVocab.submit();
-      
-      
-      
-    });
-  
-  
-  
-  }
-  
-  
-  
-  
-  
-});
+		  // 2) Regla especial para “opposite”: si escribió algo en el buscador
+		  //    pero NO eligió del select, marcamos error custom.
+		  var textoDigitado = inputBusquedaOpuesto ? inputBusquedaOpuesto.value.trim() : '';
+		  var idOculto      = inputOcultoOppositeId ? inputOcultoOppositeId.value : '';
+		  var escribioPeroNoEligio = (textoDigitado !== '' && !idOculto);
+
+		  if (escribioPeroNoEligio) {
+			// feedback custom (tu DIV)
+			if (divMensajeInvalido) divMensajeInvalido.style.display = 'block';
+			// opcional: estilo Bootstrap de inválido al <select>
+			if (selectResultadosOpuesto) {
+			  selectResultadosOpuesto.classList.add('is-invalid');
+			  selectResultadosOpuesto.focus();
+			}
+			debugLog('[submit] Texto escrito pero sin selección. Validación detenida.');
+			return;
+		  }
+
+		  // 3) Si todo OK -> recolectar datos y proceder (enviar o lo que prefieras)
+		  var datosFormulario = new FormData(formularioEnVocab);
+		  var objetoPlano = Object.fromEntries(datosFormulario.entries());
+		  //const url = formularioEnVocab.action; // ✅ obtiene la ruta actual (create o update)
+		  debugLog('[submit] Datos listos para enviar ✅', objetoPlano);
+		  
+	   
+		  var url = formularioEnVocab.getAttribute('action');
+		  
+		  
+		  var method = formularioEnVocab.dataset.method;
+		  
+		  
+			
+		  envio_data(url,objetoPlano,method);
+		 
+	   
+		  
+		});
+	  
+	  
+	  
+	  }
+	  
+ 
+
 
 function envio_data(url,data,metodo){
 	
@@ -550,10 +540,10 @@ function envio_data(url,data,metodo){
 				}
 		})
 		.then(resultado => {
-			console.log(resultado.body.data);
+			console.log(resultado);
 			
 			//modalRegistro.hide();
-			recargar_table_ingles();
+			App.ingles.reload();
 			mostrarMensajeModal(resultado.body.mensaje);
 			resetFormularioEnVocab();
 
@@ -563,18 +553,27 @@ function envio_data(url,data,metodo){
 
 		})
 		.catch(err => {
-			console.log(err.body.data);
 			
 			
 			//resetFormularioEnVocab();
-
+			
 			if (err.status === 401 && err.body?.status === 'session_expired') {
-				//loginModal.style.display = 'flex';
-			} else if (err.status === 403 && err.body?.status === 'unauthorized') {
-					mostrarMensajeModal(err.body.mensaje,'error');
+				actualizarBotonLogin(false);
+				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
+				mostrarMensajeModal(err.body.mensaje,'error');
+		
+			} else if (err.status === 403 && err.body?.status === 'unauthorized'){
+			
+				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Operación realizada correctamente",'error',7000);
+				mostrarMensajeModal(err.body.mensaje,'error');
+				
 			} else {
-					mostrarMensajeModal(err.body?.mensaje || "No se pudo conectar con el servidor",'');
+
+				//console.error("❌ Error de red:", err);
+				//mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
+				mostrarMensajeModal(err.body.mensaje,'error');
 			}
+			
 		});		
 		
 	
@@ -582,89 +581,6 @@ function envio_data(url,data,metodo){
 }
 
 
-// Función reutilizable para dejar el form “limpio”
-function resetFormularioEnVocab() {
-  // 1) Valores
-  formularioEnVocab.reset();
-
-  // 2) Quitar estado de validación de Bootstrap
-  formularioEnVocab.classList.remove('was-validated');
-
-  // 3) Quitar clases is-valid / is-invalid de todos los controles
-  formularioEnVocab
-    .querySelectorAll('.is-valid, .is-invalid')
-    .forEach(el => {
-      el.classList.remove('is-valid', 'is-invalid');
-    });
-
-  // 4) (Opcional) devolver textos de created/updated
-  const createdAt = document.getElementById('created_at');
-  const updatedAt = document.getElementById('updated_at');
-  if (createdAt) createdAt.value = '(auto)';
-  if (updatedAt) updatedAt.value = '(auto)';
-}
-	
-
-
-/*
-
-function openEnVocabModal(){
-	
-
-	 if(formularioEnVocab){
-		 
-		formularioEnVocab.reset();
-
-		formularioEnVocab.classList.remove('was-validated');
-		formularioEnVocab.id.value = ''; // asegura que no haya ID previo
-		
-	
-	
-	
-	  	
-	  	
-		const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-		modal.show();
-  
-	}
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-	
-  // Utilidad: limpia el formulario “bonito”
-  function resetFormVisual(form) {
-    form.reset(); // ← restaura valores iniciales
-    form.classList.remove('was-validated');
-    // Quita clases de validación Bootstrap si las usas
-    form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-		console.log("entre was");
-      	el.classList.remove('is-valid', 'is-invalid');
-    });
-    // Limpia resultados de búsqueda del “Opposite” (si existen)
-    const oppList = document.getElementById('opposite_list');
-    if (oppList) oppList.innerHTML = '';
-  }
-
-  // Cancelar = reset + cerrar modal
-  btnCancel.addEventListener('click', () => {
-    resetFormVisual(formularioEnVocab);
-	
-    // Cierra el modal con la API de Bootstrap 5
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-   
-    modal.hide();
-  });
-
-  // Opcional: cada vez que se cierra el modal, dejamos el form “prístino”
-  modalEl.addEventListener('hidden.bs.modal', () => {
-    resetFormVisual(formularioEnVocab);
-
-    // Si quieres, también asegúrate de limpiar el ID (modo crear)
-    const idInput = document.getElementById('id');
-    if (idInput) idInput.value = '';
-    
-  });
-});*/
 
 
 
@@ -702,3 +618,4 @@ function mostrarMensajeModal(texto, tipo = "success") {
 
 
 
+})();

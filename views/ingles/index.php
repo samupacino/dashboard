@@ -34,6 +34,10 @@
 	<!-- ESTILOS GENERAL-->
 	<link rel="stylesheet" href="css/estilos-iconos-ingles.css?v=<?php echo time();?>">
 	<link rel="stylesheet" href="css/estilos-mensaje-ingles.css?v=<?php echo time();?>">
+	
+	<link rel="stylesheet" href="css/estilos-login-modal-ingles.css?v=<?php echo time();?>">
+	
+	
 <style>
 /* ===== Scroll interno del modal ===== */
 .modal-dialog-scrollable .modal-content {
@@ -60,6 +64,7 @@
 <?php
 
 	include_once'modal-registro-ingles.php';
+	include_once 'modal-ingles.php';
 ?>
 
 
@@ -68,26 +73,31 @@
 
 
 
+<header class="sticky-top bg-light py-3 shadow-sm border-bottom position-relative">
 
+  <!-- Botón Login simple, negro, visible y tamaño mediano -->
+  <button id="btnAbrirLogin"
+          class="btn btn-outline-dark fw-bold px-5 py-2 position-absolute top-0 end-0 m-4"
+          style="z-index: 1200; font-size: 1.5rem;">
+    Login
+  </button>
 
-<!-- Encabezado fijo -->
-<header class="sticky-top bg-light py-3 shadow-sm border-bottom">
   <div class="container text-center">
-
-    <!-- Título -->
     <h2 class="fw-bold text-uppercase text-dark d-inline-block pb-1 mb-2 border-bottom border-3 border-primary">
-      Palabras en Ingles
+      Palabras en Inglés
     </h2>
 
-    <!-- Botón centrado -->
     <div class="mt-2">
-      <a href="/dashboard" class="btn btn-outline-success px-4 py-2 rounded-4 fw-bold text-uppercase shadow-sm border-2">
+      <a href="/dashboard"
+         class="btn btn-outline-success px-4 py-2 rounded-4 fw-bold text-uppercase shadow-sm border-2">
         <i class="fa-solid fa-circle-info me-2"></i> Retornar al Dashboard
       </a>
     </div>
-
   </div>
+
 </header>
+
+
 
 
 <!-- Contenido principal -->
@@ -102,7 +112,7 @@
       	<button class="btn btn-primary"  id="abrirModal" onclick="">
         <i class="bi bi-plus-circle"></i> Registrar TAG
       </button>
-      <button id="recargarTablaINGLES" class="btn btn-outline-secondary" onclick="recargar_table_ingles()">
+      <button id="recargarTablaINGLES" class="btn btn-outline-secondary" onclick="App.ingles.reload()">
         <i class="bi bi-arrow-clockwise"></i> Recargar
       </button>
     </div>
@@ -140,6 +150,7 @@ trabajar con bootstrap.bundle.min.js
 -->
 <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 
+<script src="/js/javascript-login-modal-ingles.js?v=<?php echo time();?>"></script>
 <script src="/js/ingles_datatable.js?v=<?php echo time();?>"></script>
 <script src="/js/script-ingles-registro-editar.js?v=<?php echo time();?>"></script>
 <script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script> 

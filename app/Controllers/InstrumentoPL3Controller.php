@@ -45,7 +45,7 @@ class InstrumentoPL3Controller{
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado para registrar', 403);
         }
 
         try {
@@ -81,7 +81,7 @@ class InstrumentoPL3Controller{
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::error('No autorizado', 403);
+            return Response::unauthorized('No autorizado para eliminar', 403);
         }
 
         try {
@@ -101,7 +101,7 @@ class InstrumentoPL3Controller{
         $this->verificarSesion();
 
         if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado', 403);
+            return Response::unauthorized('No autorizado para actualizar', 403);
         }
 
             

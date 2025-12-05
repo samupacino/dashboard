@@ -1,3 +1,10 @@
+
+(function () {
+  'use strict';
+  /******************************************************
+   * HELPERS DE FORMATO
+   ******************************************************/
+
 const formatDate = (s) => {
   if (!s) return '';
   const d = new Date(s);
@@ -26,27 +33,29 @@ function levelBadge(lvl) {
 }
 
 
+  const TABLE_KEY = 'datatable_ingles';  // clave para window.dataTables
 
+  // Aseguramos el “registro global” de DataTables
+  window.dataTables = window.dataTables || {};
 
-
-load_ingles_init();	
+  /******************************************************
+   * FUNCIÓN PRINCIPAL: INICIALIZAR DATATABLE
+   ******************************************************/
+	
 function load_ingles_init() {                                   // [APP] Tu función para inicializar la tabla
   
   	const tabla = document.getElementById('ingles');
 	
 	if (!tabla) {                                                  // [DOM] Verifica si existe
-		console.warn('Tabla #usuario no encontrada en el DOM');      // [DOM] Mensaje en consola si no existe
-		console.log("de fuera en init");
+		console.warn('Tabla #ingles no encontrada en el DOM');      // [DOM] Mensaje en consola si no existe
+		
 		return;                                                      // [DOM] Sale de la función
 	}
 
-
-	window.dataTables = window.dataTables || {};
-
-	if (window.dataTables['datatable_ingles']?.destroy instanceof Function) {
-		console.log("nuevo ingreso datatable");
-    	window.dataTables['datatable_ingles'].destroy();
-    	delete window.dataTables['datatable_ingles'];
+	if (window.dataTables[TABLE_KEY]?.destroy instanceof Function) {
+		console.log('[INGLES] Destruyendo instancia previa de DataTable');
+    	window.dataTables[TABLE_KEY].destroy();
+    	delete window.dataTables[TABLE_KEY];
 	}
 
 	// === CREAR INSTANCIA DATATABLE ===
@@ -137,18 +146,25 @@ function load_ingles_init() {                                   // [APP] Tu func
 					status: response.status,                             // [APP] Código HTTP (400, 401, 500, etc.)
 					body: JSON.parse(response.responseText)              // [APP] Convertimos body en objeto JS
 				};
-	
-			if (resultado.status === 401 && resultado.body?.status === 'unauthorized') {
-			
-				////loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 				
-				return;                                              // [APP] Evitamos ejecutar alert después
-			}
-
-			mostrarMensajeEnDataTableINGLES(resultado.body?.mensaje || 'Error desconocido','error',7000);
+				console.log(resultado);
+	
+				if (resultado.status === 401 && resultado.body?.status === 'session_expired') {
+					
+					actualizarBotonLogin(false);
+					
+				} else if (resultado.status === 403 && resultado.body?.status === 'unauthorized'){
+					
+					
+				}
+				
+				
+				
+				mostrarMensajeEnDataTableINGLES(resultado.body?.mensaje || 'Error desconocido','error',7000);
+				
 			
 			} catch (e) {
-				//console.error('Error parseando JSON de error:', e);    // [APP] Log de error si JSON no es válido
+				console.error(e);    // [APP] Log de error si JSON no es válido
 				mostrarMensajeEnDataTableINGLES('Error parseando JSON de error: ', e,'error',7000);
 				
 			}
@@ -232,15 +248,13 @@ function load_ingles_init() {                                   // [APP] Tu func
 	});
 
 	//Guardar esta instancia bajo el nombre del módulo 'datatable_t155'
-  	window.dataTables['datatable_ingles'] = datatable_ingles;
+  	window.dataTables[TABLE_KEY] = datatable_ingles;
   	
 	const tbody = tabla.querySelector('tbody');                    // [DOM] Seleccionamos <tbody> de la tabla
-
+	
+	if(tbody){
 	tbody.addEventListener('click', function (e) {                 // [DOM] Escuchamos clicks en todo el tbody
 		
-		
-
-
 		const boton = e.target.closest('i');                    // [DOM] Detectamos si clic fue en botón
 		if (!boton) return;                                          // [DOM] Si no es botón → salir
 
@@ -264,65 +278,53 @@ function load_ingles_init() {                                   // [APP] Tu func
 		}
 
 
-	});
-	
+		});
+	}
+	onClickEliminar_confirmar_ingles();
 }
 
 function onClickEditarINGLES(fila, boton, tr, rowApi){
 	
-	abrirModalEditar(fila);
+	// abrirModalEditar viene de tu módulo del modal EnVocab
+    if (typeof abrirModalEditar === 'function') {
+      abrirModalEditar(fila);
+    } else {
+      console.warn('[INGLES] abrirModalEditar no está definido');
+    }
 }
 
 
-/*document.addEventListener('DOMContentLoaded', () => {
-  const modalEl = document.getElementById('modalEnVocab');
-  const formEl  = document.getElementById('form-en-vocab');
-  const btnCancel = document.getElementById('btnCancelEnVocab');
-
-  // Utilidad: limpia el formulario “bonito”
-  function resetFormVisual(form) {
-    form.reset(); // ← restaura valores iniciales
-    delete form.dataset.isAction;
-    form.classList.remove('was-validated');
-    // Quita clases de validación Bootstrap si las usas
-    form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-		console.log("entre was");
-      el.classList.remove('is-valid', 'is-invalid');
-    });
-    // Limpia resultados de búsqueda del “Opposite” (si existen)
-    const oppList = document.getElementById('opposite_list');
-    if (oppList) oppList.innerHTML = '';
-  }
-
-  // Cancelar = reset + cerrar modal
-  btnCancel.addEventListener('click', () => {
-    resetFormVisual(formEl);
-	
-    // Cierra el modal con la API de Bootstrap 5
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
-  });
-
-  // Opcional: cada vez que se cierra el modal, dejamos el form “prístino”
-  modalEl.addEventListener('hidden.bs.modal', () => {
-    resetFormVisual(formEl);
-   
-    // Si quieres, también asegúrate de limpiar el ID (modo crear)
-    const idInput = document.getElementById('id');
-    if (idInput) idInput.value = '';
-  });
-});*/
 
 function recargar_table_ingles(){
-	if (window.dataTables['datatable_ingles']?.destroy instanceof Function){
-		window.dataTables['datatable_ingles'].ajax.reload();
-	}
+  // 1) window.dataTables existe?
+  // 2) existe la tabla datatable_ingles dentro?
+  const dt = window.dataTables?.['datatable_ingles'];
+
+  // 3) existe datatable_ingles y tiene ajax.reload()?
+  if (dt && typeof dt.ajax?.reload === 'function') {
+    dt.ajax.reload(null, false); // Recargar sin resetear página
+  }
 }
 
+  function destroyTable() {
+    const dt = window.dataTables?.[TABLE_KEY];
+    if (dt?.destroy instanceof Function) {
+      dt.destroy();
+      delete window.dataTables[TABLE_KEY];
+      console.log('[INGLES] DataTable destruido manualmente');
+    }
+  }
 
 function onClickEliminarINGLES(fila, boton, tr, rowApi){
 
 	var eliminar = document.querySelector('#modal_eliminar_ingles');
+	
+	if (!eliminar) {
+      console.warn('[INGLES] Modal #modal_eliminar_ingles no encontrado');
+      return;
+    }
+    
+    
 	var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
 		backdrop: 'static'
 	});
@@ -334,13 +336,15 @@ function onClickEliminarINGLES(fila, boton, tr, rowApi){
 
 
 }
-onClickEliminar_confirmar_ingles();
-function onClickEliminar_confirmar_ingles() {
 
+
+function onClickEliminar_confirmar_ingles() {
+//modal_eliminar_ingles_confirmar
 	var eliminar = document.querySelector('#modal_eliminar_ingles');
+	if (!eliminar) return;
 	eliminar.querySelector('#modal_eliminar_ingles_confirmar').addEventListener('click',function(){
 		
-		
+	
 		var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
 			backdrop: 'static'
 		});
@@ -348,9 +352,7 @@ function onClickEliminar_confirmar_ingles() {
 		
 		var id = eliminar.querySelector('.modal-body').dataset.idDelete;
 
-		
-		
-	
+
 
 		/*
 		===============================================
@@ -427,18 +429,24 @@ function onClickEliminar_confirmar_ingles() {
 		.catch(err => {
 
 			//console.log(err.status);
-			//console.log(err.body);
+			console.log(err);
 				
 			modal_eliminar.hide();
 			
-			if (err.status === 401 && err.body?.status === 'session_expired') {
-				
-				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
-					
 		
-			} else if (err.status === 401 && err.body?.status === 'unauthorized'){
-				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Operación realizada correctamente",'error',7000);
-				//mostrarErrorPL3(err.body.mensaje);
+			
+			if (err.status === 401 && err.body?.status === 'session_expired') {
+				console.log("desde linea 437");
+				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
+					actualizarBotonLogin(false);
+				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
+				
+		
+			} else if (err.status === 403 && err.body?.status === 'unauthorized'){
+				console.log("desde linea 443");
+				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Operación realizada correctamente",'error',7000);
+				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
+
 				
 			} else {
 
@@ -453,7 +461,7 @@ function onClickEliminar_confirmar_ingles() {
 			//   b) Errores de red reales (servidor caído, CORS, etc.)
 			if (err.body) {
 			
-				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Error en la operación",'error',7000);
+				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Error en la operación",'error',7000);
 
 				//console.error(`❌ Error HTTP ${err.status}:`, err.body);
 				//loginModal.style.display = 'flex'; 
@@ -464,7 +472,7 @@ function onClickEliminar_confirmar_ingles() {
 	});
 
 }
-
+		
 
 function mostrarMensajeEnDataTableINGLES(texto, tipo = "success",time = 2000) {
   const mensaje = document.getElementById("mensajeTablaINGLES");
@@ -479,7 +487,53 @@ function mostrarMensajeEnDataTableINGLES(texto, tipo = "success",time = 2000) {
 }
 
 
+  /******************************************************
+   * EXPONER MÓDULO GLOBAL
+   **/
+  window.App = window.App || {};
+  App.ingles = {
+    init:   load_ingles_init,
+    reload: recargar_table_ingles,
+   	destroy: destroyTable
+  };
+  
+  	  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    App.ingles.init();
+  });
+  
+  
+  
+})();  // fin IIFE
 
+/*******************************************************
+ * NAMESPACE GLOBAL: window.App
+ * -----------------------------------------------------
+ * JavaScript en navegador NO tiene módulos nativos
+ * cuando se usa <script> tradicional. Para evitar:
+ * 
+ *   - variables globales sueltas,
+ *   - colisiones de nombres,
+ *   - dificultad para mantener código,
+ * 
+ * se crea un único objeto global “App” dentro de
+ * window. Dentro colocamos módulos organizados como:
+ * 
+ *   App.ingles.init()
+ *   App.ingles.reload()
+ *   App.dashboard.init()
+ *
+ * Esto es una práctica profesional conocida como
+ * “namespace pattern”, permite:
+ *
+ *  ✔ evitar contaminar window con mil variables sueltas
+ *  ✔ agrupar todo por funcionalidad
+ *  ✔ mantener orden y escalabilidad
+ *  ✔ exponer solo lo necesario al ámbito global
+ *
+ * Si App ya existe, se reutiliza; si no, se crea:
+ *     window.App = window.App || {};
+ *******************************************************/
 
 
 /* ==========================================================================

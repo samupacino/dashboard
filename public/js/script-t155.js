@@ -2,7 +2,9 @@
 
 
 function cargar_t155_init(){
-	login_obligado();
+	
+	
+	//login_obligado();
 	load_t155();
 	editar_t155_init();
 	registro_t155_init();

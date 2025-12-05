@@ -60,7 +60,7 @@
   
   <?php
   include_once'barra-menu.php';
-    //include_once'modal-requerido-login.php';
+  include_once'modal-requerido-login.php';
    
   ?>
 

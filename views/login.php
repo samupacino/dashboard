@@ -85,10 +85,10 @@
     <h1>== LOGIN ==</h1>
     <form action="" method="post" id="loginForm">
       <label for="username">Usuario</label>
-      <input type="text" id="username" name="username"  value="samuel" required />
+      <input type="text" id="username" name="username"  value="" required />
 
       <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" value="12345" required />
+      <input type="password" id="password" name="password" value="" required />
     
       <input type="submit" value="Iniciar sesión" />
     </form>

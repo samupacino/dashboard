@@ -83,6 +83,14 @@ setInterval(() => {
 
 
 
+function abrir_modal_login(){
+	
+
+	loginModal.style.display = 'flex'; 	
+}
+
+
+login_obligado();
 function login_obligado(){
 
     const loginModal = document.getElementById('loginModal');
@@ -97,7 +105,8 @@ function login_obligado(){
       const data = Object.fromEntries(formData.entries());
       console.log(data);
 
-   
+   	
+ 
           fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

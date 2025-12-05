@@ -1,80 +1,186 @@
 // ====================================================================
 //  Modal EnVocab – Manejo de registro y edición en un solo modal
-//  Samuel Luján – Código profesional, limpio y mantenible
+//  Samuel Luján – Código modular, limpio y mantenible
 // ====================================================================
 
-// Referencias directas a elementos del DOM (se cargan cuando el DOM está listo)
-//const form      = document.getElementById('form-en-vocab');
-document.addEventListener('DOMContentLoaded', () => {
-	
+(function () {
+
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', () => {
+
     // ----------------------------------------------------------------
-    // Referencias al formulario y al modal
+    // Referencias al DOM
     // ----------------------------------------------------------------
     const modalEl   = document.getElementById('modalEnVocab');
     const form      = document.getElementById('form-en-vocab');
     const btnCancel = document.getElementById('btnCancelEnVocab');
+    const btnAbrir  = document.getElementById('abrirModal'); // botón “NUEVO” (si existe)
 
-	
-	
-    // Instancia del modal Bootstrap
+    if (!modalEl || !form) {
+      // Si esta vista no tiene el modal, salimos sin romper nada
+      return;
+    }
+
+    // Instancia única del modal Bootstrap
     const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
 
+    // Campo de búsqueda de opuestos (solo se usará en edición)
+    const inputBusquedaOpuesto = document.getElementById('opposite_query');
+
+    // ----------------------------------------------------------------
+    // Función auxiliar: resetear estado del formulario (versión PRO)
+    // ----------------------------------------------------------------
+    function resetFormState() {
+      // 1) Reset de valores
+      form.reset();
+
+      // 2) Quitar estado de validación de Bootstrap
+      form.classList.remove('was-validated');
+
+      // 3) Quitar clases is-valid / is-invalid de todos los controles
+      form
+        .querySelectorAll('.is-valid, .is-invalid')
+        .forEach(el => {
+          el.classList.remove('is-valid', 'is-invalid');
+        });
+
+      // 4) Acción y metadatos del formulario
+      form.action = '#';
+      form.id.value = '';
+
+      delete form.dataset.mode;
+      delete form.dataset.method;
+
+      // 5) (Opcional) devolver textos de created/updated
+      const createdAt = form.elements['created_at'];
+      const updatedAt = form.elements['updated_at'];
+
+      if (createdAt) createdAt.value = '(auto)';
+      if (updatedAt) updatedAt.value = '(auto)';
+
+      // 6) Limpiar campo de búsqueda de opuestos
+      if (inputBusquedaOpuesto) {
+        inputBusquedaOpuesto.value = '';
+      }
+    }
 
     // ----------------------------------------------------------------
     // Función: Abrir modal para registrar nuevo vocabulario
     // ----------------------------------------------------------------
-    window.abrirModalNuevo = 	function abrirModalNuevo() {
+    function abrirModalNuevo() {
+      resetFormState();
 
-        // Limpia completamente el formulario
-        form.reset();
+      // Modo creación
+      form.dataset.mode   = 'create';
+      form.action         = '/api/ingles/registro';
+      form.dataset.method = 'POST';
 
-        // Se asegura de que el campo ID esté vacío
-        form.id.value = "";
+      // Título y botón
+      const label = document.getElementById('modalEnVocabLabel');
+      if (label) {
+        label.textContent = 'Registrar palabra / expresión';
+      }
 
-        // Define el modo del formulario
-        form.dataset.mode = "create";
+      const botonSubmit = form.querySelector('button[type="submit"]');
+      if (botonSubmit) {
+        botonSubmit.textContent = 'GUARDAR';
+      }
 
-        // Define al endpoint para registro
-        form.action = "/api/ingles/registro";
-        form.dataset.method = "POST";
-
-        // Ajusta el título y el texto del botón
-        document.getElementById('modalEnVocabLabel').textContent = "Registrar palabra / expresión";
-        form.querySelector('button[type="submit"]').textContent = "GUARDAR";
-
-        // Abre el modal
-        modalInstance.show();
-    };
-    document.getElementById('abrirModal').addEventListener('click', abrirModalNuevo);
-
-    // ----------------------------------------------------------------
-    // Botón Cancelar – Limpia el formulario y cierra el modal
-    // ----------------------------------------------------------------
-    btnCancel.addEventListener('click', () => {
-        form.reset();                    // limpiar campos
-        form.classList.remove('was-validated'); // limpiar estado visual
-        modalInstance.hide();            // cerrar modal
-    });
-
-
+      // Mostrar modal
+      modalInstance.show();
+    }
 
     // ----------------------------------------------------------------
-    // Limpieza automática al cerrar el modal (opcional, buena práctica)
+    // Función: Abrir modal para editar un registro existente
+    //   data = objeto con los campos de la fila seleccionada (JSON)
     // ----------------------------------------------------------------
+    function abrirModalEditar(data) {
+      if (!data || typeof data !== 'object') {
+        console.warn('[ModalEnVocab] Datos inválidos para edición:', data);
+        return;
+      }
+
+      resetFormState();
+
+      // Modo edición
+      form.dataset.mode   = 'edit';
+      form.action         = '/api/ingles/actualizar';
+      form.dataset.method = 'PUT';
+
+      // Cargar datos en los campos (name = campo DB)
+      form.id.value            = data.id;
+      form.english.value       = data.english ?? '';
+      form.pronunciation.value = data.pronunciation ?? '';
+      form.spanish.value       = data.spanish ?? '';
+      form.pos.value           = data.pos ?? '';
+      form.level.value         = data.level ?? '';
+      form.example_en.value    = data.example_en ?? '';
+      form.example_es.value    = data.example_es ?? '';
+      form.notes.value         = data.notes ?? '';
+      form.opposite_id.value   = data.opposite_id ?? '';
+      form.source.value        = data.source ?? '';
+      form.created_at.value    = data.created_at ?? '(auto)';
+      form.updated_at.value    = data.updated_at ?? '(auto)';
+
+      if (inputBusquedaOpuesto) {
+        inputBusquedaOpuesto.value = data.opposite ?? '';
+      }
+
+      // Título y botón
+      const label = document.getElementById('modalEnVocabLabel');
+      if (label) {
+        label.textContent = 'Editar palabra / expresión';
+      }
+
+      const botonSubmit = form.querySelector('button[type="submit"]');
+      if (botonSubmit) {
+        botonSubmit.textContent = 'ACTUALIZAR';
+      }
+
+      // Mostrar modal
+      modalInstance.show();
+    }
+
+    // ----------------------------------------------------------------
+    // Eventos de botones y modal
+    // ----------------------------------------------------------------
+
+    // Botón “Nuevo” (si existe en esta vista)
+    if (btnAbrir) {
+      btnAbrir.addEventListener('click', abrirModalNuevo);
+    }
+
+    // Botón Cancelar
+    if (btnCancel) {
+      btnCancel.addEventListener('click', () => {
+        resetFormState();
+        modalInstance.hide();
+      });
+    }
+
+    // Limpieza automática al cerrar el modal
     modalEl.addEventListener('hidden.bs.modal', () => {
-		
-	
-        form.reset();
-        form.classList.remove('was-validated');
-        form.action = "#";
-        form.id.value = "";
-      
-        delete form.dataset.mode;
-        delete form.dataset.method;
- 
+      resetFormState();
     });
 
-});
+    // ----------------------------------------------------------------
+    // Exponer funciones globalmente para otros scripts (DataTable, etc.)
+    // ----------------------------------------------------------------
+    window.abrirModalNuevo        = abrirModalNuevo;
+    window.abrirModalEditar       = abrirModalEditar;
+    window.resetFormularioEnVocab = resetFormState; // ← AQUÍ tu función global “pro”
+
+  });
+
+})();
+
+
+
+
+
+
+
 
 
    // ----------------------------------------------------------------
@@ -118,52 +224,6 @@ tbody.addEventListener('click', function (e) {
 });
 
 
-function abrirModalEditar(data) {
-	
-	const form      = document.getElementById('form-en-vocab');
-	const modalEl   = document.getElementById('modalEnVocab');
-	const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-	
-	var inputBusquedaOpuesto   = document.getElementById('opposite_query');  // Input donde escribes el inglés a buscar
-
-		
-    // Limpia el formulario antes de cargar datos
-    form.reset();
-
-		
-    // Modo edición
-    form.dataset.mode = "edit";
-
-    // Endpoint para actualizar
-    form.action = "/api/ingles/actualizar";
-    form.dataset.method = "PUT";
-		
-     // Cargar valores en los campos del formulario
-        //  NOTA: todos los name coinciden con la base de datos
-    form.id.value            = data.id;
-    form.english.value       = data.english;
-    form.pronunciation.value = data.pronunciation ?? "";
-    form.spanish.value       = data.spanish;
-    form.pos.value           = data.pos;
-    form.level.value         = data.level ?? "";
-    form.example_en.value    = data.example_en ?? "";
-    form.example_es.value    = data.example_es ?? "";
-    form.notes.value         = data.notes ?? "";
-    form.opposite_id.value   = data.opposite_id ?? "";
-    form.source.value        = data.source ?? "";
-    form.created_at.value    = data.created_at ?? "(auto)";
-    form.updated_at.value    = data.updated_at ?? "(auto)";
-    
-	inputBusquedaOpuesto.value = data.opposite ?? "";
-	
-	
-        // Ajustar título y botón
-    document.getElementById('modalEnVocabLabel').textContent = "Editar palabra / expresión";
-    form.querySelector('button[type="submit"]').textContent = "ACTUALIZAR";
-
-        // Abre el modal
-    modalInstance.show();
-};
 
 
 /* ============================================================================

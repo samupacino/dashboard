@@ -1,0 +1,163 @@
+  /* ======= HEADER (solo demo) ======= */
+    header.sticky-top {
+      z-index: 1030; /* Por defecto en Bootstrap, lo dejamos claro */
+    }
+
+    /* ======= MODAL LOGIN FULLSCREEN ======= */
+
+    /* Capa de fondo que cubre toda la pantalla */
+    .modalLogin {
+      position: fixed;
+      inset: 0; /* top:0; right:0; bottom:0; left:0 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(0, 255, 150, 0.08), transparent 55%),
+                  rgba(0, 0, 0, 0.85);
+      z-index: 3000;              /* Siempre por encima del header */
+      opacity: 0;                 /* Oculto por defecto */
+      pointer-events: none;       /* No clickeable cuando está oculto */
+      transition: opacity 0.25s ease-in-out;
+      font-family: monospace;
+    }
+
+    /* Cuando se muestra */
+    .modalLogin.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Contenido del modal */
+    .modalLogin .modal-content-login {
+      position: relative;
+      width: 90%;
+      max-width: 420px;
+      padding: 28px 26px 24px;
+      background: rgba(5, 20, 10, 0.96);
+      border: 1px solid #00ff88;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 255, 150, 0.45);
+      color: #e0ffe8;
+      overflow: hidden;
+    }
+
+    /* Efecto de “scanline” sutil */
+    .modalLogin .modal-content-login::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px
+      );
+      background-size: 100% 2px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .modalLogin h2 {
+      position: relative;
+      z-index: 1;
+      font-weight: 700;
+      text-align: center;
+      color: #7bffb3;
+      margin-bottom: 18px;
+      letter-spacing: 0.12em;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .modalLogin h2::before {
+      content: "▌";
+      margin-right: 4px;
+      color: #00ff88;
+    }
+
+    .modalLogin form {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modalLogin label {
+      font-weight: 700;
+      color: #a4ffd0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .modalLogin input[type="text"],
+    .modalLogin input[type="password"] {
+      padding: 9px 10px;
+      border-radius: 6px;
+      border: 1px solid #00c86b;
+      background-color: #050f0a;
+      color: #e4ffe9;
+      font-weight: 600;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .modalLogin input[type="text"]:focus,
+    .modalLogin input[type="password"]:focus {
+      box-shadow: 0 0 0 1px #00ff88;
+    }
+
+    .modalLogin input[type="submit"] {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 999px;
+      border: 1px solid #00ff88;
+      background: linear-gradient(90deg, #00ff88, #00c86b);
+      color: #021309;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease,
+                  filter 0.12s ease;
+    }
+
+    .modalLogin input[type="submit"]:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 14px rgba(0, 255, 136, 0.65);
+      filter: brightness(1.05);
+    }
+
+    .modalLogin #mensajeModal {
+      position: relative;
+      z-index: 1;
+      font-weight: 600;
+      margin-top: 12px;
+      color: #ffeb99;
+      font-size: 0.9rem;
+      min-height: 1.2em;
+      white-space: pre-line;
+    }
+
+    /* Botón de cerrar (X) */
+    .modalLogin .btn-close-modal {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: #7bffb3;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 2;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .modalLogin .btn-close-modal:hover {
+      color: #ffffff;
+    }
+    
+    
+    
+  

@@ -18,14 +18,14 @@
 			
 		private function verificarSesion(){
 			Session::start();
-
+			
 			if (!Session::has('usuario')) {
-				Response::unauthorized('No autenticado');
+				Response::unauthorized('No autenticado INGLES');
 			}
 
 			if (Session::isExpired(1)) {
 				Session::destroy();
-				Response::sessionExpired('Sesión expirada');
+				Response::sessionExpired('Sesión expirada INGLES');
 			}
 
 			Session::renovarTiempo();
@@ -45,6 +45,9 @@
         }
 
 		public function listar(){
+			
+			$this->verificarSesion();
+			
 			try{
 				
 				$ingles = new InglesModel();
@@ -64,6 +67,7 @@
 		}
         public function guardar(){
 		
+			$this->verificarSesion();
 			
 			try{
 			
@@ -177,9 +181,9 @@
 			
 			$this->verificarSesion();
 
-			if (!Session::isAdmin()) {
+			/*if (!Session::isAdmin()) {
 				return Response::unauthorized('No autorizado', 403);
-			}
+			}*/
 
 			try{
 			
@@ -301,9 +305,9 @@
 			
 			$this->verificarSesion();
 
-			if (!Session::isAdmin()) {
+			/*if (!Session::isAdmin()) {
 				return Response::unauthorized('No autorizado', 403);
-			}
+			}*/
 
 			try {
 				

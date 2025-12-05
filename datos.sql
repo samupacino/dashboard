@@ -180,3 +180,4 @@ UPDATE en_vocab v JOIN en_vocab o ON o.english = 'See her'
   SET v.opposite_id = o.id WHERE v.english = 'See him';
 UPDATE en_vocab v JOIN en_vocab o ON o.english = 'See him'
   SET v.opposite_id = o.id WHERE v.english = 'See her';
+

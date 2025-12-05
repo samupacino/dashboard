@@ -5,7 +5,7 @@
    include_once'modal-editar-pl3.php';
    //include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
 
-   include_once ROOT.'/views/layouts/modal-requerido-login.php';
+   //include_once ROOT.'/views/layouts/modal-requerido-login.php';
    
 ?>
 <!-- Encabezado fijo -->

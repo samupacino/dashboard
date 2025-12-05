@@ -1,7 +1,7 @@
 
 <?php
-  include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
-  include_once ROOT.'/views/layouts/modal-requerido-login.php';
+  //include_once ROOT.'/views/modal/modal-mensaje-servidor.php';
+  //include_once ROOT.'/views/layouts/modal-requerido-login.php';
   include_once ROOT.'/views/instrumento_t155/modal-eliminar.php';
   include_once'modal-registro-t155.php';
   include_once'moda-editar-t155.php';
