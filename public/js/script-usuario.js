@@ -180,6 +180,24 @@ function registro_usuario() {
 			// Al ser objeto, ya podemos acceder a sus propiedades directo con data.username
 			// y además convertirlo a JSON fácilmente con JSON.stringify
 
+
+
+			/** RESUMEN:
+			 * FormData → entries() → fromEntries → JSON
+			 *
+			 * 1. FormData no es JSON ni un objeto normal.
+			 * 2. formData.entries() devuelve pares [clave, valor].
+			 * 3. Object.fromEntries() transforma esos pares en un objeto JS.
+			 * 4. JSON.stringify() convierte ese objeto en JSON válido para enviar via fetch.
+			 * 
+			 * función utilitaria profesional, por ejemplo:
+				* function formDataToJson(form) {
+				  return JSON.stringify(Object.fromEntries(new FormData(form).entries()));
+				}
+				
+				
+			 */
+
 			fetch('/usuarios', {
 				method: 'POST',
 				headers: {

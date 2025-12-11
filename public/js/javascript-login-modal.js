@@ -110,7 +110,7 @@ function login_obligado(){
           fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'same-origin', 
+            //credentials: 'same-origin', 
             body: JSON.stringify(data)
           })
           .then(function(response) {

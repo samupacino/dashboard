@@ -114,7 +114,7 @@
           fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include', 
+            //credentials: 'same-origin', 
             body: JSON.stringify(data)
         
           })
@@ -124,7 +124,8 @@
               //console.log(json);
               if (response.ok && json.status === 'success') {
                 //document.getElementById('message').textContent = json.usuario;
-                window.location.href = '/dashboard';
+                console.log(json);
+                //window.location.href = '/dashboard';
               } else {
                 document.getElementById('message').textContent = json.mensaje;
               }

@@ -14,7 +14,7 @@ function cerrar_sesion(){
 			.then(res => {
 			if (res.status === 'logout') {
 				//alert(res.mensaje || 'Sesión cerrada');
-				window.location.href = '/'; // 🔁 Redirección automática
+				window.location.href = '/'; //  Redirección automática
 			} else {
 				mostrarErrorGENERAL('Respuesta inesperada al cerrar sesión');
 			}
@@ -56,7 +56,7 @@ cerrar_sesion();
 			}
 		})
 		.then(resultado=>{
-			console.log(resultado.body.data);
+			console.log(resultado.body.damostrarErrorGENERALta);
 			  // Todo OK → redirigimos desde el navegador
 			if (resultado.body.status === 'success' && resultado.body.data && resultado.body.data.redirect) {
 				window.location.href = resultado.body.data.redirect
