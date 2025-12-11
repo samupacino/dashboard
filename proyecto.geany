@@ -28,7 +28,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=46
+current_page=54
 FILE_NAME_0=451;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fapp%2FControllers%2FInglesController.php;0;4
 FILE_NAME_1=921;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fapp%2FModels%2FInglesModel.php;0;4
 FILE_NAME_2=5765;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fapp%2FCore%2FDatatableIngles.php;0;4
@@ -75,7 +75,7 @@ FILE_NAME_42=32;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Finstrumento
 FILE_NAME_43=37;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Finstrumento_t155%2Fmodal-registro-t155.php;0;4
 FILE_NAME_44=569;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Flayouts%2Fmodal-requerido-login.php;0;4
 FILE_NAME_45=11729;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fjs%2Fscript-t155.js;0;4
-FILE_NAME_46=3072;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fjs%2Fjavascript-login-modal.js;0;4
+FILE_NAME_46=2968;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fjs%2Fjavascript-login-modal.js;0;4
 FILE_NAME_47=1550;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Fperfil%2Findex.php;0;4
 FILE_NAME_48=283;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Finstrumento_t155%2Findex.php;0;4
 FILE_NAME_49=2383;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fapp%2FControllers%2FInstrumentoT155Controller.php;0;4
@@ -83,7 +83,7 @@ FILE_NAME_50=1462;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fj
 FILE_NAME_51=274;CSS;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fcss%2Festilos-login-modal.css;0;4
 FILE_NAME_52=641;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Fingles%2Fmodal-ingles.php;0;4
 FILE_NAME_53=3118;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fjs%2Fjavascript-login-modal-ingles.js;0;4
-FILE_NAME_54=2646;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Flogin.php;0;4
+FILE_NAME_54=3060;PHP;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fviews%2Flogin.php;0;4
 FILE_NAME_55=141;None;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2F.htaccess;0;4
 FILE_NAME_56=325;None;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2F.htaccess;0;4
 FILE_NAME_57=9556;Javascript;0;EUTF-8;1;1;0;%2Fvar%2Fwww%2Fproyecto%2Fpublic%2Fjs%2Fscript-pl3.js;0;4

@@ -125,7 +125,7 @@
               if (response.ok && json.status === 'success') {
                 //document.getElementById('message').textContent = json.usuario;
                 console.log(json);
-                //window.location.href = '/dashboard';
+                window.location.href = '/dashboard';
               } else {
                 document.getElementById('message').textContent = json.mensaje;
               }
