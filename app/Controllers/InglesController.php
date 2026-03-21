@@ -23,7 +23,7 @@
 				Response::unauthorized('No autenticado INGLES');
 			}
 
-			if (Session::isExpired(1)) {
+			if (Session::isExpired()) {
 				Session::destroy();
 				Response::sessionExpired('Sesión expirada INGLES');
 			}
@@ -34,6 +34,7 @@
 
         public function search(){
 			
+
 			//echo json_encode(['samuel'=>1]);
 			//return;
 			
@@ -46,16 +47,19 @@
 
 		public function listar(){
 			
-			$this->verificarSesion();
+			
+			
+			//$this->verificarSesion();
 			
 			try{
 				
 				$ingles = new InglesModel();
 				
-				//Response::error("SIMULANDO DESDE BACKEND SAMUEL",200);
+				Response::json($ingles->datatable());
 				
 				
-				return Response::json($ingles->datatable());
+			
+				//return Response::json($ingles->datatable());
 				
 			
 			

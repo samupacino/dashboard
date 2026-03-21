@@ -90,6 +90,26 @@
       // Mostrar modal
       modalInstance.show();
     }
+    
+    function abrirModalNuevoREPEAT() {
+      resetFormState();
+
+      // Modo creación
+      form.dataset.mode   = 'create';
+      form.action         = '/api/ingles/registro';
+      form.dataset.method = 'POST';
+
+      // Título y botón
+      const label = document.getElementById('modalEnVocabLabel');
+      if (label) {
+        label.textContent = 'Registrar palabra / expresión';
+      }
+
+      const botonSubmit = form.querySelector('button[type="submit"]');
+      if (botonSubmit) {
+        botonSubmit.textContent = 'GUARDAR';
+      }
+    }
 
     // ----------------------------------------------------------------
     // Función: Abrir modal para editar un registro existente
@@ -167,9 +187,15 @@
     // ----------------------------------------------------------------
     // Exponer funciones globalmente para otros scripts (DataTable, etc.)
     // ----------------------------------------------------------------
-    window.abrirModalNuevo        = abrirModalNuevo;
-    window.abrirModalEditar       = abrirModalEditar;
-    window.resetFormularioEnVocab = resetFormState; // ← AQUÍ tu función global “pro”
+    
+    window.App = window.App || {};
+
+  	App.modal = App.modal || {};
+  	
+    App.modal.abrirModalNuevo        = abrirModalNuevo;
+    App.modal.abrirModalREPEAT		  = abrirModalNuevoREPEAT;
+    App.modal.abrirModalEditar       = abrirModalEditar;
+    App.modal.resetFormularioEnVocab = resetFormState; // ← AQUÍ tu función global “pro”
 
   });
 

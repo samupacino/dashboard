@@ -39,23 +39,28 @@ class Response
         http_response_code($status);
 
         if (!headers_sent()) {
-            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Type: application/json; charset=utf-8',TRUE);
         }
 
+        $json = json_encode(
+            $data,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE
+        );
 
-        
-
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
+     
 
         if ($json === false) {
             http_response_code(500);
             echo json_encode([
-                'error' => 'Error al codificar JSON',
-                'detalle' => json_last_error_msg()
-            ]);
-            if ($exit) exit;
-        }
+                'status'  => 'error',
+                'mensaje' => 'Error al codificar JSON',
+                'data'    => ['detalle' => json_last_error_msg()],
+            ], JSON_UNESCAPED_UNICODE);
 
+            if ($exit) exit;
+            return;
+        }
+        
         echo $json;
 
         if ($exit) exit;

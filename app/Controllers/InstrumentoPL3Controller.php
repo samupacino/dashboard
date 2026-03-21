@@ -16,7 +16,7 @@ class InstrumentoPL3Controller{
             Response::unauthorized('No autenticado');
         }
 
-        if (Session::isExpired(1)) {
+        if (Session::isExpired()) {
             Session::destroy();
             Response::sessionExpired('Sesión expirada');
         }

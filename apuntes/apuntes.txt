@@ -1,0 +1,15 @@
+✅ Forma correcta y precisa (recomendada)
+🔹 Versión técnica clara
+
+La aplicación HTTP genera el mensaje, y la capa de transporte TCP se encarga de segmentarlo, garantizar 
+su entrega confiable y transportarlo hacia el destino.
+
+🔹 Versión aún más exacta (nivel ingeniería)
+
+HTTP es un protocolo de la capa de aplicación que define el formato y significado de los mensajes, mientras 
+que TCP, en la capa de transporte, se encarga de cómo esos datos son enviados: segmentación, control de 
+flujo, confiabilidad y orden.
+
+🔹 Versión corta para memorizar
+
+HTTP define qué se envía; TCP define cómo se envía.

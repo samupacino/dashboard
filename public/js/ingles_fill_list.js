@@ -8,7 +8,6 @@
  ******************************************************/
 
 
-
 // Endpoint del backend para buscar por texto (GET ?q=...)
 var API_SEARCH_URL = '/api/ingles/search';
 
@@ -495,26 +494,21 @@ function manejadorSeleccionarEnLista() {
 			
 		  envio_data(url,objetoPlano,method);
 		 
-	   
-		  
+  
 		});
 	  
 	  
 	  
 	  }
 	  
- 
 
 
 function envio_data(url,data,metodo){
 	
-	   console.log(url);
-      
+	   
+      console.log(url);
       console.log(metodo);
     
-   
-     
-
 		fetch(url, {
 			method: metodo,
 			headers: {
@@ -540,38 +534,36 @@ function envio_data(url,data,metodo){
 				}
 		})
 		.then(resultado => {
-			console.log(resultado);
-			
-			//modalRegistro.hide();
+	
 			App.ingles.reload();
-			mostrarMensajeModal(resultado.body.mensaje);
-			resetFormularioEnVocab();
-
-        	// Se asegura de que el campo ID esté vacío
-        	//form.id.value = "";
+					
+			App.ui.mensaje_modal_registro(resultado.body.mensaje);
 			
-
+			if(url.includes('registro')){
+				App.modal.abrirModalREPEAT();
+			}else{
+				App.modal.resetFormularioEnVocab();
+			}
+			
 		})
 		.catch(err => {
-			
 			
 			//resetFormularioEnVocab();
 			
 			if (err.status === 401 && err.body?.status === 'session_expired') {
 				actualizarBotonLogin(false);
 				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
-				mostrarMensajeModal(err.body.mensaje,'error');
+				App.ui.mensaje_modal_registro(err.body.mensaje,'error');
 		
 			} else if (err.status === 403 && err.body?.status === 'unauthorized'){
 			
 				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Operación realizada correctamente",'error',7000);
-				mostrarMensajeModal(err.body.mensaje,'error');
+				App.ui.mensaje_modal_registro(err.body.mensaje,'error');
 				
 			} else {
 
-				//console.error("❌ Error de red:", err);
-				//mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
-				mostrarMensajeModal(err.body.mensaje,'error');
+		
+				App.ui.mensaje_modal_registro(err.body?.mensaje || "No se pudo conectar con el servidor",'error');
 			}
 			
 		});		
@@ -579,42 +571,6 @@ function envio_data(url,data,metodo){
 	
 
 }
-
-
-
-
-
-
-/**
- * Muestra un mensaje dentro del modal (solo para registrar).
- *
- * @param {string} texto - El mensaje a mostrar.
- * @param {string} tipo  - Puede ser "success", "error".
- */
-function mostrarMensajeModal(texto, tipo = "success") {
-    const alert = document.getElementById("alertModalEnVocab");
-
-    // Limpia clases anteriores
-    alert.className = "alert text-center";
-
-    // Aplica clase según tipo
-    alert.classList.add(
-        tipo === "success" ? "alert-success" : "alert-danger",
-        "p-2",
-        "mb-3"
-    );
-
-    alert.textContent = texto;
-
-    // Muestra el mensaje
-    alert.classList.remove("d-none");
-
-    // Oculta después de 2 segundos
-    setTimeout(() => {
-        alert.classList.add("d-none");
-    }, 5000);
-}
-
 
 
 

@@ -4,6 +4,9 @@
   /******************************************************
    * HELPERS DE FORMATO
    ******************************************************/
+let tableEventsBound = false;
+let modalEventsBound = false;
+
 
 const formatDate = (s) => {
   if (!s) return '';
@@ -43,7 +46,7 @@ function levelBadge(lvl) {
    ******************************************************/
 	
 function load_ingles_init() {                                   // [APP] Tu función para inicializar la tabla
-  
+ 	
   	const tabla = document.getElementById('ingles');
 	
 	if (!tabla) {                                                  // [DOM] Verifica si existe
@@ -87,10 +90,21 @@ function load_ingles_init() {                                   // [APP] Tu func
 		},
 		columnDefs: [
 			
-			
+			/*
+			 ⚠️ Diferencia importante
+				className: 'none'
+					Oculta en fila principal
+					Visible en detalle responsive
+					hidden = true
+					
+				visible: false
+					Oculta completamente
+					NO aparece en detalle
+					hidden = false (no participa)
+			 * */
 			
 			{ targets: 0, visible: false, searchable: false },
-			{ targets: 1, className: 'dtr-control' }, // NOMBRE
+			{ targets: 1, className: 'dtr-control all' }, // NOMBRE
 
 			// Columnas que van al “detalle” al expandir la fila
 			{ targets: 2, className: 'all' }, 
@@ -100,11 +114,11 @@ function load_ingles_init() {                                   // [APP] Tu func
 			{ targets: 6, className: 'none' },
 			{ targets: 7, className: 'none' },
 			{ targets: 8, className: 'none' },
-			{ targets: 9, visible: false, className: 'none' , searchable: true},
+			{ targets: 9, visible: false, searchable: false },
 			{ targets: 10, className: 'none' },
 			{ targets: 11, className: 'none' },
 			{ targets: 12, className: 'none' },
-			{ targets: 13, className: 'none' },
+			{ targets: 13, className: 'none' }
 			
 
 		],
@@ -112,9 +126,9 @@ function load_ingles_init() {                                   // [APP] Tu func
 		
 		
 		
-		destroy:true ,
+		//destroy:true ,
 		processing: true,                                            // [DT] Muestra texto "Procesando..." durante AJAX
-		serverSide: true,                                           // [DT] Paginación y filtros hechos en cliente
+		serverSide: true,                                           // // [DT] Búsqueda, orden y paginación procesados en servidor
 		pageLength: 5,                                               // [DT] Número de filas por página
 		paging: true,                                                // [DT] Activa paginación
 		lengthMenu: [5, 10, 25, 50],                                 // [DT] Opciones para elegir filas por página
@@ -123,14 +137,13 @@ function load_ingles_init() {                                   // [APP] Tu func
 		},
 
 		ajax: {                                                      // [DT] Bloque AJAX de DataTables
-		url: '/api/ingles/listar',                                          // [DT] URL del backend para cargar datos
+			url: '/api/ingles/listar',                                          // [DT] URL del backend para cargar datos
 
-
-		dataSrc: function (json) {  // [DT] Función que transforma la respuesta JSON
+			type: 'POST',
+			dataSrc: function (json) {  // [DT] Función que transforma la respuesta JSON
 			// Solo entra aquí si el servidor respondió 200 OK
 			
-			 
-			 
+			console.log(json);
 			if (Array.isArray(json.data)) { // [APP] Validación de tu contrato de API
 				//alert(json.data);
 				return json.data;                                      // [DT] Devuelve array de datos para pintar filas
@@ -165,7 +178,7 @@ function load_ingles_init() {                                   // [APP] Tu func
 			
 			} catch (e) {
 				console.error(e);    // [APP] Log de error si JSON no es válido
-				mostrarMensajeEnDataTableINGLES('Error parseando JSON de error: ', e,'error',7000);
+				mostrarMensajeEnDataTableINGLES('Error parseando JSON de error: ' + e,'error',7000);
 				
 			}
 		}
@@ -180,7 +193,7 @@ function load_ingles_init() {                                   // [APP] Tu func
 			{data: 'pronunciation', title: 'PRONUNCIATION', render: (v)=> v || ''},
 			{data: 'spanish', title: 'SPANISH', render: (v)=> v || ''},
 			{data: 'pos', title: 'TIPO', render: (v)=> posLabel(v)},
-			{data: 'level', title: 'LEVEL', render: (v)=> posLabel(v)},
+			{data: 'level', title: 'LEVEL', render: (v)=> levelBadge(v)},
 			{data: 'example_en', title: 'EXAMPLE EN', render: (v)=> v || ''},
 			{data: 'example_es', title: 'EXAMPLE ES', render: (v)=> v || ''},
 			{data: 'notes', title: 'NOTES', render: (v)=> v || ''},
@@ -236,11 +249,6 @@ function load_ingles_init() {                                   // [APP] Tu func
 		],
 		
 		
-		
-
-		
-		
-		
 		createdRow: function (row, data, dataIndex) {                // [DT] Callback al crear cada fila
 			//console.log(data);
 			row.dataset.rowId = data.id;                               // [DOM] Insertamos atributo data-row-id en el <tr>
@@ -249,45 +257,103 @@ function load_ingles_init() {                                   // [APP] Tu func
 
 	//Guardar esta instancia bajo el nombre del módulo 'datatable_t155'
   	window.dataTables[TABLE_KEY] = datatable_ingles;
-  	
-	const tbody = tabla.querySelector('tbody');                    // [DOM] Seleccionamos <tbody> de la tabla
-	
-	if(tbody){
-	tbody.addEventListener('click', function (e) {                 // [DOM] Escuchamos clicks en todo el tbody
-		
-		const boton = e.target.closest('i');                    // [DOM] Detectamos si clic fue en botón
-		if (!boton) return;                                          // [DOM] Si no es botón → salir
-
-		const tr = e.target.closest('tr');                           // [DOM]td.control:before {
-
-		if (!tr) return;                                             // [DOM] Seguridad
-	
-		const rowApi = datatable_ingles.row(tr);                            // [DT] Obtenemos instancia row() de DataTables
-
-		const fila = rowApi.data();                                  // [DT] Obtenemos datos JSON de la fila
-	
-		//console.log(fila);
-		if (boton.classList.contains('btn-editar')) {                // [DOM] Si el botón tiene clase editar
-				
-			
-			onClickEditarINGLES(fila, boton, tr, rowApi);                    // [APP] Llamamos a función de negocio editar
-		
-		} else if (boton.classList.contains('btn-eliminar')) {       // [DOM] Si es eliminar
-
-			onClickEliminarINGLES(fila, boton, tr, rowApi);                  // [APP] Llamamos a función de negocio eliminar
-		}
+  	  // 🔥 Bind eventos de tabla SOLO UNA VEZ
+  bindTableEvents(tabla);
 
 
-		});
-	}
-	onClickEliminar_confirmar_ingles();
+  
+  // 🔥 Bind eventos del modal SOLO UNA VEZ
+  bindModalEvents();
+  
+
+
 }
 
+function bindModalEvents() {
+
+  if (modalEventsBound) return;
+  
+
+
+  const eliminar = document.querySelector('#modal_eliminar_ingles');
+  if (!eliminar) return;
+
+  const btnConfirmar = eliminar.querySelector('#modal_eliminar_ingles_confirmar');
+  if (!btnConfirmar) return;
+
+  btnConfirmar.addEventListener('click', function () {
+    onClickEliminar_confirmar_ingles();
+  });
+
+  modalEventsBound = true;
+}
+function bindTableEvents(tabla) {
+	
+
+
+  if (tableEventsBound) return;   // 🧠 evitar duplicados
+
+
+  const tbody = tabla.querySelector('tbody');
+  if (!tbody) return;
+
+  tbody.addEventListener('click', function (e) {
+	  
+
+     	const boton = e.target.closest('i');
+  		if (!boton) return;
+
+		const tr = boton.closest('tr');
+		if (!tr) return;
+
+		const dt = window.dataTables?.[TABLE_KEY];
+		if (!dt) return;
+
+		const rowApi = dt.row(tr);
+		const fila = rowApi.data();
+	   
+		if (!fila) return;
+
+		if (boton.classList.contains('btn-editar')) {
+			
+			onClickEditarINGLES(fila, boton, tr, rowApi);
+			
+		} else if (boton.classList.contains('btn-eliminar')) {
+			
+			onClickEliminarINGLES(fila, boton, tr, rowApi);
+		}
+
+  });
+  
+  tableEventsBound = true;
+
+}
+function onClickEliminarINGLES(fila, boton, tr, rowApi){
+
+	var eliminar = document.querySelector('#modal_eliminar_ingles');
+	
+	if (!eliminar) {
+      console.warn('[INGLES] Modal #modal_eliminar_ingles no encontrado');
+      return;
+    }
+    
+    
+	var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
+		backdrop: 'static'
+	});
+
+	//console.log(fila);
+	eliminar.querySelector('.modal-body').dataset.idDelete = fila.id;
+	eliminar.querySelector('.modal-body').textContent = `¿Seguro que deseas eliminar la palabra ${fila.english}?`;
+	modal_eliminar.show();
+
+
+}
 function onClickEditarINGLES(fila, boton, tr, rowApi){
 	
 	// abrirModalEditar viene de tu módulo del modal EnVocab
-    if (typeof abrirModalEditar === 'function') {
-      abrirModalEditar(fila);
+    if (typeof  App.modal.abrirModalEditar === 'function') {
+       App.modal.abrirModalEditar(fila);
     } else {
       console.warn('[INGLES] abrirModalEditar no está definido');
     }
@@ -306,7 +372,7 @@ function recargar_table_ingles(){
   }
 }
 
-  function destroyTable() {
+function destroyTable() {
     const dt = window.dataTables?.[TABLE_KEY];
     if (dt?.destroy instanceof Function) {
       dt.destroy();
@@ -315,35 +381,12 @@ function recargar_table_ingles(){
     }
   }
 
-function onClickEliminarINGLES(fila, boton, tr, rowApi){
-
-	var eliminar = document.querySelector('#modal_eliminar_ingles');
-	
-	if (!eliminar) {
-      console.warn('[INGLES] Modal #modal_eliminar_ingles no encontrado');
-      return;
-    }
-    
-    
-	var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
-		backdrop: 'static'
-	});
-
-	console.log(fila);
-	eliminar.querySelector('.modal-body').dataset.idDelete = fila.id;
-	eliminar.querySelector('.modal-body').textContent = `¿Seguro que deseas eliminar la palabra ${fila.english}?`;
-	modal_eliminar.show();
-
-
-}
-
 
 function onClickEliminar_confirmar_ingles() {
 //modal_eliminar_ingles_confirmar
 	var eliminar = document.querySelector('#modal_eliminar_ingles');
 	if (!eliminar) return;
-	eliminar.querySelector('#modal_eliminar_ingles_confirmar').addEventListener('click',function(){
-		
+	
 	
 		var modal_eliminar = bootstrap.Modal.getOrCreateInstance(eliminar,{
 			backdrop: 'static'
@@ -351,7 +394,7 @@ function onClickEliminar_confirmar_ingles() {
 
 		
 		var id = eliminar.querySelector('.modal-body').dataset.idDelete;
-
+		if (!id) return;
 
 
 		/*
@@ -421,10 +464,8 @@ function onClickEliminar_confirmar_ingles() {
 			//mostrarSuccess(resultado.body.mensaje || "Operación realizada correctamente");
 			recargar_table_ingles();
 			modal_eliminar.hide();
-			//mostrarMensajeEnDataTableINGLES(resultado.body.mensaje || "Operación realizada correctamente");
-			mostrarMensajeEnDataTableINGLES(resultado.body.mensaje || "Operación realizada correctamente");
-			//mostrarMensajeEnDataTable(resultado.body.mensaje || "Operación realizada correctamente");
-
+		
+			App.ui.mensaje(resultado.body.mensaje || "Operación realizada correctamente");
 		})
 		.catch(err => {
 
@@ -438,7 +479,7 @@ function onClickEliminar_confirmar_ingles() {
 			if (err.status === 401 && err.body?.status === 'session_expired') {
 				console.log("desde linea 437");
 				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
-					actualizarBotonLogin(false);
+				actualizarBotonLogin(false);
 				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
 				
 		
@@ -469,22 +510,10 @@ function onClickEliminar_confirmar_ingles() {
 			} 	
 		});
 
-	});
+	
 
 }
 		
-
-function mostrarMensajeEnDataTableINGLES(texto, tipo = "success",time = 2000) {
-  const mensaje = document.getElementById("mensajeTablaINGLES");
-
-  mensaje.className = tipo;  // success o error
-  mensaje.textContent = texto;
-  mensaje.style.display = "block";
-
-  setTimeout(() => {
-    mensaje.style.display = "none";
-  }, time);
-}
 
 
   /******************************************************

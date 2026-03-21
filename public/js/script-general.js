@@ -1,4 +1,26 @@
+var practica = document.getElementById('ingresar_practica');
+practica.addEventListener('click',function(){
+	fetch("/api/practica",{
+		method: 'GET',
+		headers: {
+			'Accept':'Aplication/json',
+			'SAMUEL' : 'LUJAN'
+		}
+	})
+	.then(response => {
+		
+		//const type = response.headers;
+		const type = response.headers.get('content-type')??'';
+		
+		console.log(type);
 
+		return response.json();
+	})
+	.then(contenido => {
+		console.log(contenido);
+	})
+
+});
 
 function cerrar_sesion(){
 	if(document.getElementById('cerrar_sesion')!==null){
@@ -33,10 +55,11 @@ cerrar_sesion();
 	
 	ingresar_ingles.addEventListener('click',function(){
 		
-		fetch('/ingles',
+		fetch('/ingles/access',
 			{
 				method: 'GET',
 				headers: {
+					'Accept': 'application/json',
 					'X-Requested-With': 'XMLHttpRequest' // MUY IMPORTANTE para detectar AJAX
 				}
 			}
@@ -44,32 +67,75 @@ cerrar_sesion();
 		.then(function(response){
 			
 			
-			const contentType = response.headers.get("content-type");
+			const contentType = response.headers.get("content-type")??'';
 
-			if (contentType && contentType.includes("application/json")) {
-				return response.json().then(body => {
-
-					if (!response.ok) throw { status: response.status, body: body };
-					return { status: response.status, body: body };
-
-				});
+		
+			
+			
+			// Si NO es JSON, igual devolvemos algo para no romper el chain
+			if (!contentType.includes('application/json')) {
+				
+			  	if (!response.ok) {
+			  		throw { 
+							status: response.status, 
+							body: { mensaje: 'Respuesta no válida del servidor.' } 
+						};
+		  		}
+		  		
+			  	return { status: response.status, body: { status: 'error', mensaje: 'Respuesta no válida del servidor.' } };
 			}
+
+			// Si es JSON, lo parseamos y armamos un objeto uniforme
+			return response.json().then(body => {
+				
+			  if (!response.ok){ 
+				  throw { status: response.status, body: body };
+			  }
+			  
+			  return { status: response.status, body: body };
+			});
+			
+			
 		})
 		.then(resultado=>{
-			console.log(resultado.body.damostrarErrorGENERALta);
+		
+			const b = resultado.body;
+			console.log(b);
 			  // Todo OK → redirigimos desde el navegador
-			if (resultado.body.status === 'success' && resultado.body.data && resultado.body.data.redirect) {
-				window.location.href = resultado.body.data.redirect
+			if (b.status === 'success' && b.data?.redirect) {
+
+				window.location.href = b.data.redirect;
+				
+				return;
 			}
+			
+			 mostrarErrorGENERAL(b.mensaje || 'Acción completada sin redirección.');
+			
+			
 		})
 		.catch(error=>{
 			
-		
-			if (error.body.status === 'error' && error.status === 403) {
-				mostrarErrorGENERAL(error.body.mensaje || 'No tienes permisos.');
-				return;
+		 	const body = error?.body || {};
+			const status = error?.status;
+
+			// Sesión expirada
+			if (body.status === 'session_expired' || status === 401) {
+			  mostrarErrorGENERAL(body.mensaje || 'Sesión expirada. Inicie sesión nuevamente.');
+			  //window.location.assign('/login');
+			  return;
 			}
-		})
+
+			// Sin permisos (rol)
+			if (body.status === 'error' && status === 403) {
+			  mostrarErrorGENERAL(body.mensaje || 'No tienes permisos.');
+			  return;
+			}
+
+			// Cualquier otro error
+			mostrarErrorGENERAL(body.mensaje || 'Error.');
+    
+    
+		});
 			
 
 		
@@ -82,7 +148,7 @@ cerrar_sesion();
 	
 	document.addEventListener('click',function(e){
 		
-		//console.log(e.target);	
+		console.log(e.target);	
 	});
 	
 let modalError = null;
@@ -109,9 +175,6 @@ function mostrarSuccessGENERAL(mensaje) {
     document.querySelector('.body_mensaje_success').textContent = mensaje;
     modalSuccess.show();
 }
-
-
-
 
 
 

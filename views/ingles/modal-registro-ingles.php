@@ -1,6 +1,10 @@
 <!-- Modal único: registrar / editar en_vocab -->
+
+
+
 <div class="modal fade" id="modalEnVocab" tabindex="-1" aria-labelledby="modalEnVocabLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
+	  
     <div class="modal-content">
       
       <!-- data-mode: "create" | "edit" se controla desde JS -->
@@ -9,8 +13,9 @@
             novalidate
             method="post"
             action=""
-            data-mode="create">
-
+            data-mode="create">     
+     
+     
         <div class="modal-header">
           <h5 class="modal-title" id="modalEnVocabLabel">Registrar palabra / expresión</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -192,11 +197,17 @@
         </div>
 
 
-	 	<div class="modal-body m-1">
-        	<!-- Mensaje de respuesta (Bootstrap Alerts) -->
-			<div id="alertModalEnVocab" class="alert d-none text-center" role="alert"></div>
 
+	 	<div class="modal-body m-1">
+        	<!-- Mensaje de respuesta (Bootstrap Alerts) alertModalEnVocab -->
+					
+ 			<div id="mensajeREGISTRO_INGLES"
+				 role="alert"
+				 aria-live="polite">
+			</div>
         </div>
+        
+       
 
         <div class="modal-footer">
           <!-- Cancelar: resetea y cierra -->
@@ -209,6 +220,8 @@
             GUARDAR
           </button>
         </div>
+        
+       
       
 
       </form>

@@ -45,9 +45,6 @@
   overflow-y: auto;       /* permite desplazamiento vertical */
   
   
-  
-  
-  
 }
 </style>
         
@@ -121,11 +118,16 @@
 
 
   <!-- Mensaje dinámico -->
-  <div id="mensajeTablaINGLES" class="alert alert-info d-none" role="status" aria-live="polite"></div>
 
+
+<div id="mensajeTablaINGLES"
+     role="status"
+     aria-live="polite"></div>
+     
+     
   <!-- Tabla de datos -->
   <section class="table-responsive"> 
-    <table id="ingles" width="100%" class="responsive nowrap table table-striped table-bordered table-hover align-middle nowrap dt-responsive w-100">
+    <table id="ingles" width="100%" class="responsive table table-striped table-bordered table-hover align-middle nowrap dt-responsive w-100">
       <caption class="caption-top fw-semibold text-secondary">
         Lista actualizada: 
       </caption>
@@ -154,5 +156,5 @@ trabajar con bootstrap.bundle.min.js
 <script src="/js/ingles_datatable.js?v=<?php echo time();?>"></script>
 <script src="/js/script-ingles-registro-editar.js?v=<?php echo time();?>"></script>
 <script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script> 
-	
+<script src="/js/script-mensaje-table-ingles.js?v=<?php echo time();?>"></script> 
 </body>

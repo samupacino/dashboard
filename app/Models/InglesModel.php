@@ -80,24 +80,26 @@
         public function datatable(){
 			
 			
+				
+			
 			
             //$tabla = 'instrumento_pl3 i JOIN plataformas p ON i.plataforma = p.id';
-            //$columnas = ['i.id', 'i.tag', 'i.plataforma','p.ubicacion '];
+            //$columnas = ['i.id' , 'i.tag', 'i.plataforma','p.ubicacion'];
 
 
             /*
                 con variable tabla y columnas se armara lo siguiente:
 
-                SELECT i.id, i.tag, p.nombre FROM instrumento_t155 i J
-                OIN plataformas p ON i.plataforma = p.id
+                SELECT i.id, i.tag, p.nombre FROM instrumento_t155 i 
+                JOIN plataformas p ON i.plataforma = p.id
                 
                 
                 SELECT a.english AS palabra, b.english AS opuesto
-FROM en_vocab a
-LEFT JOIN en_vocab b ON a.opposite_id = b.id;
+				FROM en_vocab a
+				LEFT JOIN en_vocab b ON a.opposite_id = b.id;
 
-select a.id, a.english , a.opposite_id , b.english from en_vocab a 
-left join en_vocab b on a.opposite_id = b.id;
+				select a.id, a.english , a.opposite_id , b.english from en_vocab a 
+				left join en_vocab b on a.opposite_id = b.id;
 
             */
         
@@ -105,7 +107,7 @@ left join en_vocab b on a.opposite_id = b.id;
          
             
             
-            $columnas = [
+            $select_columnas = [
             'a.id',
             'a.english',
             'a.pronunciation',
@@ -123,9 +125,49 @@ left join en_vocab b on a.opposite_id = b.id;
             
             ];
             
-            $dt = new DatatableIngles($this->pdo, $tabla, $columnas);
+            
+    	           
+            
+            // ✅ Búsqueda optimizada (solo columnas útiles, reales, sin alias)
+			$searchCols = [
+			  'a.english as perro',
+			  'a.spanish',
+			  'a.pronunciation',
+			  'a.pos',
+			  'a.level',
+			  'b.english',
+			  'a.source'
+			];
+			
+			
+			$orderCols = [
+		
+			  1  => 'a.english',
+			  2  => 'a.pronunciation',
+			  3  => 'a.spanish',
+			
+			];
+			
+			
+            $dt = new DatatableIngles($this->pdo, $tabla, $select_columnas,'a.id', $searchCols, $orderCols);
 		
           
+          	
+          	
+          	$requestTest = [
+				'draw' => 1,
+				'start' => 0,
+				'length' => 5,
+				'search' => [
+					'value' => ''
+				],
+				'order' => [
+					[
+						'column' => 0,
+						'dir' => 'asc'
+					]
+				]
+			];
             return $dt->procesar();
 /*
 	

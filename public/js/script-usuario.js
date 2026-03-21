@@ -1139,3 +1139,6 @@ Pinta las filas con lo que devuelves desde dataSrc.
 
 ✅ Mientras draw, recordsTotal, recordsFiltered estén en la raíz del JSON, DataTables los procesará automáticamente antes de aplicar dataSrc.
 */
+
+
+

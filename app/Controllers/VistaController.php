@@ -25,47 +25,68 @@ class VistaController
      
     }
     
-	public function ingles(){
+	public function inglesAccess(){
+		
 		Session::start();
 
+		//$http = getallheaders();
+		//Response::json($http['X-Requested-With']);	
+			
 		$esAjax = $this->isAjaxRequest();
-
-		// ====== Validación de sesión / rol ======
-		if (!Session::isAdmin()) {
-			// Si viene por fetch → JSON
-			if ($esAjax) {
-				
-				Response::error('No tienes permisos para ver esta sección.',403);
-				//$this->jsonError(403, 'No tienes permisos para ver esta sección.');
-				//return;
-			}
 		
+		if(!$esAjax){
 			// Si viene por navegación normal → redirigir o mostrar vista 403
 			header('Location: /'); // o /login o /error403
 			exit;
 		}
-
-		// ====== Si ES admin ======
-		if ($esAjax) {
-			// Llamada hecha por fetch → NO renderizamos la vista aquí.
-			// Solo avisamos al front que puede ir a la URL real.
-			Response::success(['redirect' => '/ingles']);
-			//http_response_code(200);
-        	//header('Content-Type: application/json');
-        	//echo json_encode(['redirect' => '/ingles']);
+		
+		if(Session::isExpired()){
 			
-			return;
+			Response::sessionExpired();
+			
+		}
+		// ====== Validación de sesión / rol ======
+		if (!Session::isAdmin()) {
+			// Si viene por fetch → JSON : 
+			Response::unauthorized('No tienes permisos para ver esta sección.');
+		
 		}
 
-		// Navegación normal (no AJAX): renderizar vista directamente
-		
-		require_once ROOT . '/views/ingles/index.php';
+		Response::success(['redirect' => '/ingles']);
+
 	}
 	
 	protected function isAjaxRequest(): bool
 	{
-		return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-			&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+		$accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    	$xhr = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+
+    	return str_contains($accept, 'application/json')
+        	|| strtolower($xhr) === 'xmlhttprequest';
+		
+	}
+	
+	public function ingles(){
+		
+		
+		Session::start();
+		
+        if (Session::isExpired()) {
+            Session::destroy();
+            header('Location: /login');
+            exit;
+        }
+        
+        if (!Session::isAdmin()) {
+			
+			Session::destroy();
+            header('Location: /');
+            exit;
+		
+		}
+		
+		require_once ROOT . '/views/ingles/index.php';
+		
 	}
 
 

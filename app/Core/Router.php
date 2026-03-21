@@ -87,15 +87,21 @@ class Router {
         $this->add('GET','/', 'app\\Controllers\\VistaController@menu');
 
 
+        $this->add('GET','/ingles/access', 'app\\Controllers\\VistaController@inglesAccess');
         $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles');
 						
         $this->add('GET','/api/ingles/search', 'app\\Controllers\\InglesController@search');
+        
         $this->add('POST','/api/ingles/registro', 'app\\Controllers\\InglesController@guardar');
         $this->add('PUT','/api/ingles/actualizar', 'app\\Controllers\\InglesController@actualizar');
- 		$this->add('GET','/api/ingles/listar', 'app\\Controllers\\InglesController@listar');
+ 		
+ 		//$this->add('GET','/api/ingles/listar', 'app\\Controllers\\InglesController@listar');
+ 		$this->add('POST','/api/ingles/listar', 'app\\Controllers\\InglesController@listar');
+		
 		$this->add('DELETE','/api/ingles/{id}', 'app\\Controllers\\InglesController@eliminar');
 
      
+     	$this->add('GET','/api/practica', 'app\\Controllers\\PracticaController@practica');
     }
 
     private function add($method, $route, $handler) {

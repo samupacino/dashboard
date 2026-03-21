@@ -11,7 +11,26 @@
   background: #28a745;
   color: white;
 }
-#mensajeTablaINGLES.error {
+#mensajeTablaINGLES.error { 
+  background: #dc3545;
+  color: white;
+}   
+
+
+
+#mensajeREGISTRO_INGLES{
+  display: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+#mensajeREGISTRO_INGLES.success {
+  background: #28a745;
+  color: white;
+}
+#mensajeREGISTRO_INGLES.error { 
   background: #dc3545;
   color: white;
 }
