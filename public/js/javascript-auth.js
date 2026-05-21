@@ -24,13 +24,15 @@
   // Funciones auxiliares
   // ===============================
 
+
+
   function actualizarBotonLogin(haySesion) {
     if (!btnAbrirLogin) return;
 
     // Hay sesión activa → ocultar botón
     // No hay sesión      → mostrar botón
     btnAbrirLogin.style.display = haySesion ? 'none' : 'block';
-  }
+  }//<div class="modalLogin" id="loginModal">
 
   function mostrarLoginModal() {
     loginModal.classList.add('is-visible');
@@ -40,6 +42,8 @@
       setTimeout(() => usuario.focus(), 50);
     }
   }
+  
+
 
   function ocultarLoginModal() {
     loginModal.classList.remove('is-visible');
@@ -133,11 +137,11 @@
             }
 
             setTimeout(() => {
-				App.ingles.reload();
+				window.onLoginSuccess();
               ocultarLoginModal();
               // location.href = '/dashboard';
             }, 800);
-
+		
           } else {
             if (mensajeModal) {
               mensajeModal.style.color = '#ff9999';
@@ -155,6 +159,9 @@
       });
     });
   }
+  
+  
+ 
 
   // ===============================
   // Exponer funciones globales si quieres usarlas en otros scripts
@@ -162,6 +169,7 @@
   window.actualizarBotonLogin = actualizarBotonLogin;
   window.mostrarLoginModal    = mostrarLoginModal;
   window.ocultarLoginModal    = ocultarLoginModal;
+  window.onLoginSuccess = function () {}; //  SIEMPRE reinicia
 
 })();
 

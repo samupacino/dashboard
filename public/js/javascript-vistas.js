@@ -44,16 +44,24 @@ function cargarVistaModulo(nombreModulo) {
   
   // Paso 2: Construimos la ruta del backend para obtener la vista
   const rutaVista = `/dashboard/${nombreModulo}`;
-
+	
   // Paso 3: Enviamos petición AJAX (fetch) para cargar el HTML de la vista
     fetch(rutaVista)
     .then(response => {
+		
+		
+	
+	
       // Paso 4: Si la respuesta del servidor no fue exitosa (401, 403, 404, etc)
       if (!response.ok) {
+		
         // Convertimos la respuesta en JSON (esperamos que tenga la propiedad "error")
         return response.json().then(errorData => {
           // Lanzamos un error personalizado para el catch
-          throw new Error(errorData.error || 'Error desconocido al cargar la vista');
+     
+     
+     		
+          throw new Error(errorData.mensaje || 'Error desconocido al cargar la vista');
         });
       }
 
@@ -62,6 +70,9 @@ function cargarVistaModulo(nombreModulo) {
     })
     .then(html => {
 
+
+
+	
 
        //destruirTodasLasDataTables();
 
@@ -121,6 +132,8 @@ function cargarVistaModulo(nombreModulo) {
       }
     })
     .catch(error => {
+		
+		
       // Paso 10: Si hubo algún error, lo mostramos dentro del contenedor principal
       contenedor.innerHTML = `
         <div class="vista-error" style="color: red; text-align: center; padding: 2rem;">

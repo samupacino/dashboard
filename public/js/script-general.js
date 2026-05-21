@@ -1,161 +1,9 @@
-var practica = document.getElementById('ingresar_practica');
-practica.addEventListener('click',function(){
-	fetch("/api/practica",{
-		method: 'GET',
-		headers: {
-			'Accept':'Aplication/json',
-			'SAMUEL' : 'LUJAN'
-		}
-	})
-	.then(response => {
-		
-		//const type = response.headers;
-		const type = response.headers.get('content-type')??'';
-		
-		console.log(type);
-
-		return response.json();
-	})
-	.then(contenido => {
-		console.log(contenido);
-	})
-
-});
-
-function cerrar_sesion(){
-	if(document.getElementById('cerrar_sesion')!==null){
-
-		var cerrar_sesion = document.getElementById('cerrar_sesion');
-		cerrar_sesion.addEventListener('click',function(e){
-
-			fetch('/login/logout', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' }
-			})
-			.then(response => response.json())
-			.then(res => {
-			if (res.status === 'logout') {
-				//alert(res.mensaje || 'Sesión cerrada');
-				window.location.href = '/'; //  Redirección automática
-			} else {
-				mostrarErrorGENERAL('Respuesta inesperada al cerrar sesión');
-			}
-			})
-			.catch(err => {
-			console.error('Error al cerrar sesión:', err);
-			mostrarErrorGENERAL('Error inesperado al cerrar sesión');
-			});
-		});
-	}
-}
-cerrar_sesion();
-
-
-	var ingresar_ingles = document.getElementById('ingresar_ingles');
-	
-	ingresar_ingles.addEventListener('click',function(){
-		
-		fetch('/ingles/access',
-			{
-				method: 'GET',
-				headers: {
-					'Accept': 'application/json',
-					'X-Requested-With': 'XMLHttpRequest' // MUY IMPORTANTE para detectar AJAX
-				}
-			}
-		)
-		.then(function(response){
-			
-			
-			const contentType = response.headers.get("content-type")??'';
-
-		
-			
-			
-			// Si NO es JSON, igual devolvemos algo para no romper el chain
-			if (!contentType.includes('application/json')) {
-				
-			  	if (!response.ok) {
-			  		throw { 
-							status: response.status, 
-							body: { mensaje: 'Respuesta no válida del servidor.' } 
-						};
-		  		}
-		  		
-			  	return { status: response.status, body: { status: 'error', mensaje: 'Respuesta no válida del servidor.' } };
-			}
-
-			// Si es JSON, lo parseamos y armamos un objeto uniforme
-			return response.json().then(body => {
-				
-			  if (!response.ok){ 
-				  throw { status: response.status, body: body };
-			  }
-			  
-			  return { status: response.status, body: body };
-			});
-			
-			
-		})
-		.then(resultado=>{
-		
-			const b = resultado.body;
-			console.log(b);
-			  // Todo OK → redirigimos desde el navegador
-			if (b.status === 'success' && b.data?.redirect) {
-
-				window.location.href = b.data.redirect;
-				
-				return;
-			}
-			
-			 mostrarErrorGENERAL(b.mensaje || 'Acción completada sin redirección.');
-			
-			
-		})
-		.catch(error=>{
-			
-		 	const body = error?.body || {};
-			const status = error?.status;
-
-			// Sesión expirada
-			if (body.status === 'session_expired' || status === 401) {
-			  mostrarErrorGENERAL(body.mensaje || 'Sesión expirada. Inicie sesión nuevamente.');
-			  //window.location.assign('/login');
-			  return;
-			}
-
-			// Sin permisos (rol)
-			if (body.status === 'error' && status === 403) {
-			  mostrarErrorGENERAL(body.mensaje || 'No tienes permisos.');
-			  return;
-			}
-
-			// Cualquier otro error
-			mostrarErrorGENERAL(body.mensaje || 'Error.');
-    
-    
-		});
-			
-
-		
-		
-		
-		
-		
-		
-	});
-	
-	document.addEventListener('click',function(e){
-		
-		console.log(e.target);	
-	});
-	
 let modalError = null;
 let modalSuccess = null;
 
 function mostrarErrorGENERAL(mensaje) {
     const modalElement = document.querySelector('#modal_error');
+    if (!modalElement) return;
 
     if (!modalError) {
         modalError = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -167,6 +15,7 @@ function mostrarErrorGENERAL(mensaje) {
 
 function mostrarSuccessGENERAL(mensaje) {
     const modalElement = document.querySelector('#modal_success');
+    if (!modalElement) return;
 
     if (!modalSuccess) {
         modalSuccess = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -177,20 +26,125 @@ function mostrarSuccessGENERAL(mensaje) {
 }
 
 
+// 1. PRIMERO creamos la función global
+(function () {
+
+    function accederVistaPorAjax(urlAccess) {
+        fetch(urlAccess, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function (response) {
+            const contentType = response.headers.get('content-type') || '';
+
+            if (!contentType.includes('application/json')) {
+                throw {
+                    status: response.status,
+                    body: {
+                        mensaje: 'Respuesta no válida del servidor.'
+                    }
+                };
+            }
+
+            return response.json().then(function (body) {
+                if (!response.ok) {
+                    throw {
+                        status: response.status,
+                        body: body
+                    };
+                }
+
+                return {
+                    status: response.status,
+                    body: body
+                };
+            });
+        })
+        .then(function (resultado) {
+            const body = resultado.body;
+
+            if (body.status === 'success' && body.data && body.data.redirect) {
+                window.location.href = body.data.redirect;
+                return;
+            }
+
+            mostrarErrorGENERAL(body.mensaje || 'No se pudo redirigir.');
+        })
+        .catch(function (error) {
+            const body = error && error.body ? error.body : {};
+            const status = error && error.status ? error.status : 0;
+
+            if (body.status === 'session_expired' || status === 401) {
+                mostrarErrorGENERAL(body.mensaje || 'Sesión expirada. Inicie sesión nuevamente.');
+                return;
+            }
+
+            if (body.status === 'forbidden' || status === 403) {
+                mostrarErrorGENERAL(body.mensaje || 'No tienes permisos para acceder.');
+                return;
+            }
+
+            if (body.status === 'unauthorized') {
+                mostrarErrorGENERAL(body.mensaje || 'No autenticado.');
+                return;
+            }
+
+            mostrarErrorGENERAL(body.mensaje || 'Ocurrió un error al intentar acceder.');
+        });
+    }
+
+    window.ajax = window.ajax || {};
+    window.ajax.url = window.ajax.url || {};
+    window.ajax.url.accederVistaPorAjax = accederVistaPorAjax;
+	
+})();
 
 
+// 2. DESPUÉS recién asignas eventos
+document.addEventListener('DOMContentLoaded', function () {
 
+    const practica = document.getElementById('ingresar_practica');
 
+    if (practica) {
+        practica.addEventListener('click', function () {
+            window.ajax.url.accederVistaPorAjax('/instrumento/access');
+        });
+    }
 
+    const ingresarIngles = document.getElementById('ingresar_ingles');
 
+    if (ingresarIngles) {
+        ingresarIngles.addEventListener('click', function () {
+            window.ajax.url.accederVistaPorAjax('/ingles/access');
+        });
+    }
 
+    const cerrarSesion = document.getElementById('cerrar_sesion');
 
+    if (cerrarSesion) {
+        cerrarSesion.addEventListener('click', function () {
+            fetch('/login/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'logout') {
+                    window.location.href = '/login';
+                } else {
+                    mostrarErrorGENERAL('Respuesta inesperada al cerrar sesión');
+                }
+            })
+            .catch(err => {
+                console.error('Error al cerrar sesión:', err);
+                mostrarErrorGENERAL('Error inesperado al cerrar sesión');
+            });
+        });
+    }
 
-
-
-
-
-
-
-
-
+});

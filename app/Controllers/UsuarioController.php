@@ -5,198 +5,245 @@ namespace app\Controllers;
 use app\Models\Usuario;
 use app\Core\Response;
 use app\Core\Session;
-use PDOException;
 use Throwable;
 
-class UsuarioController
+class UsuarioController extends BaseApiController
 {
-    private function verificarSesion()
+    public function login(): void
     {
-        Session::start();
-
-        if (!Session::has('usuario')) {
-            Response::unauthorized('No autenticado');
-        }
-
-        if (Session::isExpired()) {
-            Session::destroy();
-            Response::sessionExpired('Sesión expirada');
-        }
-
-        Session::renovarTiempo();
-    }
-
-    public function login()
-    {
-        Session::start();
-
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $username = $data['username'] ?? '';
-            $clave = $data['password'] ?? '';
-          
-         
-            if (!$username || !$clave) {
-                return Response::error('Usuario o clave faltante', 400);
+            $data = $this->obtenerJsonInput();
+
+            $username = trim($data['username'] ?? '');
+            $clave    = $data['password'] ?? '';
+
+            $errors = [];
+
+            if ($username === '') {
+                $errors['username'] = ['El usuario es obligatorio'];
             }
+
+            if ($clave === '') {
+                $errors['password'] = ['La contraseña es obligatoria'];
+            }
+
+            $this->validateOrFail($errors);
 
             $usuarioModel = new Usuario();
             $usuario = $usuarioModel->verificarCredenciales($username, $clave);
 
-            if ($usuario) {
-                Session::set('usuario', [
-                    'id' => $usuario['id'],
-                    'username' => $usuario['username'],
-                    'name_complete' => $usuario['name_complete'],
-                    'rol' => $usuario['rol']
-                ]);
-                Session::renovarTiempo();
-
-                return Response::success(Session::get('usuario')['username'], 'Login correcto');
+            if (!$usuario) {
+                Response::unauthorized('Credenciales inválidas');
             }
 
-            return Response::error('Credenciales inválidas', 401);
+            Session::start();
+
+            Session::set('usuario', [
+                'id'            => $usuario['id'],
+                'username'      => $usuario['username'],
+                'name_complete' => $usuario['name_complete'],
+                'rol'           => $usuario['rol']
+            ]);
+
+            Session::regenerate();
+			Session::touch();
+
+            Response::success(
+                [
+                    'usuario' => Session::get('usuario')
+                ],
+                'Login exitoso'
+            );
         } catch (Throwable $e) {
-            return Response::error('Error inesperado al hacer login: ' . $e->getMessage(), 500);
+            Response::serverError(
+                'Error inesperado al hacer login',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function logout()
+    public function logout(): void
     {
         try {
             Session::start();
             Session::destroy();
-            return Response::logout();
+
+            Response::logout();
         } catch (Throwable $e) {
-            return Response::error('Error al cerrar sesión: ' . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al cerrar sesión',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function sessionInfo()
+    public function sessionInfo(): void
     {
-        Session::start();
-
-        if (Session::has('usuario')) {
-            return Response::data([
-                'autenticado' => true,
-                'usuario' => Session::get('usuario')
-            ]);
-        }
-
-        return Response::data(['autenticado' => false]);
-    }
-
-    public function listar()
-    {
-        $this->verificarSesion();
-
         try {
-            if (!Session::isAdmin()) {
-                return Response::unauthorized('No autorizado');
+            Session::start();
+
+            if (Session::has('usuario')) {
+                Response::success([
+                    'autenticado' => true,
+                    'usuario'     => Session::get('usuario')
+                ], 'Sesión activa');
             }
 
+            Response::success([
+                'autenticado' => false
+            ], 'No hay sesión activa');
+        } catch (Throwable $e) {
+            Response::serverError(
+                'Error al obtener información de sesión',
+                ['detalle' => $e->getMessage()]
+            );
+        }
+    }
+
+    public function listar(): void
+    {
+        $this->verificarAdmin('No autorizado para listar usuarios');
+
+        try {
             $usuarioModel = new Usuario();
             $resultado = $usuarioModel->obtenerDataTable();
 
-          
-            return Response::json($resultado);
-
+            Response::datatable($resultado);
         } catch (Throwable $e) {
-            return Response::error("Error al listar: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al listar usuarios',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function guardar()
+    public function guardar(): void
     {
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado');
-        }
+        $this->verificarAdmin('No autorizado para registrar usuarios');
 
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $username = $data['username'] ?? '';
-            $name_complete = $data['name_complete'] ?? '';
-            $password = $data['password'] ?? '';
-            $rol = $data['rol'] ?? 'invitado';
+            $data = $this->obtenerJsonInput();
 
-            
-            if (!$username || !$name_complete || !$password) {
-                return Response::error('Faltan campos requeridos', 400);
+            $username      = trim($data['username'] ?? '');
+            $name_complete = trim($data['name_complete'] ?? '');
+            $password      = $data['password'] ?? '';
+            $rol           = trim($data['rol'] ?? 'invitado');
+
+            $errors = [];
+
+            if ($username === '') {
+                $errors['username'] = ['El usuario es obligatorio'];
             }
 
+            if ($name_complete === '') {
+                $errors['name_complete'] = ['El nombre completo es obligatorio'];
+            }
+
+            if ($password === '') {
+                $errors['password'] = ['La contraseña es obligatoria'];
+            }
+
+            if ($rol === '') {
+                $errors['rol'] = ['El rol es obligatorio'];
+            }
+
+            $this->validateOrFail($errors);
+
             $usuarioModel = new Usuario();
+
             $success = $usuarioModel->guardar($username, $name_complete, $password, $rol);
 
-            return $success
-                ? Response::success([], 'Usuario creado exitosamente')
-                : Response::error('Error al crear el usuario', 500);
+            if (!$success) {
+                Response::serverError('Error al crear el usuario');
+            }
+
+            Response::created([], 'Usuario creado exitosamente');
         } catch (Throwable $e) {
-            return Response::error('Error inesperado al guardar: ' . $e->getMessage(), 500);
+            Response::serverError(
+                'Error inesperado al guardar usuario',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function obtener($id)
+    public function obtener($id): void
     {
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado');
-        }
+        $this->verificarAdmin('No autorizado para obtener usuarios');
 
         try {
             $usuarioModel = new Usuario();
             $usuario = $usuarioModel->obtener($id);
 
-            return $usuario
-                ? Response::data($usuario, 'Usuario obtenido correctamente')
-                : Response::error('Usuario no encontrado', 404);
+            if (!$usuario) {
+                Response::notFound('Usuario no encontrado');
+            }
+
+            Response::success($usuario, 'Usuario obtenido correctamente');
         } catch (Throwable $e) {
-            return Response::error("Error al obtener usuario: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al obtener usuario',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function actualizar($id)
+    public function actualizar($id): void
     {
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado');
-        }
+        $this->verificarAdmin('No autorizado para actualizar usuarios');
 
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $this->obtenerJsonInput();
+
+            $errors = [];
+
+            if (isset($data['username']) && trim((string)$data['username']) === '') {
+                $errors['username'] = ['El usuario no puede estar vacío'];
+            }
+
+            if (isset($data['name_complete']) && trim((string)$data['name_complete']) === '') {
+                $errors['name_complete'] = ['El nombre completo no puede estar vacío'];
+            }
+
+            if (isset($data['rol']) && trim((string)$data['rol']) === '') {
+                $errors['rol'] = ['El rol no puede estar vacío'];
+            }
+
+            $this->validateOrFail($errors);
+
             $usuarioModel = new Usuario();
             $success = $usuarioModel->actualizar($id, $data);
 
-            return $success
-                ? Response::success([], 'Usuario actualizado correctamente')
-                : Response::error('Error al actualizar usuario', 500);
+            if (!$success) {
+                Response::serverError('Error al actualizar usuario');
+            }
+
+            Response::success([], 'Usuario actualizado correctamente');
         } catch (Throwable $e) {
-            return Response::error("Error al actualizar usuario: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al actualizar usuario',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function eliminar($id)
+    public function eliminar($id): void
     {
-          
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado');
-        }
+        $this->verificarAdmin('No autorizado para eliminar usuarios');
 
         try {
             $modelo = new Usuario();
             $exito = $modelo->eliminar($id);
 
-            return $exito
-                ? Response::success([], 'Usuario eliminado correctamente' . $exit)
-                : Response::error('Error al eliminar usuario', 500);
+            if (!$exito) {
+                Response::serverError('Error al eliminar usuario');
+            }
+
+            Response::success([], 'Usuario eliminado correctamente');
         } catch (Throwable $e) {
-            return Response::error("Error al eliminar usuario: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al eliminar usuario',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 }
-

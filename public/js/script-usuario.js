@@ -311,6 +311,8 @@ function load_usuario_init() {                                   // [APP] Tu fun
 		console.log("de fuera en init");
 		return;                                                      // [DOM] Sale de la función
 	}
+	
+
 	window.dataTables = window.dataTables || {};
 
 	if (window.dataTables['usuario']?.destroy instanceof Function) {
@@ -366,7 +368,7 @@ function load_usuario_init() {                                   // [APP] Tu fun
 			
 			
 			if (Array.isArray(json.data)) { // [APP] Validación de tu contrato de API
-				//alert(json.data);
+			
 				return json.data;                                      // [DT] Devuelve array de datos para pintar filas
 			}
 			alert('Respuesta inesperada del servidor. No se puede construir la tabla.');          // [APP] Si llega 200 pero no es success → alerta
@@ -374,7 +376,9 @@ function load_usuario_init() {                                   // [APP] Tu fun
 		},
 
 		error: function (response) {                               // [DT] Manejo de errores HTTP ≠ 200
-			try {                                                    // [APP] Intentamos parsear respuesta
+			try {
+				console.log(response);         
+				                                           // [APP] Intentamos parsear respuesta
 			const resultado = {
 				status: response.status,                             // [APP] Código HTTP (400, 401, 500, etc.)
 				body: JSON.parse(response.responseText)              // [APP] Convertimos body en objeto JS

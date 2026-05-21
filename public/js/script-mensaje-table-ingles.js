@@ -16,7 +16,7 @@
     tipo = "success",
     tiempo = 3000
   ) {
-    const mensaje = document.getElementById("mensajeTablaINGLES");
+    const mensaje = document.getElementById("mensajeDATATABLE");
     if (!mensaje) return;
 
     // Cancelar ocultado previo
@@ -85,7 +85,8 @@
 
   App.ui = App.ui || {};
 
-  App.ui.mensaje = mostrarMensajeDATATABLE;
+  App.ui.mostrarMensajeEnDataTableINGLES = mostrarMensajeDATATABLE;
+  App.ui.mostrarMensajeEnDataTable = mostrarMensajeDATATABLE;
   App.ui.mensaje_modal_registro = mostrarMensaje_REGISTRO_MODAL;
   
 

@@ -1,143 +1,133 @@
 <?php
-    namespace app\Controllers;
 
-    use app\Models\InstrumentoPL3Model;
-    use app\Core\Session;
-    use app\Core\Response;
-    use PDOException;
-    use Throwable;
+namespace app\Controllers;
 
-class InstrumentoPL3Controller{
+use app\Models\InstrumentoPL3Model;
+use app\Core\Response;
+use PDOException;
+use Throwable;
 
-    private function verificarSesion(){
-        Session::start();
-
-        if (!Session::has('usuario')) {
-            Response::unauthorized('No autenticado');
-        }
-
-        if (Session::isExpired()) {
-            Session::destroy();
-            Response::sessionExpired('Sesión expirada');
-        }
-
-        Session::renovarTiempo();
-    }
-
-    public function listar(){
-
-        $this->verificarSesion();
+class InstrumentoPL3Controller extends BaseApiController
+{
+    public function listar(): void
+    {
        
         try {
             $modelo = new InstrumentoPL3Model();
             $resultado = $modelo->datatable();
-                    
-            return Response::json($resultado);
+
+            Response::datatable($resultado);
+
         } catch (Throwable $e) {
-            return Response::error("Error al listar: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al listar instrumentos',
+                ['detalle' => $e->getMessage()]
+            );
         }
-
-
-        
     }
-    public function guardar(){
 
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para registrar', 403);
-        }
-
+    public function guardar(): void
+    {
+        
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $this->obtenerJsonInput();
+
             $tag = trim($data['tag'] ?? '');
             $plataforma = $data['plataforma'] ?? null;
 
-            if (!$tag || !$plataforma) {
-                return Response::error('Faltan campos requeridos', 400);
-            }
+            $this->validarRequeridos(
+                [
+                    'tag' => $tag,
+                    'plataforma' => $plataforma
+                ],
+                [
+                    'tag' => 'tag',
+                    'plataforma' => 'plataforma'
+                ]
+            );
 
             $modelo = new InstrumentoPL3Model();
-
-          
-
-            /*if ($modelo->existeNombre($tag)) {
-                return Response::json(['error' => 'El nombre ya existe'], 409);
-            }*/
-
             $exito = $modelo->crear($tag, $plataforma);
-            return $exito
-                ? Response::success([],'Instrumento creado exitosamente')
-                : Response::error('Error al crear instrumento', 500);
+
+            if (!$exito) {
+                Response::serverError('Error al crear instrumento');
+            }
+
+            Response::created([], 'Instrumento creado exitosamente');
+
         } catch (PDOException $e) {
-            return Response::error("Error de base de datos: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error de base de datos al crear instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         } catch (Throwable $e) {
-            return Response::error("Error inesperado: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error inesperado al crear instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function eliminar($id){
-	
-        $this->verificarSesion();
+    public function actualizar($id): void
+    {
+        
+        try {
+            $data = $this->obtenerJsonInput();
 
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para eliminar', 403);
+            $tag = trim($data['tag'] ?? '');
+            $plataforma = $data['plataforma'] ?? null;
+
+            $this->validarRequeridos(
+                [
+                    'tag' => $tag,
+                    'plataforma' => $plataforma
+                ],
+                [
+                    'tag' => 'tag',
+                    'plataforma' => 'plataforma'
+                ]
+            );
+
+            $modelo = new InstrumentoPL3Model();
+            $exito = $modelo->actualizar($id, $tag, $plataforma);
+
+            if (!$exito) {
+                Response::serverError('Error al actualizar TAG');
+            }
+
+            Response::success([], 'Tag actualizado correctamente');
+
+        } catch (PDOException $e) {
+            Response::serverError(
+                'Error de base de datos al actualizar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
+        } catch (Throwable $e) {
+            Response::serverError(
+                'Error inesperado al actualizar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
+    }
 
+    public function eliminar($id): void
+    {
+        
         try {
             $modelo = new InstrumentoPL3Model();
             $exito = $modelo->eliminar($id);
 
-            return $exito
-                ? Response::success([], 'Instrumento eliminado correctamente' . $exit)
-                : Response::error('Error al eliminar instrumento', 500);
-        } catch (Throwable $e) {
-            return Response::error("Error al eliminar instrumento: " . $e->getMessage(), 500);
-        }
-    }
-
-    public function actualizar($id){
-   
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para actualizar', 403);
-        }
-
-            
-        try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $tag = trim($data['tag'] ?? '');
-            $plataforma = $data['plataforma'] ?? null;
-
-            if (!$tag || !$plataforma) {
-                Response::error('Faltan campos requeridos');
-                //return Response::json(['error' => 'Faltan campos requeridos'], 400);
+            if (!$exito) {
+                Response::serverError('Error al eliminar instrumento');
             }
 
-            $modelo = new InstrumentoPL3Model();
+            Response::success([], 'Instrumento eliminado correctamente');
 
-            /*if ($modelo->existeNombre($tag, $id)) {
-                return Response::json(['error' => 'El nombre ya está en uso por otro instrumento'], 409);
-            }*/
-
-            $exito = $modelo->actualizar($id, $tag, $plataforma);
-            return $exito
-                ? Response::success([], 'Tag actualizado correctamente')
-                : Response::error('Error al actualizar TAG', 500);
-        } catch (PDOException $e) {
-            return Response::error("Error de base de datos: " . $e->getMessage(), 500);
         } catch (Throwable $e) {
-            return Response::error("Error inesperado: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al eliminar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
-
-
-
-
-        
     }
-    
 }
-
-
-?>

@@ -130,7 +130,7 @@
             
             // ✅ Búsqueda optimizada (solo columnas útiles, reales, sin alias)
 			$searchCols = [
-			  'a.english as perro',
+			  'a.english',
 			  'a.spanish',
 			  'a.pronunciation',
 			  'a.pos',

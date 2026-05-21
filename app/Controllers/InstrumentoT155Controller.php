@@ -3,165 +3,169 @@
 namespace app\Controllers;
 
 use app\Models\InstrumentoT155Model;
-use app\Core\Session;
 use app\Core\Response;
 use PDOException;
 use Throwable;
 
-class InstrumentoT155Controller
+class InstrumentoT155Controller extends BaseApiController
 {
-    private function verificarSesion()
+    public function listar(): void
     {
-        Session::start();
-
-        if (!Session::has('usuario')) {
-            Response::unauthorized('No autenticado');
-        }
-
-        if (Session::isExpired()) {
-            Session::destroy();
-            Response::sessionExpired('Sesión expirada');
-        }
-
-        Session::renovarTiempo();
-    }
-
-    public function listar(){
-        $this->verificarSesion();
-       
+        
         try {
             $modelo = new InstrumentoT155Model();
             $resultado = $modelo->datatable();
-                  
-            return Response::json($resultado);
+
+            Response::datatable($resultado);
+
         } catch (Throwable $e) {
-            return Response::error("Error al listar: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al listar instrumentos',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function guardar()
+    public function guardar(): void
     {
-        $this->verificarSesion();
+        
+        try {
+            $data = $this->obtenerJsonInput();
 
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para registrar', 403);
-        }
-
-        try {	
-            $data = json_decode(file_get_contents('php://input'), true);
             $tag = trim($data['tag'] ?? '');
             $plataforma = $data['plataforma'] ?? null;
 
-            if (!$tag || !$plataforma) {
-                return Response::error('Faltan campos requeridos', 400);
-            }
+            $this->validarRequeridos(
+                [
+                    'tag' => $tag,
+                    'plataforma' => $plataforma
+                ]
+            );
 
             $modelo = new InstrumentoT155Model();
-
-          
-
-            /*if ($modelo->existeNombre($tag)) {
-                return Response::json(['error' => 'El nombre ya existe'], 409);
-            }*/
-
             $exito = $modelo->crear($tag, $plataforma);
-            return $exito
-                ? Response::success([],'Instrumento creado exitosamente')
-                : Response::error('Error al crear instrumento', 500);
+
+            if (!$exito) {
+                Response::serverError('Error al crear instrumento');
+            }
+
+            Response::created([], 'Instrumento creado exitosamente');
+
         } catch (PDOException $e) {
-            return Response::error("Error de base de datos: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error de base de datos al crear instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         } catch (Throwable $e) {
-            return Response::error("Error inesperado: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error inesperado al crear instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function obtener($id)
+    public function obtener($id): void
     {
-        $this->verificarSesion();
-
+        
         try {
             $modelo = new InstrumentoT155Model();
             $registro = $modelo->obtenerPorId($id);
 
-            return $registro
-                ? Response::json($registro)
-                : Response::json(['error' => 'Instrumento no encontrado'], 404);
+            if (!$registro) {
+                Response::notFound('Instrumento no encontrado');
+            }
+
+            Response::success($registro, 'Instrumento obtenido correctamente');
+
         } catch (Throwable $e) {
-            return Response::error("Error al obtener instrumento: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al obtener instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-    public function actualizar($id){
+    public function actualizar($id): void
+    {
         
-   
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para actualizar', 403);
-        }
-
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $this->obtenerJsonInput();
+
             $tag = trim($data['tag'] ?? '');
             $plataforma = $data['plataforma'] ?? null;
 
-            if (!$tag || !$plataforma) {
-                Response::error('Faltan campos requeridos');
-                //return Response::json(['error' => 'Faltan campos requeridos'], 400);
-            }
+            $this->validarRequeridos(
+                [
+                    'tag' => $tag,
+                    'plataforma' => $plataforma
+                ]
+            );
 
             $modelo = new InstrumentoT155Model();
-
-            /*if ($modelo->existeNombre($tag, $id)) {
-                return Response::json(['error' => 'El nombre ya está en uso por otro instrumento'], 409);
-            }*/
-
             $exito = $modelo->actualizar($id, $tag, $plataforma);
-            return $exito
-                ? Response::success([], 'Tag actualizado correctamente')
-                : Response::error('Error al actualizar TAG', 500);
+
+            if (!$exito) {
+                Response::serverError('Error al actualizar TAG');
+            }
+
+            Response::success([], 'Tag actualizado correctamente');
+
         } catch (PDOException $e) {
-            return Response::error("Error de base de datos: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error de base de datos al actualizar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         } catch (Throwable $e) {
-            return Response::error("Error inesperado: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error inesperado al actualizar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
-        
     }
 
-    public function eliminar($id){
-        $this->verificarSesion();
-
-        if (!Session::isAdmin()) {
-            return Response::unauthorized('No autorizado para eliminar', 403);
-        }
-        
+    public function eliminar($id): void
+    {
+       
         try {
             $modelo = new InstrumentoT155Model();
             $exito = $modelo->eliminar($id);
 
-            return $exito
-                ? Response::success([], 'INSTRUMENTO eliminado correctamente' . $exit)
-                : Response::error('Error al eliminar INSTRUMENTO', 500);
+            if (!$exito) {
+                Response::serverError('Error al eliminar instrumento');
+            }
+
+            Response::success([], 'Instrumento eliminado correctamente');
+
         } catch (Throwable $e) {
-            return Response::error("Error al eliminar instrumento: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al eliminar instrumento',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 
-
-    public function existeNombre(){
-        $this->verificarSesion();
-
+    public function existeNombre(): void
+    {
+        
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $tag = $data['tag'] ?? '';
+            $data = $this->obtenerJsonInput();
+
+            $tag = trim($data['tag'] ?? '');
             $idExcluir = $data['id_excluir'] ?? null;
 
             $modelo = new InstrumentoT155Model();
             $existe = $modelo->existeNombre($tag, $idExcluir);
 
-            return Response::json(['existe' => $existe]);
+            Response::success(
+                ['existe' => $existe],
+                'Verificación realizada'
+            );
+
         } catch (Throwable $e) {
-            return Response::error("Error al verificar nombre: " . $e->getMessage(), 500);
+            Response::serverError(
+                'Error al verificar nombre',
+                ['detalle' => $e->getMessage()]
+            );
         }
     }
 }

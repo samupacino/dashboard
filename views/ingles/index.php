@@ -1,3 +1,6 @@
+<?php
+use app\Core\Session;
+?>
 <!DOCTYPE html>
 <html lang="en">
 	
@@ -29,13 +32,14 @@
   	<script src="https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.min.js"></script> 
 
 
-
+	<!-- ESTILOS DE LOGIN-AUTH-->
+	<link rel="stylesheet" href="css/estilos-auth.css?v=<?php echo time();?>">
 
 	<!-- ESTILOS GENERAL-->
 	<link rel="stylesheet" href="css/estilos-iconos-ingles.css?v=<?php echo time();?>">
-	<link rel="stylesheet" href="css/estilos-mensaje-ingles.css?v=<?php echo time();?>">
+	<link rel="stylesheet" href="css/estilos-mensaje-datatable.css?v=<?php echo time();?>">
 	
-	<link rel="stylesheet" href="css/estilos-login-modal-ingles.css?v=<?php echo time();?>">
+	
 	
 	
 <style>
@@ -53,7 +57,7 @@
 <body>
 
 <?php
-
+	include_once ROOT . '/views/auth/auth-login.php';
 	include_once'modal-eliminar-ingles.php';
 	
 ?>
@@ -61,23 +65,18 @@
 <?php
 
 	include_once'modal-registro-ingles.php';
-	include_once 'modal-ingles.php';
+
+
+	
+
+	
 ?>
-
-
-
 
 
 
 
 <header class="sticky-top bg-light py-3 shadow-sm border-bottom position-relative">
 
-  <!-- Botón Login simple, negro, visible y tamaño mediano -->
-  <button id="btnAbrirLogin"
-          class="btn btn-outline-dark fw-bold px-5 py-2 position-absolute top-0 end-0 m-4"
-          style="z-index: 1200; font-size: 1.5rem;">
-    Login
-  </button>
 
   <div class="container text-center">
     <h2 class="fw-bold text-uppercase text-dark d-inline-block pb-1 mb-2 border-bottom border-3 border-primary">
@@ -120,7 +119,7 @@
   <!-- Mensaje dinámico -->
 
 
-<div id="mensajeTablaINGLES"
+<div id="mensajeDATATABLE"
      role="status"
      aria-live="polite"></div>
      
@@ -143,7 +142,12 @@
   </section>
 </main>
 
+<?php
 
+
+
+
+?>
 
 <!--
 Si solo usas componentes simples (modal, collapse, alert, etc.) podrías usar bootstrap.min.js, 
@@ -152,9 +156,14 @@ trabajar con bootstrap.bundle.min.js
 -->
 <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="/js/javascript-login-modal-ingles.js?v=<?php echo time();?>"></script>
+<script src="/js/javascript-auth.js?v=<?php echo time();?>"></script>
+
+<!-- JS GENERAL-->
+
 <script src="/js/ingles_datatable.js?v=<?php echo time();?>"></script>
 <script src="/js/script-ingles-registro-editar.js?v=<?php echo time();?>"></script>
 <script src="/js/ingles_fill_list.js?v=<?php echo time();?>"></script> 
 <script src="/js/script-mensaje-table-ingles.js?v=<?php echo time();?>"></script> 
+
+
 </body>

@@ -1,207 +1,204 @@
 <?php
+
 namespace app\Controllers;
 
 use app\Core\Session;
 use app\Core\Response;
 
-class VistaController
+class VistaController extends BaseWebController
 {
-    // Vista de login
-    public function loginView()
-    {
-        Session::start();
-
-        if (Session::has('usuario')) {
-            header('Location: /dashboard');
-            exit;
-        }
-
-        require_once ROOT . '/views/login.php';
-    }
-
-    public function menu(){
-     
-        require_once ROOT . '/views/menu/menu.php';
-     
-    }
-    
-	public function inglesAccess(){
-		
-		Session::start();
-
-		//$http = getallheaders();
-		//Response::json($http['X-Requested-With']);	
-			
-		$esAjax = $this->isAjaxRequest();
-		
-		if(!$esAjax){
-			// Si viene por navegación normal → redirigir o mostrar vista 403
-			header('Location: /'); // o /login o /error403
-			exit;
-		}
-		
-		if(Session::isExpired()){
-			
-			Response::sessionExpired();
-			
-		}
-		// ====== Validación de sesión / rol ======
-		if (!Session::isAdmin()) {
-			// Si viene por fetch → JSON : 
-			Response::unauthorized('No tienes permisos para ver esta sección.');
-		
-		}
-
-		Response::success(['redirect' => '/ingles']);
-
-	}
-	
-	protected function isAjaxRequest(): bool
+    /**
+     * Muestra la vista de login.
+     *
+     * Lógica:
+     * 1. Inicia la sesión por si aún no existe.
+     * 2. Si ya hay un usuario autenticado y la sesión sigue vigente,
+     *    no tiene sentido mostrar login otra vez, así que se redirige al dashboard.
+     * 3. Si la sesión existe pero ya expiró por inactividad,
+     *    se destruye para limpiar completamente el estado anterior.
+     * 4. Si no hay sesión válida, se carga la vista login.php.
+     */
+	public function loginView(): void
 	{
-		$accept = $_SERVER['HTTP_ACCEPT'] ?? '';
-    	$xhr = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+		Session::start();
 
-    	return str_contains($accept, 'application/json')
-        	|| strtolower($xhr) === 'xmlhttprequest';
-		
+		$tieneUsuario = Session::has('usuario');
+		$expirada = Session::isExpired();
+
+		// Si ya existe una sesión válida, renovamos actividad y mandamos al dashboard
+		if ($tieneUsuario && !$expirada) {
+			Session::touch();
+			$this->redirect('/dashboard');
+		}
+
+		// Si la sesión existe pero expiró, la destruimos para dejar limpio el acceso
+		if ($expirada) {
+			Session::destroy();
+		}
+
+		// Mostrar formulario de login
+		$this->render(ROOT . '/views/login.php');
+	}
+    /**
+     * Muestra el menú principal del sistema.
+     *
+     * Esta vista se considera protegida, por lo tanto:
+     * - exige sesión válida
+     * - si no hay sesión o expiró, el BaseWebController redirige a /login
+     */
+    public function menu(): void
+    {
+        //$this->verificarSesionWeb();
+        $this->render(ROOT . '/views/menu/menu.php');
+    }
+
+    /**
+     * Endpoint de validación previa para entrar al módulo inglés.
+     *
+     * Está pensado para peticiones fetch/AJAX desde frontend.
+     *
+     * Flujo:
+     * 1. Verifica que realmente sea una petición AJAX/fetch.
+     * 2. Verifica sesión válida y rol admin.
+     * 3. Si todo está correcto, responde JSON con la ruta de redirección.
+     *
+     * Si falla:
+     * - redirige a / si no es AJAX
+     * - responde JSON si no hay sesión o no tiene permisos
+     */
+	public function inglesAccess(): void
+	{
+		// Esta ruta está pensada solo para fetch / AJAX.
+		// Si alguien entra directo por navegador, respondemos error JSON claro.
+		if (!$this->isAjaxRequest()) {
+			Response::error('Esta ruta solo acepta peticiones AJAX.');
+		}
+
+
+		// Si todo está correcto, devolvemos la ruta que el frontend debe abrir.
+		Response::success([
+			'redirect' => '/ingles'
+		], 'Acceso autorizado');
 	}
 	
-	public function ingles(){
-		
-		
-		Session::start();
-		
-        if (Session::isExpired()) {
-            Session::destroy();
-            header('Location: /login');
-            exit;
-        }
-        
-        if (!Session::isAdmin()) {
-			
-			Session::destroy();
-            header('Location: /');
-            exit;
-		
+	public function registroInstrumentoAccess(): void
+	{
+		// Esta ruta está pensada solo para fetch / AJAX.
+		// Si alguien entra directo por navegador, respondemos error JSON claro.
+		if (!$this->isAjaxRequest()) {
+			Response::error('Esta ruta solo acepta peticiones AJAX.');
 		}
-		
-		require_once ROOT . '/views/ingles/index.php';
-		
+
+		// Si todo está correcto, devolvemos la ruta que el frontend debe abrir.
+		Response::success([
+			'redirect' => '/instrumento/registro'
+		], 'Acceso autorizado');
 	}
+	
+	public function registroInstrumento(): void 
+	{
+		$this->render(ROOT . '/views/practica/form.php');
+	}
+    
+	public function instrumentoAccess(): void
+	{
+		// Esta ruta está pensada solo para fetch / AJAX.
+		// Si alguien entra directo por navegador, respondemos error JSON claro.
+		if (!$this->isAjaxRequest()) {
+			Response::error('Esta ruta solo acepta peticiones AJAX.');
+		}
 
 
-    /*public function ingles(){
-		
-		Session::start();
-
-       // Solo admin puede acceder
-       if (!Session::isAdmin()) {
-          $this->jsonError(403, 'No tienes permisos para ver usuarios.');
-          return;
-       }
-
-     
-        require_once ROOT . '/views/ingles/index.php';
-     
-    }*/
-    // Vista principal del dashboard
-    public function dashboardView()
+		// Si todo está correcto, devolvemos la ruta que el frontend debe abrir.
+		Response::success([
+			'redirect' => '/instrumento'
+		], 'Acceso autorizado');
+	}
+	public function instrumento(): void
     {
-        Session::start();
+       
+        $this->render(ROOT . '/views/practica/index.php');
+    }
+	
+	
+    /**
+     * Muestra la vista principal del módulo inglés.
+     *
+     * Esta vista solo puede verla un usuario admin con sesión válida.
+     * Si no cumple:
+     * - se redirige según la lógica de BaseWebController
+     */
+    public function ingles(): void
+    {
+       
+        $this->render(ROOT . '/views/ingles/index.php');
+    }
 
-     
-
-        if (!Session::has('usuario')) {
-            Session::destroy();
-            header('Location: /login');
-            exit;
-        }
-
-        if (Session::isExpired()) {
-            Session::destroy();
-            header('Location: /login');
-            exit;
-        }
+    /**
+     * Muestra la vista principal del dashboard.
+     *
+     * Requiere:
+     * - sesión válida
+     *
+     * Si la sesión es válida:
+     * - carga head
+     * - carga dashboard
+     * - carga footer
+     */
+    public function dashboardView(): void
+    {
         
-      
+
         require ROOT . '/views/layouts/head.php';
         require ROOT . '/views/dashboard.php';
         require ROOT . '/views/layouts/footer.php';
     }
 
-    // Método reutilizable para errores en formato JSON
-    private function jsonError($code, $message)
+    /**
+     * Carga vistas parciales según el módulo solicitado.
+     *
+     * Este método está pensado para peticiones AJAX/fetch que cargan
+     * HTML parcial dinámicamente dentro de la interfaz.
+     *
+     * Flujo:
+     * 1. Verifica que la petición sea AJAX/fetch.
+     * 2. Verifica que exista una sesión válida.
+     * 3. Según el módulo pedido, carga la vista parcial correspondiente.
+     * 4. Si el módulo no existe, responde 404 en JSON.
+     *
+     * Nota:
+     * - En el caso del módulo "usuario", además exige rol admin.
+     */
+    public function vistaParcial($modulo): void
     {
-        http_response_code($code);
-        header('Content-Type: application/json');
-        echo json_encode(['error' => $message]);
-    }
     
+        // Verifica que el usuario tenga sesión activa
+        //$this->verificarSesionAjax();
 
-
-    // Vista parcial que se carga dinámicamente según el módulo
-    public function vistaParcial($modulo)
-    {
-        Session::start();
-
-        // 1. Verifica autenticación
-        if (!Session::has('usuario')) {
-            $this->jsonError(401, 'No autenticado.');
-            return;
-        }
-
-        // 2. Switch de vistas
         switch ($modulo) {
-
             case 'usuario':
-                // Solo admin puede acceder
+                // Este parcial solo lo puede ver un admin
                 if (!Session::isAdmin()) {
-                    $this->jsonError(403, 'No tienes permisos para ver usuarios.');
-                    return;
+                    Response::forbidden('No tienes permisos para ver usuarios.');
                 }
 
-                $ruta = ROOT . '/views/usuario/usuario.php';
-                if (!file_exists($ruta)) {
-                    $this->jsonError(500, 'Archivo de vista usuario.php no encontrado.');
-                    return;
-                }
-
-                require $ruta;
+                $this->renderPartial(ROOT . '/views/usuario/usuario.php');
                 break;
 
             case 't155':
-                $ruta = ROOT . '/views/instrumento_t155/index.php';
-                if (!file_exists($ruta)) {
-                    $this->jsonError(500, 'Archivo de vista instrumento_t155/index.php no encontrado.');
-                    return;
-                }
-
-                require $ruta;
+                $this->renderPartial(ROOT . '/views/instrumento_t155/index.php');
                 break;
 
-                
             case 'perfil':
-                $ruta = ROOT . '/views/perfil/index.php';
-                if (!file_exists($ruta)) {
-                    $this->jsonError(500, 'Archivo de vista perfil/index.php no encontrado.');
-                    return;
-                }
-
-                require $ruta;
+                $this->renderPartial(ROOT . '/views/perfil/index.php');
                 break;
 
             case 'pl3':
-                $ruta = ROOT . '/views/instrumento_pl3/index.php';
-                if (!file_exists($ruta)) {
-                    $this->jsonError(500, 'Archivo de vista perfil/index.php no encontrado.');
-                    return;
-                }
+                $this->renderPartial(ROOT . '/views/instrumento_pl3/index.php');
+                break;
 
-                require $ruta;
-                break;
             default:
-                $this->jsonError(404, 'Vista no encontrada.');
-                break;
+                Response::notFound('Vista no encontrada.');
         }
     }
 }

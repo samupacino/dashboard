@@ -207,6 +207,7 @@ function buscarOpuestosEnServidor(textoBuscado) {
     return [];
   })
   .then(function normalizarDatos(datos) {
+	  console.log(datos);
     // Aseguramos que sea un arreglo. Tu API idealmente devuelve un array directamente
     // pero si usas { items: [...] } lo convertimos aquí.
     var lista = Array.isArray(datos) ? datos : (datos.items || []);
@@ -458,7 +459,7 @@ function manejadorSeleccionarEnLista() {
 			formularioEnVocab.classList.add('was-validated');
 			debugLog('[submit] Validación HTML5/Bootstrap falló');
 			return; // no seguimos si hay campos requeridos vacíos o inválidos
-		  }
+		  }	
 
 		  // 2) Regla especial para “opposite”: si escribió algo en el buscador
 		  //    pero NO eligió del select, marcamos error custom.
@@ -571,6 +572,7 @@ function envio_data(url,data,metodo){
 	
 
 }
+
 
 
 

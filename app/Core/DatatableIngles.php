@@ -70,7 +70,32 @@ class DatatableIngles
 	 */
 
     private ?array $orderCols;
-
+/**
+ * Constructor del DataTable genérico.
+ *
+ * @param PDO $pdo
+ * Conexión activa a base de datos.
+ *
+ * @param string $tabla
+ * Cláusula FROM completa. Puede incluir alias y JOINs.
+ * Ejemplo: 'instrumentos i LEFT JOIN plataformas p ON i.plataforma_id = p.id'
+ *
+ * @param array $columnas
+ * Lista de columnas que formarán el SELECT.
+ * Puede incluir alias y expresiones SQL.
+ *
+ * @param string $pk
+ * Clave primaria real de la entidad principal listada.
+ * Se usa para conteos robustos con COUNT(DISTINCT ...).
+ *
+ * @param array|null $searchCols
+ * Columnas reales permitidas para búsqueda global.
+ * No se recomienda usar alias aquí.
+ *
+ * @param array|null $orderCols
+ * Columnas reales permitidas para ORDER BY.
+ * Deben corresponder al orden de columnas enviado por DataTables.
+ */
     public function __construct(PDO $pdo, string $tabla, array $columnas, string $pk, ?array $searchCols = null, ?array $orderCols = null)
     {
         // Guardamos la conexión a BD
@@ -282,10 +307,10 @@ orderCols  → columnas permitidas para ordenar
         $draw = (int)($request['draw'] ?? 1);
 
         // start: offset inicial (desde qué registro empezar)
-        $start = (int)($request['start'] ?? 0);
+        $start = max(0, (int)($request['start'] ?? 0));
 
         // length: cuántos registros devolver por página
-        $length = (int)($request['length'] ?? 5);
+        $length = min((int)($request['length'] ?? 5), 100);
 
         // search[value]: búsqueda global (un solo input en DataTables)
         // trim() para evitar espacios fantasma ("   ")

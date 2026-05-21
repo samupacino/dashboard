@@ -1,11 +1,24 @@
 
+<button id="btnAbrirLogin"
+			class="btn btn-outline-dark fw-bold px-4 py-2"
+			style="
+			  position: fixed;
+			  top: 20px;
+			  right: 20px;
+			  z-index: 9999;
+			  font-size: 1.5rem;
+			"
+			data-bs-toggle="modal"
+			data-bs-target="#modalLogin">
+	  Login
+	</button>
 
 <!-- Modal login oculto -->
 <div class="modalLogin" id="loginModal">
   <div class="modal-content-login">
     <button type="button" class="btn-close-modal" id="btnCerrarLogin" aria-label="Cerrar">×</button>
 
-    <h2>== LOGIN REQUERIDO JAJAJ ==</h2>
+    <h2>== LOGIN REQUERIDO AUTH ==</h2>
 
     <form id="modalLoginForm" method="POST">
       <label for="username">Usuario</label>

@@ -14,6 +14,7 @@ trabajar con bootstrap.bundle.min.js
 
 <script src="/js/javascript-login-modal.js?v=<?php echo time();?>"></script>
 <script src="/js/script-general.js?v=<?php echo time();?>"></script>
+
 <script  src="/js/javascript-vistas.js?v=<?php echo time();?>"></script>
 
 <script  id="script-usuario" src="/js/script-usuario.js?v=<?php echo time();?>"></script>

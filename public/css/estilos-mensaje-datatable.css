@@ -1,5 +1,5 @@
 
-#mensajeTablaINGLES{
+#mensajeDATATABLE{
   display: none;
   padding: 10px;
   margin-bottom: 10px;
@@ -7,11 +7,11 @@
   font-weight: bold;
   text-align: center;
 }
-#mensajeTablaINGLES.success {
+#mensajeDATATABLE.success {
   background: #28a745;
   color: white;
 }
-#mensajeTablaINGLES.error { 
+#mensajeDATATABLE.error { 
   background: #dc3545;
   color: white;
 }   

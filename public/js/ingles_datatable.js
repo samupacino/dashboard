@@ -139,7 +139,7 @@ function load_ingles_init() {                                   // [APP] Tu func
 		ajax: {                                                      // [DT] Bloque AJAX de DataTables
 			url: '/api/ingles/listar',                                          // [DT] URL del backend para cargar datos
 
-			type: 'POST',
+			type: 'GET',
 			dataSrc: function (json) {  // [DT] Función que transforma la respuesta JSON
 			// Solo entra aquí si el servidor respondió 200 OK
 			
@@ -148,7 +148,7 @@ function load_ingles_init() {                                   // [APP] Tu func
 				//alert(json.data);
 				return json.data;                                      // [DT] Devuelve array de datos para pintar filas
 			}
-			mostrarMensajeEnDataTableINGLES('Respuesta inesperada del servidor. No se puede construir la tabla.','error',7000);          // [APP] Si llega 200 pero no es success → alerta
+			App.ui.mostrarMensajeEnDataTableINGLES('Respuesta inesperada del servidor. No se puede construir la tabla.','error',7000);          // [APP] Si llega 200 pero no es success → alerta
 			return [];                                               // [DT] Devuelve vacío para no romper la tabla
 		},
 
@@ -164,7 +164,7 @@ function load_ingles_init() {                                   // [APP] Tu func
 	
 				if (resultado.status === 401 && resultado.body?.status === 'session_expired') {
 					
-					actualizarBotonLogin(false);
+					window.actualizarBotonLogin(false);
 					
 				} else if (resultado.status === 403 && resultado.body?.status === 'unauthorized'){
 					
@@ -173,12 +173,12 @@ function load_ingles_init() {                                   // [APP] Tu func
 				
 				
 				
-				mostrarMensajeEnDataTableINGLES(resultado.body?.mensaje || 'Error desconocido','error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES(resultado.body?.mensaje || 'Error desconocido','error',7000);
 				
 			
 			} catch (e) {
 				console.error(e);    // [APP] Log de error si JSON no es válido
-				mostrarMensajeEnDataTableINGLES('Error parseando JSON de error: ' + e,'error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES('Error parseando JSON de error: ' + e,'error',7000);
 				
 			}
 		}
@@ -287,10 +287,9 @@ function bindModalEvents() {
 
   modalEventsBound = true;
 }
+
 function bindTableEvents(tabla) {
 	
-
-
   if (tableEventsBound) return;   // 🧠 evitar duplicados
 
 
@@ -328,6 +327,7 @@ function bindTableEvents(tabla) {
   tableEventsBound = true;
 
 }
+
 function onClickEliminarINGLES(fila, boton, tr, rowApi){
 
 	var eliminar = document.querySelector('#modal_eliminar_ingles');
@@ -457,15 +457,11 @@ function onClickEliminar_confirmar_ingles() {
 			}
 		})
 		.then(resultado => {
-			// Solo entra aquí si el status fue 200–299
-			//window.dataTables['usuario'].ajax.reload();
-			//console.log("✅ OK:", resultado.body);
-			//console.log(resultado);
-			//mostrarSuccess(resultado.body.mensaje || "Operación realizada correctamente");
+			
 			recargar_table_ingles();
 			modal_eliminar.hide();
 		
-			App.ui.mensaje(resultado.body.mensaje || "Operación realizada correctamente");
+			App.ui.mostrarMensajeEnDataTableINGLES(resultado.body.mensaje || "Operación realizada correctamente");
 		})
 		.catch(err => {
 
@@ -477,23 +473,23 @@ function onClickEliminar_confirmar_ingles() {
 		
 			
 			if (err.status === 401 && err.body?.status === 'session_expired') {
-				console.log("desde linea 437");
+				
 				//loginModal.style.display = 'flex';                   // [DOM] Mostramos modal de login si expiró sesión
 				actualizarBotonLogin(false);
-				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
 				
 		
 			} else if (err.status === 403 && err.body?.status === 'unauthorized'){
-				console.log("desde linea 443");
+				
 				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Operación realizada correctamente",'error',7000);
-				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
 
 				
 			} else {
 
 				//console.error("❌ Error de red:", err);
 				//mostrarErrorPL3(err.body?.mensaje || "No se pudo conectar con el servidor");
-				mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "No se pudo conectar con el servidor",'error',7000);
 
 			}
 			
@@ -502,7 +498,7 @@ function onClickEliminar_confirmar_ingles() {
 			//   b) Errores de red reales (servidor caído, CORS, etc.)
 			if (err.body) {
 			
-				//mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Error en la operación",'error',7000);
+				App.ui.mostrarMensajeEnDataTableINGLES(err.body?.mensaje || "Error en la operación",'error',7000);
 
 				//console.error(`❌ Error HTTP ${err.status}:`, err.body);
 				//loginModal.style.display = 'flex'; 
@@ -529,6 +525,12 @@ function onClickEliminar_confirmar_ingles() {
   	  // Inicializar cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded', () => {
     App.ingles.init();
+    window.onLoginSuccess = function (){
+		
+		window.App.ingles.reload();
+		
+	}
+	console.log("entre reload cargar ingles");
   });
   
   

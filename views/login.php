@@ -121,12 +121,12 @@
           .then(function(response) {
 
             return response.json().then(function(json) {
-              //console.log(json);
+              console.log(json);
               if (response.ok && json.status === 'success') {
-                //document.getElementById('message').textContent = json.usuario;
-                console.log(json);
+              
                 document.getElementById('message').textContent = 'Acceso concedido. Redirigiendo...';
                 setTimeout(() => {
+					
 					
                 	window.location.href = '/dashboard';
 				

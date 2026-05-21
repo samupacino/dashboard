@@ -3,20 +3,12 @@
 	namespace app\Controllers;
 	
 	
-	use app\Core\Session;
-    use app\Core\Response;
-    use PDOException;
-    use Throwable;
-    
     
 	class PracticaController{
 		
 		public function practica(){
 			
-			$headers = getallheaders();
-			
-			
-			Response::json($headers['SAMUEL']);
+			echo "jajajaja";
 			
 		}
 	
