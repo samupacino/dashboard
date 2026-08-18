@@ -1,0 +1,35 @@
+# ============================================================
+# ARCHIVOS Y CARPETAS IGNORADAS POR GIT
+# ============================================================
+
+# ------------------------------------------------------------
+# Imágenes subidas por los usuarios
+# ------------------------------------------------------------
+# Se ignoran todos los archivos reales almacenados por el CRUD.
+# La carpeta se conserva en Git mediante .gitkeep.
+/public/uploads/instrumentos/*
+!/public/uploads/instrumentos/.gitkeep
+
+
+# ------------------------------------------------------------
+# Configuración de editores / IDE
+# ------------------------------------------------------------
+.vscode/
+.kdev4/
+*.kdev4
+*.geany
+
+
+# ------------------------------------------------------------
+# Archivos temporales del sistema
+# ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+
+# ------------------------------------------------------------
+# Archivos temporales
+# ------------------------------------------------------------
+*.tmp
+*.temp
+*.log
