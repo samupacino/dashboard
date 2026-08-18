@@ -117,13 +117,13 @@ class InstrumentoController extends BaseApiController
     public function store(): void
     {
       
-        
+       
         $input = $this->obtenerFormInput();
 
 		$data  = $input['fields'];
 		$files = $input['files'];
-
 		
+	
 		$errors = [];
 
         // =========================
@@ -132,6 +132,12 @@ class InstrumentoController extends BaseApiController
         $tag = Validator::requireString($data['tag'] ?? null, 'tag', $errors);
         $tag = Validator::maxLength($tag, 50);
         $tag = Validator::sanitize($tag);
+        
+        // TAG usado internamente para comparar
+		$tagNormalizado = strtoupper($tag);
+		$tagNormalizado = str_replace(['-', ' ', '_'], '', $tagNormalizado);
+        
+        
 
         $descripcion = Validator::requireString($data['descripcion'] ?? null, 'descripcion', $errors);
         $descripcion = Validator::maxLength($descripcion, 150);
@@ -141,10 +147,13 @@ class InstrumentoController extends BaseApiController
         $tipo = Validator::maxLength($tipo, 50);
         $tipo = Validator::sanitize($tipo);
 
+		$planta_id = Validator::requirePositiveInt($data['planta_id'] ?? null, 'planta_id', $errors);
+		
+		/*
         $planta = Validator::requireString($data['planta'] ?? null, 'planta', $errors);
         $planta = Validator::maxLength($planta, 50);
         $planta = Validator::sanitize($planta);
-
+		*/
         $area = Validator::requireString($data['area'] ?? null, 'area', $errors);
         $area = Validator::maxLength($area, 100);
         $area = Validator::sanitize($area);
@@ -204,14 +213,19 @@ class InstrumentoController extends BaseApiController
         	// Validación de negocio
         	// =========================
         	
+        	
       
-            $existe = $this->model->getByTag($tag);
+            $existe = $this->model->getByTagAndPlanta($tagNormalizado, $planta_id);
 
             if ($existe) {
                 Response::conflict('Ya existe un instrumento registrado con ese tag', [
-                    'campo' => 'tag'
-                ]);
+                
+                    'tag' => $existe['tag'],
+					'planta' => $existe['planta']
+				]);
             }
+            
+         
             
 				
 			// =========================
@@ -251,9 +265,10 @@ class InstrumentoController extends BaseApiController
 
             $id = $this->model->create([
                 'tag' => $tag,
+                'tag_normalizado' => $tagNormalizado,
                 'descripcion' => $descripcion,
                 'tipo' => $tipo,
-                'planta' => $planta,
+                'planta_id' => $planta_id,
                 'area' => $area,
                 'ubicacion_exacta' => $ubicacionExacta,
                 'foto' => $rutaFoto,
@@ -315,6 +330,12 @@ class InstrumentoController extends BaseApiController
 		$tag = Validator::requireString($data['tag'] ?? null, 'tag', $errors);
 		$tag = Validator::maxLength($tag, 50);
 		$tag = Validator::sanitize($tag);
+		// Versión normalizada para comparar
+		$tagNormalizado = strtoupper($tag);
+		$tagNormalizado = str_replace(['-', ' ', '_'], '', $tagNormalizado);
+		
+		
+		
 
 		$descripcion = Validator::requireString($data['descripcion'] ?? null, 'descripcion', $errors);
 		$descripcion = Validator::maxLength($descripcion, 150);
@@ -324,10 +345,15 @@ class InstrumentoController extends BaseApiController
 		$tipo = Validator::maxLength($tipo, 50);
 		$tipo = Validator::sanitize($tipo);
 
+
+
+		$planta_id = Validator::requirePositiveInt($data['planta_id'] ?? null, 'planta_id', $errors);
+		
+/*
 		$planta = Validator::requireString($data['planta'] ?? null, 'planta', $errors);
 		$planta = Validator::maxLength($planta, 50);
 		$planta = Validator::sanitize($planta);
-
+*/
 		$area = Validator::requireString($data['area'] ?? null, 'area', $errors);
 		$area = Validator::maxLength($area, 100);
 		$area = Validator::sanitize($area);
@@ -387,11 +413,12 @@ class InstrumentoController extends BaseApiController
 				Response::notFound('Instrumento no encontrado');
 			}
 
-			$otro = $this->model->getByTag($tag);
+			$otro = $this->model->getByTagAndPlanta($tagNormalizado, $planta_id);
 
 			if ($otro && (int)$otro['id'] !== $id) {
 				Response::conflict('Ya existe otro instrumento con ese tag', [
-					'campo' => 'tag'
+					'tag' => $otro['tag'],
+					'planta' => $otro['planta']
 				]);
 			}
 
@@ -433,9 +460,10 @@ class InstrumentoController extends BaseApiController
 
 			$ok = $this->model->update($id, [
 				'tag' => $tag,
+				'tag_normalizado' => $tagNormalizado,
 				'descripcion' => $descripcion,
 				'tipo' => $tipo,
-				'planta' => $planta,
+				'planta_id' => $planta_id,
 				'area' => $area,
 				'ubicacion_exacta' => $ubicacionExacta,
 				'foto' => $rutaFotoFinal,

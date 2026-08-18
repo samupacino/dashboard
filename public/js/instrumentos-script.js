@@ -86,18 +86,19 @@ function load_instrumento_init() {                                   // [APP] Tu
 			
 			{ targets: 0, visible: false, searchable: false },
 			{ targets: 1, className: 'dtr-control all' }, // NOMBRE
-
+			{ targets: 2, className: 'all', orderable: true }, 
+			{ targets: 3, visible: false, className: 'all' },
+			{ targets: 4, className: 'all' },
 			// Columnas que van al “detalle” al expandir la fila
-			{ targets: 2, className: 'all' }, 
-			{ targets: 3, className: 'all' },
-			{ targets: 4, className: 'none' },
-			{ targets: 5, className: 'none' },
+			
+			{ targets: 5, visible: true, className: 'none' },
 			{ targets: 6, className: 'none' },
 			{ targets: 7, className: 'none' },
-			{ targets: 8, className: 'none'},
-			{ targets: 9, className: 'none' },
-			{ targets: 10, className: 'none'},
+			{ targets: 8, className: 'none' },
+			{ targets: 9, className: 'none'},
+			{ targets: 10, className: 'none' },
 			{ targets: 11, className: 'none'},
+			{ targets: 12, className: 'none'},
 
 			
 
@@ -169,36 +170,39 @@ function load_instrumento_init() {                                   // [APP] Tu
 		
 			{data: 'id', title: 'ID', render: (v)=> v || ''},
 			{data: 'tag', title: 'TAG', render: (v)=> v || ''},
+			{data: 'planta', title: 'PLANTA', render: (v)=> v || ''},
+			{data: 'planta_id', title: 'PLANTA ID', render: (v)=> v || ''},
 			{data: 'descripcion', title: 'DESCRIPCION', render: (v)=> v || ''},
 			{data: 'tipo', title: 'TIPO', render: (v)=> v || ''},
-			{data: 'planta', title: 'PLANTA', render: (v)=> v || ''},
+			
+			
 			{data: 'area', title: 'AREA', render: (v)=> v || ''},
 			{data: 'ubicacion_exacta', title: 'UBICACION', render: (v)=> v || ''},
 			//{data: 'foto', title: 'FOTO', render: (v)=> v || ''},
 			
-{
-  data: 'foto',
-  title: 'FOTO',
-  render: function(v, type) {
+			{
+			  data: 'foto',
+			  title: 'FOTO',
+			  render: function(v, type) {
 
-    if (type === 'display') {
+				if (type === 'display') {
 
-      if (!v || v.trim() === '') {
-        return '<span class="text-muted">Sin foto</span>';
-      }
+				  if (!v || v.trim() === '') {
+					return '<span class="text-muted">Sin foto</span>';
+				  }
 
-      return `
-        <a href="/${v}" target="_blank">
-          <img src="/${v}" 
-               loading="lazy"
-               style="width:60px; height:60px; object-fit:cover; border-radius:6px;">
-        </a>
-      `;
-    }
+				  return `
+					<a href="/${v}" target="_blank">
+					  <img src="/${v}" 
+						   loading="lazy"
+						   style="width:60px; height:60px; object-fit:cover; border-radius:6px;">
+					</a>
+				  `;
+				}
 
-    return v;
-  }
-},		
+				return v;
+			  }
+			},		
 			
 			
 			
@@ -401,7 +405,10 @@ function onClickEditarINSTRUMENTO(fila, boton, tr, rowApi){
 	document.getElementById('edit_estado').value = fila.estado || 'activo';
 	document.getElementById('edit_descripcion').value = fila.descripcion;
 	document.getElementById('edit_tipo').value = fila.tipo;
-	document.getElementById('edit_planta').value = fila.planta;
+	
+	document.getElementById('edit_planta_id').value = fila.planta_id;
+	
+	
 	document.getElementById('edit_area').value = fila.area;
 	document.getElementById('edit_ubicacion_exacta').value = fila.ubicacion_exacta;
 	document.getElementById('edit_observacion').value = fila.observacion || '';

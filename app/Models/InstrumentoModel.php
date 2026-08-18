@@ -21,17 +21,18 @@ class InstrumentoModel
     public function create(array $data): int
     {
         $sql = "INSERT INTO {$this->table}
-                (tag, descripcion, tipo, planta, area, ubicacion_exacta, foto, observacion, estado)
+                (tag, tag_normalizado, descripcion, tipo, planta_id, area, ubicacion_exacta, foto, observacion, estado)
                 VALUES
-                (:tag, :descripcion, :tipo, :planta, :area, :ubicacion_exacta, :foto, :observacion, :estado)";
+                (:tag, :tag_normalizado ,:descripcion, :tipo, :planta_id, :area, :ubicacion_exacta, :foto, :observacion, :estado)";
 
         $stmt = $this->db->prepare($sql);
         
         $stmt->execute([
             ':tag' => $data['tag'],
+            ':tag_normalizado' => $data['tag_normalizado'],
             ':descripcion' => $data['descripcion'],
             ':tipo' => $data['tipo'],
-            ':planta' => $data['planta'],
+            ':planta_id' => $data['planta_id'],
             ':area' => $data['area'],
             ':ubicacion_exacta' => $data['ubicacion_exacta'],
             ':foto' => $data['foto'] ?? null,
@@ -44,50 +45,97 @@ class InstrumentoModel
 
 	public function datatable(?array $request = null): array
 	{
-		$tabla = 'instrumentos i';
+		$tabla = 'instrumentos as a inner join plantas as b on a.planta_id = b.id';
 
 		$columnas = [
-			'i.id',
-			'i.tag',
-			'i.descripcion',
-			'i.tipo',
-			'i.planta',
-			'i.area',
-			'i.ubicacion_exacta',
-			'i.foto',
-			'i.observacion',
-			'i.estado',
-			'i.created_at',
-			'i.updated_at'
+			'a.id',
+			'a.tag',
+			'b.nombre as planta',
+			'a.planta_id',
+			'a.descripcion',
+			'a.tipo',			
+			'a.area',
+			'a.ubicacion_exacta',
+			'a.foto',
+			'a.observacion',
+			'a.estado',
+			'a.created_at',
+			'a.updated_at'
 		];
 
-		$pk = 'i.id';
+		$pk = 'a.id';
 
 		// columnas reales para búsqueda (SIN alias)
 		$searchCols = [
-			'i.tag',
-			'i.descripcion',
-			'i.tipo',
-			'i.planta',
-			'i.area',
-			'i.ubicacion_exacta',
-			'i.observacion'
+			'a.tag',
+			'b.nombre',
+			'a.planta_id',
+			'a.descripcion',
+			'a.tipo',
+			'a.area',
+			'a.ubicacion_exacta',
+			'a.observacion'
 		];
 
-		// columnas reales para ordenar (mismo orden que DataTable frontend)
+		/*
+		 * IMPORTANTE - USO DE $orderCols:
+		 *
+		 * $order	Cols funciona como una lista de las columnas permitidas
+		 * para realizar el ordenamiento.
+		 *
+		 * El índice de cada elemento de $orderCols DEBE coincidir exactamente
+		 * con el índice que ocupa esa columna en DataTables.
+		 *
+		 * Ejemplo de columnas en DataTables:
+		 *
+		 * 0 = ID
+		 * 1 = Tag
+		 * 2 = Descripción
+		 * 3 = Tipo
+		 * 4 = Planta
+		 * 5 = Área
+		 * 6 = Ubicación
+		 * 7 = Foto
+		 * 8 = Estado
+		 * 9 = Acciones
+		 *
+		 * Si solamente se permite ordenar por ID, Tag, Planta y Estado:
+		 *
+		 * $orderCols = [
+		 *     0 => 'i.id',
+		 *     1 => 'i.tag',
+		 *     4 => 'p.nombre AS planta',
+		 *     8 => 'i.estado'
+		 * ];
+		 *
+		 * REGLA:
+		 * Índice de $orderCols = índice correspondiente en DataTables.
+		 *
+		 * Los índices NO deben renumerarse de forma consecutiva si las
+		 * columnas ocupan posiciones diferentes en DataTables.
+		 *
+		 * Si DataTables envía un índice que no existe en $orderCols,
+		 * esa columna no se considera válida para el ordenamiento y
+		 * la consulta se ejecutará sin agregar ORDER BY.
+		 */
 		$orderCols = [
-			'i.id',
-			'i.tag',
-			'i.descripcion',
-			'i.tipo',
-			'i.planta',
-			'i.area',
-			'i.ubicacion_exacta',
-			'i.foto',
-			'i.observacion',
-			'i.created_at',
-			'i.updated_at'
+			
+			1 => 'a.tag',
+			
 		];
+		/*$orderCols = [
+			'a.id',
+			'a.tag',
+			'a.descripcion',
+			'a.tipo',
+			'a.planta_id',
+			'a.area',
+			'a.ubicacion_exacta',
+			'a.foto',
+			'a.observacion',
+			'a.created_at',
+			'a.updated_at'
+		];*/
 
 		$datatable = new DatatableIngles(
 			$this->db,
@@ -98,7 +146,7 @@ class InstrumentoModel
 			$orderCols
 		);
 
-		return $datatable->procesar($request);
+		return $datatable->procesar();
 	}
     /**
      * Obtener todos los instrumentos
@@ -132,13 +180,26 @@ class InstrumentoModel
     /**
      * Obtener instrumento por TAG
      */
-    public function getByTag(string $tag): ?array
+    public function getByTagAndPlanta(string $tag_normalizado, int $planta_id): ?array
     {
-        $sql = "SELECT * FROM {$this->table} WHERE tag = :tag LIMIT 1";
-
+        //$sql = "SELECT * FROM {$this->table} WHERE tag_normalizado = :tag_normalizado AND planta_id = :planta_id LIMIT 1";
+		$sql = "SELECT
+                a.id,
+                a.tag,
+                a.tag_normalizado,
+                a.planta_id,
+                b.nombre AS planta
+            FROM instrumentos AS a
+            INNER JOIN plantas AS b
+                ON a.planta_id = b.id
+            WHERE a.tag_normalizado = :tag_normalizado
+              AND a.planta_id = :planta_id
+            LIMIT 1";
+            
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':tag' => $tag
+            ':tag_normalizado' => $tag_normalizado,
+            ':planta_id' => $planta_id
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -171,9 +232,10 @@ class InstrumentoModel
 	{
 		$sql = "UPDATE {$this->table} SET
 					tag = :tag,
+					tag_normalizado = :tagNormalizado,
 					descripcion = :descripcion,
 					tipo = :tipo,
-					planta = :planta,
+					planta_id = :planta_id,
 					area = :area,
 					ubicacion_exacta = :ubicacion_exacta,
 					foto = :foto,
@@ -185,9 +247,10 @@ class InstrumentoModel
 
 		return $stmt->execute([
 			':tag' => $data['tag'],
+			':tagNormalizado' => $data['tag_normalizado'],
 			':descripcion' => $data['descripcion'],
 			':tipo' => $data['tipo'],
-			':planta' => $data['planta'],
+			':planta_id' => $data['planta_id'],
 			':area' => $data['area'],
 			':ubicacion_exacta' => $data['ubicacion_exacta'],
 			':foto' => $data['foto'] ?? null,

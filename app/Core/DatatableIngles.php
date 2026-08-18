@@ -310,7 +310,15 @@ orderCols  → columnas permitidas para ordenar
         $start = max(0, (int)($request['start'] ?? 0));
 
         // length: cuántos registros devolver por página
-        $length = min((int)($request['length'] ?? 5), 100);
+		$length = (int)($request['length'] ?? 5);
+
+		if ($length < 1) {
+			$length = 5;
+		}
+
+		if ($length > 100) {
+			$length = 100;
+		}
 
         // search[value]: búsqueda global (un solo input en DataTables)
         // trim() para evitar espacios fantasma ("   ")
@@ -319,8 +327,8 @@ orderCols  → columnas permitidas para ordenar
 	
         // order[0][column]: índice de columna a ordenar (DataTables manda índice, no nombre)
         $orderColumnIndex = (int)($request['order'][0]['column'] ?? 0);
-	      
-
+	  
+		
 				
 				
         // order[0][dir]: dirección (asc/desc)
@@ -333,57 +341,356 @@ orderCols  → columnas permitidas para ordenar
         // ============================================================
 
 
-		// ✅ Si hay whitelist de order, úsala. Si no, usa el modo antiguo.
-		
-		
 		/*
-    Validación correcta del índice de orden:
-    - Si usamos orderCols, el índice debe existir en orderCols.
-    - Si no usamos orderCols, el índice debe existir en columnas.
-    - Así el ORDER BY siempre se construye usando una fuente válida y coherente.
-*/
-		if ($this->orderCols !== null && !empty($this->orderCols)) {
-			/*
-    Validación del índice de orden:
-    - Si existe whitelist de orderCols, validamos contra ese arreglo.
-    - Si no existe, validamos contra $columnas.
-    - Esto asegura que el índice siempre se evalúe sobre la fuente real
-      que se usará para construir el ORDER BY.
-*/
-			if (!array_key_exists($orderColumnIndex, $this->orderCols)) {
-        		$orderColumnIndex = array_key_first($this->orderCols);
-    		}
-    		$orderColumn = $this->orderCols[$orderColumnIndex];
-			//return [$orderColumn];
-			
-		}else{
-			
-			 // Blindaje: si el índice no existe, lo forzamos a 0
-			if (!isset($this->columnas[$orderColumnIndex])) {
-				$orderColumnIndex = 0;
-			}
-		 	// tu lógica antigua basada en $this->columnas (con alias)
-		 	
-		 	
-			// Obtenemos la columna del SELECT según el índice de DataTables
-			$orderColumnRaw = $this->columnas[$orderColumnIndex] ?? $this->columnas[0];
+		 * ============================================================
+		 * DETERMINACIÓN DE LA COLUMNA PARA ORDER BY
+		 * ============================================================
+		 *
+		 * DataTables envía el índice de la columna que el usuario
+		 * seleccionó para ordenar mediante:
+		 *
+		 * order[0][column]
+		 *
+		 * Ese índice se encuentra almacenado en:
+		 *
+		 * $orderColumnIndex
+		 *
+		 * Ejemplo:
+		 *
+		 * DataTables:
+		 * 0 = id
+		 * 1 = tag
+		 * 2 = descripcion
+		 * 3 = tipo
+		 * 4 = planta
+		 *
+		 * Si existe $this->orderCols, este arreglo funciona como una
+		 * whitelist de las columnas que están permitidas para ordenar.
+		 *
+		 * Ejemplo:
+		 *
+		 * $this->orderCols = [
+		 *     0 => 'i.id',
+		 *     1 => 'i.tag',
+		 *     4 => 'p.nombre AS planta'
+		 * ];
+		 *
+		 * Las claves (0, 1, 4) deben coincidir con los índices reales
+		 * de las columnas mostradas en DataTables.
+		 */
 
-			// Si viene con alias (AS), para ORDER BY usamos el alias (MySQL lo permite)
-			// Ej: "b.english AS opposite" -> ORDER BY opposite
+
+		/*
+		 * Inicializamos la columna de ordenamiento en null.
+		 *
+		 * Si finalmente permanece en null significa que la columna
+		 * seleccionada por el usuario NO está permitida para ordenar
+		 * y, por lo tanto, no se deberá generar ORDER BY.
+		 */
+		/*
+		 * ============================================================
+		 * DETERMINAR LA COLUMNA PARA EL ORDER BY
+		 * ============================================================
+		 *
+		 * DataTables envía el índice de la columna que el usuario
+		 * seleccionó para ordenar.
+		 *
+		 * Ejemplo:
+		 * order[0][column] = 4
+		 *
+		 * Ese índice se encuentra guardado en:
+		 * $orderColumnIndex
+		 */
+
+
+		/*
+		 * Guarda la columna tal como viene desde $orderCols o $columnas.
+		 *
+		 * Se inicializa en null porque todavía no sabemos si el índice
+		 * enviado por DataTables corresponde a una columna válida.
+		 *
+		 * Ejemplo de un valor que podría recibir:
+		 * "p.nombre AS planta"
+		 */
+		$orderColumnRaw = null;
+
+
+		/*
+		 * Guarda la columna final que se utilizará en ORDER BY.
+		 *
+		 * También comienza en null.
+		 *
+		 * Si al terminar esta lógica continúa siendo null,
+		 * significa que no existe una columna válida para ordenar
+		 * y posteriormente NO se agregará ORDER BY al SQL.
+		 *
+		 * Ejemplo de valor final:
+		 * "planta"
+		 */
+		$orderColumn = null;
+
+
+		/*
+		 * Verificamos si $orderCols contiene elementos.
+		 *
+		 * !empty() será true cuando se haya definido una lista
+		 * específica de columnas permitidas para ordenar.
+		 *
+		 * Ejemplo:
+		 *
+		 * $this->orderCols = [
+		 *     0 => 'i.id',
+		 *     1 => 'i.tag',
+		 *     4 => 'p.nombre AS planta'
+		 * ];
+		 */
+		if (!empty($this->orderCols)) {
+
+			/*
+			 * Verificamos si el índice enviado por DataTables
+			 * existe como clave dentro de $orderCols.
+			 *
+			 * Ejemplo:
+			 *
+			 * $orderColumnIndex = 4;
+			 *
+			 * array_key_exists(4, $this->orderCols)
+			 *
+			 * devuelve true si existe la clave 4.
+			 *
+			 * Esto permite que $orderCols funcione como una lista
+			 * de columnas autorizadas para ordenar.
+			 */
+			if (array_key_exists($orderColumnIndex, $this->orderCols)) {
+
+				/*
+				 * Obtenemos la columna correspondiente al índice
+				 * enviado por DataTables.
+				 *
+				 * Ejemplo:
+				 *
+				 * $this->orderCols[4] = 'p.nombre AS planta';
+				 *
+				 * entonces:
+				 *
+				 * $orderColumnRaw = 'p.nombre AS planta';
+				 */
+				$orderColumnRaw = $this->orderCols[$orderColumnIndex];
+			}
+
+		} else {
+
+			/*
+			 * Si $orderCols está vacío o es null, significa que
+			 * no existe una lista específica de columnas permitidas.
+			 *
+			 * En ese caso usamos directamente $this->columnas,
+			 * que contiene las columnas utilizadas en el SELECT.
+			 */
+
+
+			/*
+			 * Verificamos si el índice enviado por DataTables
+			 * existe dentro de $this->columnas.
+			 *
+			 * isset() evita intentar acceder a una posición
+			 * inexistente del arreglo.
+			 */
+			if (isset($this->columnas[$orderColumnIndex])) {
+
+				/*
+				 * Obtenemos la columna del SELECT correspondiente
+				 * al índice enviado por DataTables.
+				 *
+				 * Ejemplo:
+				 *
+				 * $this->columnas[2] = 'i.descripcion';
+				 *
+				 * entonces:
+				 *
+				 * $orderColumnRaw = 'i.descripcion';
+				 */
+				$orderColumnRaw = $this->columnas[$orderColumnIndex];
+			}
+		}
+
+
+		/*
+		 * Si $orderColumnRaw continúa siendo null significa que:
+		 *
+		 * - El índice no estaba permitido en $orderCols, o
+		 * - El índice no existía en $this->columnas.
+		 *
+		 * Por eso solamente continuamos si encontramos
+		 * una columna válida.
+		 */
+		if ($orderColumnRaw !== null) {
+
+			/*
+			 * Verificamos si la columna contiene un alias mediante AS.
+			 *
+			 * stripos() busca texto sin diferenciar
+			 * mayúsculas y minúsculas.
+			 *
+			 * Ejemplo:
+			 *
+			 * "p.nombre AS planta"
+			 *
+			 * contiene " AS ", por lo tanto entra al if.
+			 */
 			if (stripos($orderColumnRaw, ' AS ') !== false) {
 
-				// Divide por "AS" (case-insensitive): ["b.english", "opposite"]
+				/*
+				 * Separamos la columna real de su alias.
+				 *
+				 * Ejemplo:
+				 *
+				 * "p.nombre AS planta"
+				 *
+				 * se convierte en:
+				 *
+				 * $partes[0] = "p.nombre"
+				 * $partes[1] = "planta"
+				 *
+				 * La "i" de la expresión regular hace que
+				 * no importe si viene AS, as, As, etc.
+				 */
 				$partes = preg_split('/\s+AS\s+/i', $orderColumnRaw);
 
-				// Si existe la parte del alias, se usa; si no, se cae a la parte original
+
+				/*
+				 * Para ORDER BY utilizamos el alias.
+				 *
+				 * Ejemplo:
+				 *
+				 * SELECT p.nombre AS planta
+				 *
+				 * entonces podemos utilizar:
+				 *
+				 * ORDER BY planta
+				 *
+				 * trim() elimina posibles espacios sobrantes.
+				 */
+				$orderColumn = trim($partes[1]);
+
+			} else {
+
+				/*
+				 * Si la columna NO tiene alias, no necesitamos
+				 * realizar ninguna transformación.
+				 *
+				 * Ejemplo:
+				 *
+				 * $orderColumnRaw = "i.tag"
+				 *
+				 * entonces:
+				 *
+				 * $orderColumn = "i.tag"
+				 *
+				 * y posteriormente:
+				 *
+				 * ORDER BY i.tag ASC
+				 */
+				$orderColumn = $orderColumnRaw;
+			}
+		}
+
+
+		/*
+		 * ============================================================
+		 * PROCESAMIENTO DEL ALIAS DE LA COLUMNA
+		 * ============================================================
+		 *
+		 * Esta parte se ejecuta independientemente de si la columna
+		 * provino de:
+		 *
+		 *     $this->orderCols
+		 *
+		 * o de:
+		 *
+		 *     $this->columnas
+		 *
+		 * De esta manera ambos casos soportan columnas con alias.
+		 */
+		if ($orderColumnRaw !== null) {
+
+			/*
+			 * Verificamos si la expresión contiene " AS ".
+			 *
+			 * stripos() realiza una búsqueda sin distinguir
+			 * mayúsculas y minúsculas.
+			 *
+			 * Por lo tanto reconoce:
+			 *
+			 * AS
+			 * as
+			 * As
+			 * aS
+			 *
+			 * Ejemplo:
+			 *
+			 * 'p.nombre AS planta'
+			 */
+			if (stripos($orderColumnRaw, ' AS ') !== false) {
+
+				/*
+				 * Separamos la expresión utilizando AS.
+				 *
+				 * Ejemplo:
+				 *
+				 * 'p.nombre AS planta'
+				 *
+				 * se convierte en:
+				 *
+				 * [
+				 *     0 => 'p.nombre',
+				 *     1 => 'planta'
+				 * ]
+				 *
+				 * La expresión regular permite reconocer AS
+				 * independientemente de mayúsculas/minúsculas
+				 * y de la cantidad de espacios alrededor.
+				 */
+				$partes = preg_split('/\s+AS\s+/i', $orderColumnRaw);
+
+				/*
+				 * Para ORDER BY utilizamos el alias.
+				 *
+				 * Ejemplo:
+				 *
+				 * SELECT p.nombre AS planta
+				 *
+				 * permite posteriormente:
+				 *
+				 * ORDER BY planta
+				 *
+				 * trim() elimina posibles espacios adicionales.
+				 *
+				 * Si por alguna razón no existiera $partes[1],
+				 * utilizamos $partes[0] como respaldo.
+				 */
 				$orderColumn = trim($partes[1] ?? $partes[0]);
 
 			} else {
-				// Sin alias: ORDER BY "a.english" / "i.id" etc.
+
+				/*
+				 * Si la columna no tiene alias, se utiliza
+				 * directamente la expresión original.
+				 *
+				 * Ejemplo:
+				 *
+				 * 'i.tag'
+				 *
+				 * produce:
+				 *
+				 * ORDER BY i.tag
+				 */
 				$orderColumn = $orderColumnRaw;
-        	}
+			}
+		}
         
-        }
+        //echo json_encode(["samuel" => $orderColumn, "dir" => $orderDir, "TEST"=>$probando]);
+   
 
         // ============================================================
         // 3) recordsTotal (conteo sin filtros)
@@ -429,60 +736,358 @@ orderCols  → columnas permitidas para ordenar
                 ]
             */
 
-            $conditions = [];
-            
-            // Si searchCols es null, usamos $columnas (comportamiento original)
-            
-            //Así si viene null o [], usa $columnas.
-            $colsParaBuscar = !empty($this->searchCols) ? $this->searchCols : $this->columnas;
+			/*
+			 * ============================================================
+			 * CONSTRUCCIÓN DE LAS CONDICIONES PARA LA BÚSQUEDA GLOBAL
+			 * ============================================================
+			 *
+			 * DataTables envía el texto ingresado en el buscador global.
+			 *
+			 * Para realizar la búsqueda necesitamos construir condiciones
+			 * SQL con LIKE para cada columna donde se permita buscar.
+			 *
+			 * Ejemplo del resultado que queremos construir:
+			 *
+			 * WHERE i.tag LIKE :search
+			 *    OR i.descripcion LIKE :search
+			 *    OR p.nombre LIKE :search
+			 */
 
-            foreach ($colsParaBuscar as $col) {
-				
-		/*"WHERE a.english LIKE :search OR a.spanish LIKE :search OR 
-		a.pronunciation LIKE :search OR a.pos LIKE :search OR a.level LIKE :search 
-		OR b.english LIKE :search OR a.source LIKE :search"*/
-		
-                // Si la columna tiene alias, NO usamos el alias en WHERE
-                // porque en SQL el WHERE se evalúa antes del SELECT.
-                
-                 // Si accidentalmente alguien puso alias en searchCols, lo limpiamos igual
-                if (stripos($col, ' AS ') !== false) {
 
-                    // Divide: "b.english AS opposite" -> ["b.english", "opposite"]
-                    $partes = preg_split('/\s+AS\s+/i', $col);
+			/*
+			 * Creamos un arreglo vacío donde iremos guardando
+			 * cada condición LIKE de la búsqueda.
+			 *
+			 * Ejemplo final:
+			 *
+			 * $conditions = [
+			 *     'i.tag LIKE :search',
+			 *     'i.descripcion LIKE :search',
+			 *     'p.nombre LIKE :search'
+			 * ];
+			 */
+			$conditions = [];
 
-                    // Tomamos la parte real: "b.english"
-                    $colReal = trim($partes[0]);
 
-                    if ($colReal !== '') {
-                        $conditions[] = "$colReal LIKE :search";
-                    }
+			/*
+			 * Determinamos qué columnas se utilizarán para buscar.
+			 *
+			 * Si $this->searchCols tiene columnas definidas,
+			 * utilizamos solamente esas columnas.
+			 *
+			 * Si searchCols es null o está vacío [],
+			 * utilizamos todas las columnas de $this->columnas.
+			 *
+			 * Ejemplo:
+			 *
+			 * $this->searchCols = [
+			 *     'i.tag',
+			 *     'i.descripcion',
+			 *     'p.nombre'
+			 * ];
+			 *
+			 * En ese caso $colsParaBuscar tendrá esas tres columnas.
+			 */
+			$colsParaBuscar = !empty($this->searchCols)
+				? $this->searchCols
+				: $this->columnas;
 
-                } else {
-                    // Columna sin alias: "a.english"
-                    $conditions[] = "$col LIKE :search";
-                }
-            }
 
-            /*       nota del porque se reemplaza el alias por normal:
-            📌 ¿Se puede usar un alias en WHERE?
-            ❌ No, en MySQL y en la mayoría de SGBD no puedes usar un alias definido en el SELECT dentro del mismo WHERE.
-            Esto es porque el orden en que se ejecutan las cláusulas SQL es distinto al orden en que lo escribes.
+			/*
+			 * Recorremos una por una las columnas donde
+			 * se realizará la búsqueda.
+			 *
+			 * En cada vuelta, $col contiene una columna.
+			 *
+			 * Ejemplo:
+			 *
+			 * Primera vuelta:
+			 * $col = 'i.tag'
+			 *
+			 * Segunda vuelta:
+			 * $col = 'i.descripcion'
+			 *
+			 * Tercera vuelta:
+			 * $col = 'p.nombre'
+			 */
+			foreach ($colsParaBuscar as $col) {
 
-            ⚠️ Restricción del uso de alias en cláusula WHERE
-            En SQL, no es posible utilizar un alias definido en el SELECT dentro de la cláusula WHERE, ya que los alias son
-            evaluados recién en una etapa posterior del procesamiento de la consulta. El orden lógico de ejecución de una
-            consulta comienza con FROM, luego WHERE, y solo después se evalúa el SELECT, por lo tanto el alias aún no existe al
-            momento de evaluar condiciones.
-            Por ejemplo, en una consulta como:
-              SELECT p.nombre AS plataforma FROM plataformas p WHERE plataforma LIKE '%A%';
-            produce error porque "plataforma" aún no existe cuando se evalúa el WHERE.
+				/*
+				 * Por defecto consideramos que la columna recibida
+				 * puede utilizarse directamente en el WHERE.
+				 *
+				 * Ejemplo:
+				 *
+				 * $col = 'i.tag'
+				 *
+				 * entonces:
+				 *
+				 * $colReal = 'i.tag'
+				 */
+				$colReal = $col;
 
-            ✅ Para solucionar esto:
-            - Usar la columna real en WHERE (p.nombre), o
-            - Encapsular como subconsulta y filtrar afuera:
-              SELECT * FROM (SELECT p.nombre AS plataforma FROM plataformas p) sub WHERE plataforma LIKE '%A%';
-            */
+
+				/*
+				 * Verificamos si la columna contiene un alias mediante AS.
+				 *
+				 * Esto es necesario porque un alias definido en SELECT
+				 * no debe utilizarse directamente en el WHERE del mismo nivel.
+				 *
+				 * Ejemplo:
+				 *
+				 * p.nombre AS planta
+				 *
+				 * Para el SELECT podemos utilizar:
+				 *
+				 * SELECT p.nombre AS planta
+				 *
+				 * Pero para buscar debemos utilizar la columna real:
+				 *
+				 * WHERE p.nombre LIKE :search
+				 *
+				 * stripos() busca " AS " sin diferenciar entre
+				 * mayúsculas y minúsculas.
+				 */
+				if (stripos($col, ' AS ') !== false) {
+
+					/*
+					 * Separamos la columna real de su alias.
+					 *
+					 * Ejemplo:
+					 *
+					 * p.nombre AS planta
+					 *
+					 * se convierte en:
+					 *
+					 * $partes[0] = 'p.nombre'
+					 * $partes[1] = 'planta'
+					 *
+					 * La expresión regular también reconoce:
+					 *
+					 * AS
+					 * as
+					 * As
+					 *
+					 * y permite uno o más espacios alrededor de AS.
+					 */
+					$partes = preg_split('/\s+AS\s+/i', $col);
+
+
+					/*
+					 * Para el WHERE necesitamos únicamente
+					 * la columna real, que está en la posición 0.
+					 *
+					 * Ejemplo:
+					 *
+					 * $partes[0] = 'p.nombre'
+					 *
+					 * entonces:
+					 *
+					 * $colReal = 'p.nombre'
+					 *
+					 * trim() elimina posibles espacios sobrantes.
+					 */
+					$colReal = trim($partes[0]);
+				}
+
+
+				/*
+				 * Verificamos que después de procesar la columna
+				 * exista realmente un nombre de columna.
+				 *
+				 * Esto evita agregar una condición vacía.
+				 */
+				if ($colReal !== '') {
+
+					/*
+					 * Agregamos la condición LIKE al arreglo.
+					 *
+					 * Ejemplo:
+					 *
+					 * Si:
+					 *
+					 * $colReal = 'p.nombre'
+					 *
+					 * se agrega:
+					 *
+					 * 'p.nombre LIKE :search'
+					 *
+					 * Después todas estas condiciones serán unidas
+					 * mediante OR para construir el WHERE global.
+					 */
+					$conditions[] = "$colReal LIKE :search";
+				}
+			}
+
+			/*
+			 * ============================================================
+			 * IMPORTANTE: USO DE ALIAS EN LA CLÁUSULA WHERE
+			 * ============================================================
+			 *
+			 * Un alias creado en el SELECT no puede utilizarse en el WHERE
+			 * de la misma consulta.
+			 *
+			 * El motivo está en el ORDEN LÓGICO en que SQL procesa las
+			 * diferentes partes de una consulta.
+			 *
+			 * Aunque nosotros escribimos normalmente:
+			 *
+			 * SELECT ...
+			 * FROM ...
+			 * WHERE ...
+			 * ORDER BY ...
+			 *
+			 * SQL no procesa estas cláusulas exactamente en ese orden.
+			 *
+			 * De forma simplificada, el orden lógico es:
+			 *
+			 * 1. FROM       -> obtiene las tablas y realiza los JOIN.
+			 * 2. WHERE      -> filtra las filas.
+			 * 3. SELECT     -> selecciona las columnas y crea sus alias.
+			 * 4. ORDER BY   -> ordena el resultado.
+			 *
+			 * Por lo tanto, cuando SQL está procesando el WHERE,
+			 * el SELECT todavía no ha sido evaluado y el alias todavía
+			 * NO EXISTE.
+			 *
+			 * ------------------------------------------------------------
+			 * EJEMPLO INCORRECTO:
+			 * ------------------------------------------------------------
+			 *
+			 * SELECT p.nombre AS planta
+			 * FROM plantas p
+			 * WHERE planta LIKE '%VPSA%';
+			 *
+			 * Esto es incorrecto porque cuando se procesa:
+			 *
+			 * WHERE planta LIKE '%VPSA%'
+			 *
+			 * el alias "planta" todavía no ha sido creado.
+			 *
+			 * El alias recién se crea posteriormente cuando SQL procesa:
+			 *
+			 * SELECT p.nombre AS planta
+			 *
+			 * ------------------------------------------------------------
+			 * FORMA CORRECTA:
+			 * ------------------------------------------------------------
+			 *
+			 * En el WHERE debemos utilizar la columna REAL:
+			 *
+			 * SELECT p.nombre AS planta
+			 * FROM plantas p
+			 * WHERE p.nombre LIKE '%VPSA%';
+			 *
+			 * Por esta razón, cuando una columna llega con alias:
+			 *
+			 *     p.nombre AS planta
+			 *
+			 * esta clase elimina el alias antes de construir el WHERE
+			 * y utiliza solamente:
+			 *
+			 *     p.nombre
+			 *
+			 * generando finalmente:
+			 *
+			 *     WHERE p.nombre LIKE :search
+			 *
+			 * ------------------------------------------------------------
+			 * ¿POR QUÉ EL ALIAS SÍ PUEDE USARSE EN ORDER BY?
+			 * ------------------------------------------------------------
+			 *
+			 * ORDER BY se procesa después del SELECT.
+			 *
+			 * Para ese momento el alias ya fue creado, por lo que:
+			 *
+			 * SELECT p.nombre AS planta
+			 * FROM plantas p
+			 * ORDER BY planta;
+			 *
+			 * sí es válido.
+			 *
+			 * ------------------------------------------------------------
+			 * ¿LIKE PUEDE UTILIZARSE CON UN ALIAS?
+			 * ------------------------------------------------------------
+			 *
+			 * Sí. LIKE no tiene ninguna restricción especial con los alias.
+			 *
+			 * El problema anterior no es LIKE, sino intentar utilizar en
+			 * el WHERE un alias creado por el SELECT DEL MISMO NIVEL de
+			 * consulta.
+			 *
+			 * Un alias sí puede utilizarse con WHERE ... LIKE cuando dicho
+			 * alias ya existe para ese nivel de consulta.
+			 *
+			 * Por ejemplo, utilizando una subconsulta:
+			 *
+			 * SELECT *
+			 * FROM (
+			 *     SELECT
+			 *         p.id,
+			 *         p.nombre AS planta
+			 *     FROM plantas p
+			 * ) AS resultado
+			 * WHERE planta LIKE '%VPSA%';
+			 *
+			 * En este caso sí funciona.
+			 *
+			 * Primero, la consulta interna:
+			 *
+			 *     SELECT p.id, p.nombre AS planta
+			 *     FROM plantas p
+			 *
+			 * genera un resultado que ya contiene una columna llamada:
+			 *
+			 *     planta
+			 *
+			 * Luego la consulta externa trabaja sobre ese resultado.
+			 * Para la consulta externa, "planta" ya existe como columna,
+			 * por lo que puede utilizar:
+			 *
+			 *     WHERE planta LIKE '%VPSA%'
+			 *
+			 * Por lo tanto:
+			 *
+			 * MISMO NIVEL:
+			 *
+			 * SELECT p.nombre AS planta
+			 * FROM plantas p
+			 * WHERE planta LIKE '%VPSA%';
+			 *
+			 *     -> INCORRECTO: WHERE se procesa antes de que SELECT
+			 *        cree el alias "planta".
+			 *
+			 *
+			 * DIFERENTE NIVEL (SUBCONSULTA):
+			 *
+			 * SELECT *
+			 * FROM (
+			 *     SELECT p.nombre AS planta
+			 *     FROM plantas p
+			 * ) AS resultado
+			 * WHERE planta LIKE '%VPSA%';
+			 *
+			 *     -> CORRECTO: para la consulta externa, "planta"
+			 *        ya existe como una columna.
+			 *
+			 * ============================================================
+			 * RESUMEN
+			 * ============================================================
+			 *
+			 * WHERE    -> se procesa antes del SELECT -> usar columna real.
+			 * SELECT   -> aquí se crea el alias.
+			 * ORDER BY -> se procesa después          -> puede usar el alias.
+			 *
+			 * LIKE no prohíbe utilizar alias.
+			 *
+			 * La restricción ocurre cuando intentamos utilizar en el WHERE
+			 * un alias creado por el SELECT del MISMO NIVEL de consulta.
+			 *
+			 * Si el alias fue generado previamente por una subconsulta,
+			 * la consulta externa puede utilizarlo normalmente en:
+			 *
+			 *     WHERE alias LIKE ...
+			 */
 
             // Armamos el WHERE global con OR (búsqueda global)
             $where = "WHERE " . implode(' OR ', $conditions);
@@ -550,16 +1155,35 @@ orderCols  → columnas permitidas para ordenar
         // Convertimos el array de columnas en un string: "a.id, a.english, b.english AS opposite, ..."
         $selectColumns = implode(', ', $this->columnas);
 
-        /*
-            Query final:
-            - Devuelve data paginada y ordenada.
-            - Aquí sí usamos ORDER BY con alias si existe (MySQL OK).
-        */
-        $sql = "SELECT $selectColumns
-                FROM {$this->tabla}
-                $where
-                ORDER BY $orderColumn $orderDir
-                LIMIT :start, :length";
+     
+		/*
+		 * Construimos el ORDER BY únicamente si existe
+		 * una columna válida para ordenar.
+		 *
+		 * Si $orderColumn es null, $orderSql queda vacío
+		 * y la consulta se ejecuta sin ORDER BY.
+		 */
+		$orderSql = '';
+
+		if ($orderColumn !== null) {
+			$orderSql = "ORDER BY $orderColumn $orderDir";
+		}
+
+
+		/*
+		 * Construcción final de la consulta.
+		 *
+		 * $orderSql puede contener:
+		 *
+		 * ORDER BY i.tag ASC
+		 *
+		 * o simplemente quedar vacío.
+		 */
+		$sql = "SELECT $selectColumns
+				FROM {$this->tabla}
+				$where
+				$orderSql
+				LIMIT :start, :length";
 
         $stmt = $this->pdo->prepare($sql);
 

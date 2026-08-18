@@ -70,18 +70,36 @@
               >
             </div>
 
-            <!-- PLANTA -->
+            <!-- PLANTA -
             <div class="col-md-4">
-              <label for="edit_planta" class="form-label fw-semibold">Planta</label>
+              <label for="edit_planta_id" class="form-label fw-semibold">Planta</label>
               <input
                 type="text"
                 class="form-control"
-                id="edit_planta"
-                name="planta"
+                id="edit_planta_id"
+                name="planta_id"
                 maxlength="50"
                 required
               >
             </div>
+            -->
+            
+            <!-- PLANTA -->
+			<div class="col-md-4">
+				<label for="edit_planta_id" class="form-label fw-semibold">Planta</label>
+
+				<select
+					class="form-select"
+					id="edit_planta_id"
+					name="planta_id"
+					required
+				>
+					<option value="" disabled>Seleccione una planta</option>
+					<option value="1">T155</option>
+					<option value="2">PL3XL</option>
+					<option value="3">VPSA120</option>
+				</select>
+			</div>
 
             <!-- AREA -->
             <div class="col-md-4">

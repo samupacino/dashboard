@@ -33,10 +33,6 @@
 
 </header>
 
-
-
-
-
 <div class="container py-4 py-md-5">
 	
 	
@@ -80,12 +76,36 @@
                 <input type="text" class="form-control" id="descripcion" name="descripcion" placeholder="Descripción corta del instrumento" required>
                 <div class="invalid-feedback">Ingrese una descripción.</div>
               </div>
-
+              
+              
+              
+              
+<!--
               <div class="col-12 col-md-6">
                 <label for="planta" class="form-label fw-semibold">Planta</label>
                 <input type="text" class="form-control" id="planta" name="planta" placeholder="Ej: T155" required>
                 <div class="invalid-feedback">Ingrese la planta.</div>
               </div>
+              
+         -->
+				
+				<div class="col-12 col-md-6">
+					<label for="planta_id" class="form-label fw-semibold">Planta</label>
+
+					<select class="form-select" id="planta_id" name="planta_id" required>
+						<option value="" selected disabled>Seleccione una planta</option>
+						<option value="1">T155</option>
+						<option value="2">PL3XL</option>
+						<option value="3">VPSA120</option>
+					</select>
+
+					<div class="invalid-feedback">Seleccione la planta.</div>
+				</div>
+              
+              
+              
+              
+              
 
               <div class="col-12 col-md-6">
                 <label for="area" class="form-label fw-semibold">Área</label>
