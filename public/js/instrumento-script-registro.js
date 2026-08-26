@@ -23,6 +23,15 @@
 |--------------------------------------------------------------------------
 */
 document.addEventListener('DOMContentLoaded', function () {
+	
+	const foto = document.getElementById('foto');
+	const btnQuitarFoto = document.getElementById('btn_quitar_foto');
+
+	btnQuitarFoto.addEventListener('click', function () {
+
+		foto.value = '';
+
+	});
 
     /*
     |--------------------------------------------------------------------------

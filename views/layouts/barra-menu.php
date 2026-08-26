@@ -39,7 +39,7 @@
 									<button class="nav-link"  target="_blank" id="ingresar_ingles">Ingles</button>
 								</li>
 								<li class="nav-item">
-									<button class="nav-link" target="_blank" id="ingresar_practica">Practica</button>
+									<button class="nav-link" target="_blank" id="ingresar_practica">Search</button>
 								</li>
 							</ul>
 							

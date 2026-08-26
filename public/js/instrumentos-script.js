@@ -387,8 +387,7 @@ function bindEliminarInstrumento() {
             window.ajax.response.manejarError(error);
         })
         .finally(function() {
-            btn.disabled = false;
-            btn.textContent = 'Eliminar';
+         
         });
 
     });

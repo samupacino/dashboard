@@ -128,10 +128,30 @@
                 </select>
               </div>
 
-              <div class="col-12 col-md-6">
-                <label for="foto" class="form-label fw-semibold">Foto</label>
-                <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-              </div>
+
+			<div class="col-12 col-md-6">
+				<label for="foto" class="form-label fw-semibold">Foto</label>
+
+				<div class="input-group">
+					<input
+						class="form-control"
+						type="file"
+						id="foto"
+						name="foto"
+						accept="image/*"
+					>
+
+					<button
+						class="btn btn-outline-secondary"
+						type="button"
+						id="btn_quitar_foto"
+					>
+						Quitar
+					</button>
+				</div>
+			</div>
+              
+              
 
               <div class="col-12">
                 <div class="border rounded-3 bg-white p-2 text-center d-none" id="previewWrapper">

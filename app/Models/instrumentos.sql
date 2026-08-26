@@ -35,3 +35,5 @@ CREATE TABLE plantas (
 );
 
 INSERT INTO plantas (nombre) VALUES ('T155');
+INSERT INTO plantas (nombre) VALUES ('PL3XL');
+INSERT INTO plantas (nombre) VALUES ('VPSA120');
