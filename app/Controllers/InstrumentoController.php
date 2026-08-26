@@ -173,40 +173,105 @@ class InstrumentoController extends BaseApiController
         $observacion = Validator::trimOrNull($data['observacion'] ?? null);
         $observacion = Validator::sanitize($observacion, true, false);
         
-        
-        // =========================
+				
+		// =========================
 		// Archivo opcional
 		// =========================
 		$foto = $files['foto'] ?? null;
 		$rutaFoto = null;
 
 		if ($foto && isset($foto['error']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
-			if ($foto['error'] !== UPLOAD_ERR_OK) {
-				$errors['foto'][] = 'Error al subir la imagen.';
-			} else {
-				$nombreOriginal = $foto['name'] ?? '';
-				$tmpName        = $foto['tmp_name'] ?? '';
-				$tamano         = $foto['size'] ?? 0;
 
-				$extension = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+			$codigoError    = $foto['error'] ?? null;
+			$nombreOriginal = $foto['name'] ?? '';
+			$tmpName        = $foto['tmp_name'] ?? '';
+			$tamano         = $foto['size'] ?? 0;
+			$tipoMime       = $foto['type'] ?? '';
+
+			// Tamaño expresado en MB para diagnóstico
+			$tamanoMB = round($tamano / 1024 / 1024, 2);
+
+			// =========================
+			// Error reportado por PHP
+			// =========================
+			if ($codigoError !== UPLOAD_ERR_OK) {
+
+				$mensajeUpload = match ($codigoError) {
+
+					UPLOAD_ERR_INI_SIZE =>
+						'El archivo supera upload_max_filesize configurado en PHP.',
+
+					UPLOAD_ERR_FORM_SIZE =>
+						'El archivo supera el tamaño máximo permitido por el formulario.',
+
+					UPLOAD_ERR_PARTIAL =>
+						'El archivo se subió parcialmente.',
+
+					UPLOAD_ERR_NO_FILE =>
+						'No se recibió ningún archivo.',
+
+					UPLOAD_ERR_NO_TMP_DIR =>
+						'No existe la carpeta temporal de PHP.',
+
+					UPLOAD_ERR_CANT_WRITE =>
+						'PHP no pudo escribir el archivo temporal en el servidor.',
+
+					UPLOAD_ERR_EXTENSION =>
+						'Una extensión de PHP detuvo la subida del archivo.',
+
+					default =>
+						'Error desconocido durante la subida.'
+				};
+
+				$errors['foto'][] =
+					$mensajeUpload .
+					' Código: ' . $codigoError .
+					' | Nombre: ' . $nombreOriginal .
+					' | Tamaño recibido: ' . $tamanoMB . ' MB' .
+					' | MIME: ' . $tipoMime .
+					' | upload_max_filesize: ' . ini_get('upload_max_filesize') .
+					' | post_max_size: ' . ini_get('post_max_size');
+			}
+
+			// =========================
+			// Si PHP recibió bien el archivo
+			// =========================
+			else {
+
+				$extension = strtolower(
+					pathinfo($nombreOriginal, PATHINFO_EXTENSION)
+				);
+
 				$permitidas = ['jpg', 'jpeg', 'png', 'webp'];
 
 				if (!in_array($extension, $permitidas, true)) {
-					$errors['foto'][] = 'Formato de imagen no permitido. Solo: jpg, jpeg, png, webp.';
+					$errors['foto'][] =
+						'Formato no permitido.' .
+						' Extensión recibida: ' . $extension .
+						' | Nombre: ' . $nombreOriginal .
+						' | MIME: ' . $tipoMime;
 				}
 
-				// Límite ejemplo: 3 MB
+				// Límite de tu aplicación
 				if ($tamano > 3 * 1024 * 1024) {
-					$errors['foto'][] = 'La imagen no debe superar los 3 MB.';
+					$errors['foto'][] =
+						'La imagen supera el límite interno de 3 MB.' .
+						' Tamaño recibido por PHP: ' . $tamanoMB . ' MB.';
 				}
 
-				if ($tmpName === '' || !is_uploaded_file($tmpName)) {
-					$errors['foto'][] = 'No se recibió un archivo válido.';
+				if ($tmpName === '') {
+					$errors['foto'][] =
+						'El archivo no contiene una ruta temporal válida.';
+				}
+				elseif (!is_uploaded_file($tmpName)) {
+					$errors['foto'][] =
+						'El archivo temporal existe como valor, pero PHP no lo reconoce como archivo subido.' .
+						' tmp_name: ' . $tmpName;
 				}
 			}
 		}
-		
-        $this->validateOrFail($errors);
+
+		$this->validateOrFail($errors);
 
         try {
 			// =========================
