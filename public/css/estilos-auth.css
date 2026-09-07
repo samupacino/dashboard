@@ -161,3 +161,23 @@
     
     
   
+
+
+	/* PC y celular horizontal */
+	#btnAbrirLogin {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 9999;
+		font-size: 1.5rem;
+	}
+
+	/* Celular en vertical */
+	@media (max-width: 576px) and (orientation: portrait) {
+		#btnAbrirLogin {
+			position: static;
+			display: block;
+			margin: 10px 10px 10px auto;
+			font-size: 1rem;
+		}
+	}

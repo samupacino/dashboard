@@ -1,17 +1,8 @@
-
 <button id="btnAbrirLogin"
-			class="btn btn-outline-dark fw-bold px-4 py-2"
-			style="
-			  position: fixed;
-			  top: 20px;
-			  right: 20px;
-			  z-index: 9999;
-			  font-size: 1.5rem;
-			"
-			data-bs-toggle="modal"
-			data-bs-target="#modalLogin">
-	  Login
-	</button>
+        class="btn btn-outline-dark fw-bold px-4 py-2">
+    Login
+</button>
+
 
 <!-- Modal login oculto -->
 <div class="modalLogin" id="loginModal">

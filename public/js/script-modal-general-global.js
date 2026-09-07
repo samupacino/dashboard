@@ -99,7 +99,7 @@
         }
 
         if (!modalSuccess) {
-            modalSuccess = bootstrap.Modal.getOrCreateInstance(modalElement);
+            //modalSuccess = bootstrap.Modal.getOrCreateInstance(modalElement);
         }
 
         modalSuccess.hide();

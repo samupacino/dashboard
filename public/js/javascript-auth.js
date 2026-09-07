@@ -5,9 +5,9 @@
   // ===============================
   // Referencias a elementos del DOM
   // ===============================
-
-  const loginModal     = document.getElementById('loginModal');
   const btnAbrirLogin  = document.getElementById('btnAbrirLogin');
+  const loginModal     = document.getElementById('loginModal');
+ 
   const btnCerrarLogin = document.getElementById('btnCerrarLogin');
   const modalLoginForm = document.getElementById('modalLoginForm');
 

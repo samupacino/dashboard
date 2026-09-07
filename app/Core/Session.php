@@ -40,7 +40,7 @@ class Session
      * Si el usuario pasa más de este tiempo sin actividad,
      * consideraremos la sesión como expirada.
      */
-    private const INACTIVITY_TIMEOUT = 3600;
+    private const INACTIVITY_TIMEOUT = 1;
 
     /**
      * Inicia la sesión solo si aún no fue iniciada.
