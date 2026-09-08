@@ -75,7 +75,7 @@ class Router {
         /**
          * Ingles
          */
-        $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles', ['web_auth','web_admin']);
+        $this->add('GET','/ingles', 'app\\Controllers\\VistaController@ingles', ['web_admin']);
         $this->add('GET','/ingles/access', 'app\\Controllers\\VistaController@inglesAccess',['auth','admin']);
 
 
@@ -101,11 +101,11 @@ class Router {
 		// INSTRUMENTOS   registroInstrumento
 		// =========================
 
-        $this->add('GET','/instrumento/access', 'app\\Controllers\\VistaController@instrumentoAccess',['web_auth']);
-        $this->add('GET','/instrumento', 'app\\Controllers\\VistaController@instrumento',);
+        $this->add('GET','/instrumento/access', 'app\\Controllers\\VistaController@instrumentoAccess',['auth']);
+        $this->add('GET','/instrumento', 'app\\Controllers\\VistaController@instrumento',['web_auth']);
         
-        $this->add('GET','/instrumento/registro/access', 'app\\Controllers\\VistaController@registroInstrumentoAccess',['web_auth','admin']);
-        $this->add('GET','/instrumento/registro', 'app\\Controllers\\VistaController@registroInstrumento',['auth','admin']);
+        $this->add('GET','/instrumento/registro/access', 'app\\Controllers\\VistaController@registroInstrumentoAccess',['admin']);
+        $this->add('GET','/instrumento/registro', 'app\\Controllers\\VistaController@registroInstrumento',['web_admin']);
         
         
         $this->add('GET','/api/instrumentos/listar', 'app\\Controllers\\InstrumentoController@index',['auth']);
@@ -255,6 +255,9 @@ class Router {
 	 */
 	private function runMiddlewares($middlewares): void
 	{
+		
+		//echo json_encode($middlewares);
+		//return;
 		foreach ($middlewares as $middleware) {
 
 			switch ($middleware) {

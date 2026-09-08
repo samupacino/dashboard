@@ -628,7 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	window.onLoginSuccess = function (){
 		window.app.instrumento.reload();
 	}
-	console.log("entre reload cargar instrumento");
+	//console.log("entre reload cargar instrumento");
 	
 	load_instrumento_init();
     bindModalEditar();
